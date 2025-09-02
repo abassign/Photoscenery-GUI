@@ -406,6 +406,16 @@
             </select>
         </div>
 
+        <div class="control-group">
+            <label for="server">Map Server (--map):</label>
+            <select id="server">
+                <option value="1" selected>1: Arcgis</option>
+                <option value="2">2: USGS (only USA)</option>
+                <option value="3">3: PNOA (only Spain)</option>
+                <option value="4">4: Geoportal (only Poland)</option>
+            </select>
+        </div>
+
         <!-- Main action button -->
         <button id="btn-download-around-aircraft">Download around aircraft</button>
 
@@ -417,7 +427,7 @@
                 style="width:100%; box-sizing: border-box; text-align:center; background:#f8f8f8; border:1px solid #ccc; color:#555;"/>
         </div>
 
-        <hr>
+        <hr style="width: 100%;">
 
         <!-- FlightGear connection controls -->
         <h3>FlightGear Controls</h3>

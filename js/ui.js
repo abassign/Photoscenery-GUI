@@ -34,7 +34,8 @@ const elements = {
     btnDownloadAroundAircraft: document.getElementById('btn-download-around-aircraft'),
     btnFillHoles: document.getElementById('btn-fill-holes'),
     dateFilterSlider: document.getElementById('date-filter-slider'),
-    dateFilterLabel: document.getElementById('date-filter-label')
+    dateFilterLabel: document.getElementById('date-filter-label'),
+    serverSelect: document.getElementById('server')
 };
 
 const CROSSHAIR_SVG_ICON_HTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32">' +
@@ -406,7 +407,8 @@ function getJobParameters() {
         radius: parseFloat(elements.radiusInput.value) || 3,
         size:   parseInt(elements.sizeInput.value, 10) || 4,
         over:   parseInt(elements.overSelect.value, 10) || 1,
-        sdwn:   parseInt(elements.sdwnSelect.value, 10)  // può restituire -1
+        sdwn:   parseInt(elements.sdwnSelect.value, 10),  // può restituire -1
+        server: parseInt(elements.serverSelect.value, 10) || 1
     };
 
     // Se lat/lon non sono compilati, usa ICAO

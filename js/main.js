@@ -344,8 +344,9 @@ function startAutomaticFollowJob() {
             radius: radiusNm,
             over: 2,
             size: parseInt(elements.sizeInput.value, 10) || 4,
-                             sdwn: parseInt(elements.sdwnSelect.value, 10) || 0,
-                             mode: 'daa'
+            sdwn: parseInt(elements.sdwnSelect.value, 10) || 0,
+            server: parseInt(elements.serverSelect.value, 10) || 1,
+            mode: 'daa'
         };
 
         const circle = L.circle([ahead.lat, ahead.lon], {
@@ -630,10 +631,11 @@ function createPreviewCircleAt(lat, lon) {
             lat: centre.lat,
             lon: centre.lng,
             radius: circle.getRadius() / 1852, // m → NM
-             size: parseInt(elements.sizeInput.value, 10) || 4,
-             over: parseInt(elements.overSelect.value, 10) || 1,
-             sdwn: parseInt(elements.sdwnSelect.value, 10) || 0, // default 0 ⇒ precoverage ON
-             mode: 'manual'
+            size: parseInt(elements.sizeInput.value, 10) || 4,
+            over: parseInt(elements.overSelect.value, 10) || 1,
+            sdwn: parseInt(elements.sdwnSelect.value, 10) || 0, // default 0 ⇒ precoverage ON
+            server: parseInt(elements.serverSelect.value, 10) || 1,
+            mode: 'manual'
         };
 
         // Avvia subito il job e trasforma il cerchio in "verde"
