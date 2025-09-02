@@ -984,7 +984,10 @@ function syncScan()
             @info "ddsFindScanner.syncScan: Scanning directory: $dir"
             for (root, _, files) in walkdir(dir; onerror = SKIP_NOACCESS)
                 # Filtra solo le cartelle di interesse per le performance
-                if !occursin("/Orthophotos", root) continue end
+                found = any(startswith.(splitpath(root), "Orthophotos"))
+                if !found
+                    continue
+                end
 
                 for file in files
                     fullpath = joinpath(root, file)
