@@ -33,6 +33,7 @@ const elements = {
     opacitySlider: document.getElementById('opacity-slider'),
     btnDownloadAroundAircraft: document.getElementById('btn-download-around-aircraft'),
     btnFillHoles: document.getElementById('btn-fill-holes'),
+    mapServerSelect: document.getElementById('map-server-select'),
     dateFilterSlider: document.getElementById('date-filter-slider'),
     dateFilterLabel: document.getElementById('date-filter-label')
 };
@@ -217,6 +218,22 @@ function renderSvgButtons(resState, clickCallback) {
         div.innerHTML = createSvgCircle(index, isActive);
         div.addEventListener('click', () => clickCallback(index));
         elements.resSvgContainer.appendChild(div);
+    });
+}
+
+/**
+ * Populates the map server dropdown selector with options from the server.
+ * @param {Array<Object>} servers - An array of server objects, each with id and name.
+ */
+function populateMapServerSelector(servers) {
+    const select = elements.mapServerSelect;
+    select.innerHTML = ''; // Pulisce opzioni esistenti
+
+    servers.forEach(server => {
+        const option = document.createElement('option');
+        option.value = server.id;
+        option.textContent = `${server.id}: ${server.name}`;
+        select.appendChild(option);
     });
 }
 
@@ -491,7 +508,8 @@ export {
     setupInteractiveSelection,
     updateHandleStyles,
     linkRadiusHandleToInput,
-    updateFgfsIndicator
+    updateFgfsIndicator,
+    populateMapServerSelector
 };
 
 

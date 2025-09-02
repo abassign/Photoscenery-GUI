@@ -35,8 +35,8 @@ module GuiMode
 
 export run
 
-using ..Connector, ..GeoEngine, ..ddsFindScanner, ..Photoscenary.dds2pngDXT1, ..Commons, ..Downloader, ..Route
-using Logging, JSON3, HTTP, Images, Dates
+using ..Connector, ..GeoEngine, ..ddsFindScanner, ..Photoscenary.dds2pngDXT1, ..Commons, ..Downloader, ..Route, ..AppConfig
+using Logging, JSON3, HTTP, Images, Dates, LightXML
 using Base.Threads: @spawn
 using Base.Threads: Atomic, atomic_add!
 
@@ -46,6 +46,8 @@ using Base.Threads: Atomic, atomic_add!
 const SERVER_START_TIME = now()
 
 const FGFS_CONNECTION = Ref{Union{Connector.FGFSPositionRoute, Nothing}}(nothing)
+
+const APP_CONFIG = Ref{Dict}()
 
 # Infinite job queue for processing download/conversion tasks
 const JOB_QUEUE = Channel{Dict}(Inf)
@@ -121,10 +123,14 @@ function handle(req::HTTP.Request)
             elseif startswith(p, "/api/resolve-icao")
                 return h_resolve_icao(req)
             elseif p == "/api/queue-size"
-            # This route is now accessible
+                # This route is now accessible
                 return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(Base.n_avail(JOB_QUEUE)))
             elseif startswith(p, "/preview")
                 return h_preview(req)
+            elseif p == "/api/map-servers"
+                return h_get_map_servers(req)
+            elseif p == "/api/app-config"
+                return h_app_config(req)
         else
             # If no API route matches, serve static files
             return serve_static_file(req)
@@ -508,6 +514,41 @@ function h_resolve_icao(req::HTTP.Request)
     end
 end
 
+
+"""
+Legge params.xml e restituisce una lista di server disponibili in formato JSON.
+"""
+function h_get_map_servers(req)
+    servers_list = []
+    try
+        xdoc = parse_file("params.xml")
+        servers_node = find_element(root(xdoc), "servers")
+        if servers_node !== nothing
+            for server_node in child_elements(servers_node)
+                if name(server_node) == "server"
+                    server_id = content(find_element(server_node, "id"))
+                    server_name = content(find_element(server_node, "name"))
+                    push!(servers_list, Dict("id" => parse(Int, server_id), "name" => server_name))
+                end
+            end
+        end
+    catch e
+        @error "Impossibile leggere o parsare params.xml per i server" exception=(e, catch_backtrace())
+        return HTTP.Response(500, "Error reading server list from params.xml")
+    end
+
+    return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(servers_list))
+end
+
+
+function h_app_config(req)
+    # Legge il valore "server" dalla config salvata, con un default di 1 se non presente
+    default_server_id = get(APP_CONFIG[], "server", 1)
+    payload = Dict("default_server" => default_server_id)
+    return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(payload))
+end
+
+
 ###############################################################################
 # Background Worker Management
 #
@@ -715,6 +756,8 @@ end
 
 function run(args::Vector{String}=ARGS)
     # Parse command line arguments for HTTP port configuration
+    APP_CONFIG[] = AppConfig.parse_args(args) # Salva la config parsata
+
     port = 8000
     if (idx = findfirst(a -> startswith(a, "--http"), args)) !== nothing
         val = split(args[idx], '=')

@@ -294,8 +294,9 @@ function _parse_commandline(args)
         "--http"
         help = "Starts a local web server. Used as a flag, it uses port 8000; otherwise, it uses the specified port (es. --webserver 8081)."
         arg_type = Int
-        nargs = '*' # Accetta zero o più valori (restituirà un array)
-        default = 8000 # Se non presente, il valore è nothing
+        nargs = '?'         # Accetta zero o più valori (restituirà un array)
+        constant = 8000
+        default = nothing   # Se non presente, il valore è nothing
     end
 
     # parse_args gestisce automaticamente gli argomenti passati

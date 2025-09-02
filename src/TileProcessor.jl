@@ -55,11 +55,10 @@ function assemble_group_from_tmp(
     (cols * cols == total_chunks) || return false
     min_bytes = get(cfg, "min_chunk_bytes", 64)
 
-    # 1) indicizza SOLO i file validi presenti (pattern, id/size/total coerenti, dimensione >= min_bytes)
-    #    mappa: (y,x) => path
+    # 1) indicizza SOLO i file validi presenti
     byyx = Dict{Tuple{Int,Int},String}()
     for f in files
-        if !(isfile(f) && filesize(f) >= min_bytes); return false; end  # race: non pronto → riprova
+        if !(isfile(f) && filesize(f) >= min_bytes); return false; end
         name = basename(f)
         m = match(r"^(\d+)_(\d+)_([1-9]\d*)_([1-9]\d*)_([1-9]\d*)\.png$", name)
         m === nothing && return false
@@ -70,108 +69,84 @@ function assemble_group_from_tmp(
         (1 <= x <= cols && 1 <= y <= cols) || return false
         byyx[(y,x)] = f
     end
-    # devono esserci esattamente tutti i pezzi
     length(byyx) == total_chunks || return false
 
-    # 2) misura dal primo file esistente (evita race)
+    # 2) misura dal primo file esistente
     first_path = first(values(byyx))
-    if !(isfile(first_path) && filesize(first_path) >= get(cfg, "min_chunk_bytes", 64))
-        return false
-    end
-
-    first_img = try
-        Images.load(first_path)
-    catch
-        return false  # non ancora leggibile → riprova
-    end
-    chunk_h, chunk_w = size(first_img)  # (rows, cols)
+    if !(isfile(first_path) && filesize(first_path) >= get(cfg, "min_chunk_bytes", 64)); return false; end
+    first_img = try Images.load(first_path) catch; return false; end
+    chunk_h, chunk_w = size(first_img)
     total_h = chunk_h * cols
     total_w = chunk_w * cols
     final_image = fill(colorant"black", total_h, total_w)
 
-    # 3) y nel filename è già "flippato" (1 = TOP) ⇒ riga = y-1
-    @inline y_to_row(y::Int) = y - 1
-
-    # 4) copia tutti i chunk (se uno manca o non carica → ritorna false, il monitor riproverà)
+    # 3) & 4) copia tutti i chunk
     for y in 1:cols, x in 1:cols
         f = get(byyx, (y,x), "")
         !isempty(f) || return false
         isfile(f) || return false
-        img = try
-            Images.load(f)
-        catch
-            return false
-        end
+        img = try Images.load(f) catch; return false; end
         (size(img,1) == chunk_h && size(img,2) == chunk_w) || return false
-
-        row = y_to_row(y)
+        row = y - 1
         col = x - 1
         row_start = row * chunk_h + 1
         col_start = col * chunk_w + 1
         final_image[row_start:row_start+chunk_h-1, col_start:col_start+chunk_w-1] .= img
     end
 
-    # 5) TileMetadata minimale per "move": usa latC per la larghezza longitudinale
+    # 5) TileMetadata minimale per "move"
     lonC, latC, lonLL, latLL, xidx, yidx, _, _ = Commons.coordFromIndex(tile_id)
     width, _ = Commons.getSizeAndCols(size_id)
-    lon_step = Commons.tileWidth(latC)   # <- meglio del latLL: dipende dalla riga
+    lon_step = Commons.tileWidth(latC)
     tile_meta = Commons.TileMetadata(
         tile_id, size_id,
         lonLL, latLL, lonLL + lon_step, latLL + 0.125,
         xidx, yidx,
         lonC, latC, lon_step,
         width, cols
-        )
+    )
 
-    # 6) scrivi PNG temporaneo (taggato con size_id per evitare collisioni) → DDS (se cfg[:png] non è true)
-    #    poi RINOMINA a <tile_id>.dds|.png PRIMA di place_tile!
+    # --- INIZIO BLOCCO LOGICO CORRETTO ---
+
+    # 6) Logica di salvataggio e posizionamento
     if !get(cfg, "png", false)
+        # Percorso DDS
         temp_png = joinpath(tmp_dir, "$(tile_id)_$(size_id)_assembled.png")
+        temp_dds = joinpath(tmp_dir, "$(tile_id)_$(size_id).dds")
+        final_staging = joinpath(tmp_dir, string(tile_id) * ".dds")
         try
             Images.save(temp_png, final_image)
-        catch
-            return false
-        end
-        temp_dds = joinpath(tmp_dir, "$(tile_id)_$(size_id).dds")
-        try
             png2ddsDXT1.convert(temp_png, temp_dds)
             rm(temp_png; force=true)
-            final_staging = joinpath(tmp_dir, string(tile_id) * ".dds")   # ← SOLO id a 7 cifre
-            if isfile(final_staging); rm(final_staging; force=true); end  # evita collisioni
             mv(temp_dds, final_staging; force=true)
-            ddsFindScanner.place_tile!(final_staging, tile_meta, root_path, save_path, cfg)
-            rm(final_staging; force=true)  # opzionale: ripulisci lo staging
-        catch
-            # fallback: prova a piazzare il PNG se la conversione fallisce
-            try
-                final_png = joinpath(tmp_dir, string(tile_id) * ".png")
-                if isfile(final_png); rm(final_png; force=true); end
-                mv(temp_png, final_png; force=true)
-                ddsFindScanner.place_tile!(final_png, tile_meta, root_path, save_path, cfg)
-                rm(final_png; force=true)
-            catch
-                return false
+
+            if !ddsFindScanner.place_tile!(final_staging, tile_meta, root_path, save_path, cfg)
+                return false # Propaga il fallimento
             end
+            rm(final_staging; force=true) # Cleanup
+        catch
+            return false # Errore in conversione/salvataggio
         end
     else
-        temp_png = joinpath(tmp_dir, "$(tile_id)_$(size_id).png")
+        # Percorso PNG
+        final_staging = joinpath(tmp_dir, string(tile_id) * ".png")
         try
-            Images.save(temp_png, final_image)
-            final_png = joinpath(tmp_dir, string(tile_id) * ".png")       # ← SOLO id a 7 cifre
-            if isfile(final_png); rm(final_png; force=true); end
-            mv(temp_png, final_png; force=true)
-            ddsFindScanner.place_tile!(final_png, tile_meta, root_path, save_path, cfg)
-            rm(final_png; force=true)
+            Images.save(final_staging, final_image)
+            if !ddsFindScanner.place_tile!(final_staging, tile_meta, root_path, save_path, cfg)
+                return false # Propaga il fallimento
+            end
+            rm(final_staging; force=true) # Cleanup
         catch
-            return false
+            return false # Errore in salvataggio
         end
     end
 
-    # 7) cleanup dei chunk SOLO a successo
+    # 7) Cleanup finale dei chunk e successo
     for f in values(byyx)
         rm(f; force=true)
     end
-    return true
+
+    return true # <-- Restituisce SEMPRE e SOLO 'true' in caso di successo
 end
 
 

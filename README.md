@@ -51,7 +51,7 @@ This command can assume the following values: 1, 2, 3, or 4.
 For example, the US is --map 2.
 
 ```bash
-julia --project=. -e 'using Photoscenary; Photoscenary.GuiMode.run(["--http --map 2"])'
+julia --project=. -e 'using Photoscenary; Photoscenary.GuiMode.run(["--http", ""--map=2"])'
 ```
 
 Then open your browser at:  

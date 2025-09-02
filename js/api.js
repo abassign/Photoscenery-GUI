@@ -154,3 +154,16 @@ export function fillHoles(bounds, settings) {
         return res.json();
     });
 }
+
+/**
+ * Retrieves the list of available map servers from the backend.
+ * @returns {Promise<Array>} A promise that resolves with an array of server objects.
+ */
+export function getMapServers() {
+    return fetch('/api/map-servers').then(r => r.json());
+}
+
+// Aggiungi questa funzione
+export function getAppConfig() {
+    return fetch('/api/app-config').then(r => r.json());
+}

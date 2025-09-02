@@ -370,16 +370,15 @@ function scan_directories(dirs_to_scan::Vector{String})
     png_count = 0
 
     for dir in dirs_to_scan
-        # Il messaggio di scansione ora viene loggato da _periodic_update
         try
             for (root, _, files) in walkdir(dir; onerror = SKIP_NOACCESS)
-                if occursin("/Orthophotos/", root) || occursin("/Orthophotos-saved/", root)
+                path_components = splitpath(root)
+                if ("Orthophotos" in path_components) || ("Orthophotos-saved" in path_components)
                     for file in files
                         full_path = joinpath(root, file)
                         is_dds = endswith(lowercase(file), ".dds")
                         is_png = endswith(lowercase(file), ".png")
                         filename_pattern_match = match(r"^\d{7}\.(dds|DDS|png|PNG)$", file) !== nothing
-
                         if (is_dds || is_png) && filename_pattern_match
                             info = get_file_info(full_path, is_dds, is_png)
                             if info[1]
@@ -984,7 +983,9 @@ function syncScan()
             @info "ddsFindScanner.syncScan: Scanning directory: $dir"
             for (root, _, files) in walkdir(dir; onerror = SKIP_NOACCESS)
                 # Filtra solo le cartelle di interesse per le performance
-                if !occursin("/Orthophotos", root) continue end
+                if !("Orthophotos" in splitpath(root))
+                    continue
+                end
 
                 for file in files
                     fullpath = joinpath(root, file)

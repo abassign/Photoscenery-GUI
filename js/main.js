@@ -17,6 +17,7 @@ import {
     updateHandleStyles,
     linkRadiusHandleToInput,
     updateFgfsIndicator,
+    populateMapServerSelector
 } from './ui.js';
 
 // ---------- DEBUG SWITCH ----------
@@ -49,7 +50,8 @@ const state = {
     lastDaaCenterPoint: null,       // centro dell’ultimo cerchio verde
     lastAutoLaunchTs: 0,            // timestamp ultimo invio autoù
     lastDaaCircleLayer: null,       // riferimento diretto all’ultimo cerchio verde
-    daaArmed: false                 // isteresi: diventa true solo dopo essere entrati sotto ARM_TH
+    daaArmed: false,                 // isteresi: diventa true solo dopo essere entrati sotto ARM_TH
+    defaultServerId: 1
 };
 
 const activeCircles = {};           // Stores active job circles on the map
@@ -344,8 +346,9 @@ function startAutomaticFollowJob() {
             radius: radiusNm,
             over: 2,
             size: parseInt(elements.sizeInput.value, 10) || 4,
-                             sdwn: parseInt(elements.sdwnSelect.value, 10) || 0,
-                             mode: 'daa'
+            sdwn: parseInt(elements.sdwnSelect.value, 10) || 0,
+            mode: 'daa',
+            server: parseInt(elements.mapServerSelect.value, 10) || state.defaultServerId
         };
 
         const circle = L.circle([ahead.lat, ahead.lon], {
@@ -630,10 +633,11 @@ function createPreviewCircleAt(lat, lon) {
             lat: centre.lat,
             lon: centre.lng,
             radius: circle.getRadius() / 1852, // m → NM
-             size: parseInt(elements.sizeInput.value, 10) || 4,
-             over: parseInt(elements.overSelect.value, 10) || 1,
-             sdwn: parseInt(elements.sdwnSelect.value, 10) || 0, // default 0 ⇒ precoverage ON
-             mode: 'manual'
+            size: parseInt(elements.sizeInput.value, 10) || 4,
+            over: parseInt(elements.overSelect.value, 10) || 1,
+            sdwn: parseInt(elements.sdwnSelect.value, 10) || 0, // default 0 ⇒ precoverage ON
+            mode: 'manual',
+            server: parseInt(elements.mapServerSelect.value, 10) || state.defaultServerId
         };
 
         // Avvia subito il job e trasforma il cerchio in "verde"
@@ -737,8 +741,9 @@ elements.btnFillHoles.addEventListener('click', () => {
     const bounds = elements.map.getBounds();
     const settings = {
         size: parseInt(elements.sizeInput.value, 10) || 4,
-                                       over: parseInt(elements.overSelect.value, 10) || 1,
-                                       sdwn: parseInt(elements.sdwnSelect.value, 10) || 0
+            over: parseInt(elements.overSelect.value, 10) || 1,
+            sdwn: parseInt(elements.sdwnSelect.value, 10) || 0,
+            server: parseInt(elements.mapServerSelect.value, 10) || state.defaultServerId
     };
 
     // 2. Chiama l'API per avviare il processo in background
@@ -777,6 +782,27 @@ window.addEventListener('DOMContentLoaded', () => {
     }).catch(err => {
         console.error("Impossibile recuperare l'ora della sessione:", err);
     });
+    // Popola il selettore dei map server al caricamento
+    api.getMapServers()
+        .then(servers => {
+            populateMapServerSelector(servers);
+        })
+        .catch(err => {
+            console.error("Could not load map servers:", err);
+            // Opzionale: mostra un errore all'utente o disabilita il selettore
+        });
+    api.getAppConfig()
+        .then(config => {
+            console.log("Configurazione ricevuta dal backend:", config);
+            // Salva l'ID del server di default nello stato globale
+            state.defaultServerId = config.default_server;
+            // Imposta il valore nel selettore a discesa per renderlo visibile all'utente
+            elements.mapServerSelect.value = state.defaultServerId;
+        })
+        .catch(err => {
+            console.error("Errore nel caricare la configurazione dell'app:", err);
+            // In caso di errore, il default rimarrà 1 (o quello che hai impostato nello stato)
+        });
 
     // Avvia il loop periodic
     mainUpdateLoop();

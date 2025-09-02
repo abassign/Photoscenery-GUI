@@ -59,4 +59,4 @@ julia --project=. -e 'using Photoscenary; Photoscenary.GuiMode.run(["--http=8000
 
 If you want to specify one of the four map servers, you can select it using the --map n command. This command can assume the following values: 1, 2, 3, or 4. For example, the US is --map 2.
 
-julia --project=. -e 'using Photoscenary; Photoscenary.GuiMode.run(["--http --map 2"])'
+julia --project=. -e 'using Photoscenary; Photoscenary.GuiMode.run(["--http", "--map=2"])'
