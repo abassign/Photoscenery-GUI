@@ -762,6 +762,41 @@ elements.btnFillHoles.addEventListener('click', () => {
     });
 });
 
+elements.btnEditPaths.addEventListener('click', () => {
+    const isEditing = !elements.outputPathInput.readOnly;
+
+    if (isEditing) {
+        // --- Logica per SALVARE ---
+        const newPath = elements.outputPathInput.value.trim();
+        const newSave = elements.backupPathInput.value.trim();
+
+        if (!newPath || !newSave) {
+            alert("Paths cannot be empty.");
+            return;
+        }
+
+        api.setPaths(newPath, newSave)
+        .then(response => {
+            if (!response.ok) throw new Error("Server failed to update paths.");
+            alert("Paths updated successfully!");
+            // Riporta allo stato di sola lettura
+            elements.outputPathInput.readOnly = true;
+            elements.backupPathInput.readOnly = true;
+            elements.btnEditPaths.textContent = "Edit";
+            elements.btnEditPaths.style.backgroundColor = "";
+        })
+        .catch(err => {
+            alert(`Error: ${err.message}`);
+        });
+
+    } else {
+        // --- Logica per MODIFICARE ---
+        elements.outputPathInput.readOnly = false;
+        elements.backupPathInput.readOnly = false;
+        elements.btnEditPaths.textContent = "Save";
+        elements.btnEditPaths.style.backgroundColor = "#4CAF50"; // Verde per indicare "conferma"
+    }
+});
 
 // ------------------------------------------------------------------
 // 4. Initialization
@@ -803,6 +838,21 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error("Errore nel caricare la configurazione dell'app:", err);
             // In caso di errore, il default rimarrà 1 (o quello che hai impostato nello stato)
         });
+    api.getPaths()
+        .then(paths => {
+            elements.outputPathInput.value = paths.path;
+            elements.backupPathInput.value = paths.save;
+        });
+
+    // Gestione della sezione collassabile "Directory Settings"
+    elements.directorySettingsHeader.addEventListener('click', () => {
+        elements.directorySettingsHeader.classList.toggle('collapsed');
+        elements.directorySettingsContent.classList.toggle('collapsed');
+    });
+    // Per avviare la sezione come chiusa di default, aggiungi queste due righe:
+    elements.directorySettingsHeader.classList.add('collapsed');
+    elements.directorySettingsContent.classList.add('collapsed');
+
 
     // Avvia il loop periodic
     mainUpdateLoop();

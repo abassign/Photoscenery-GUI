@@ -34,6 +34,11 @@ const elements = {
     btnDownloadAroundAircraft: document.getElementById('btn-download-around-aircraft'),
     btnFillHoles: document.getElementById('btn-fill-holes'),
     mapServerSelect: document.getElementById('map-server-select'),
+    outputPathInput: document.getElementById('output-path-input'),
+    backupPathInput: document.getElementById('backup-path-input'),
+    btnEditPaths: document.getElementById('btn-edit-paths'),
+    directorySettingsHeader: document.getElementById('directory-settings-content').previousElementSibling,
+    directorySettingsContent: document.getElementById('directory-settings-content'),
     dateFilterSlider: document.getElementById('date-filter-slider'),
     dateFilterLabel: document.getElementById('date-filter-label')
 };

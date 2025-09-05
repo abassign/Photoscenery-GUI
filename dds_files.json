@@ -1,3041 +1,1465 @@
 {
     "files": {
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745057.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252569.dds": {
-            "name": "3252569.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:24",
-            "id": 3252569,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154386.dds": {
-            "name": "3154386.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:58:24",
-            "id": 3154386,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105251.dds": {
-            "name": "3105251.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:24:45",
-            "id": 3105251,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187113.dds": {
-            "name": "3187113.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:00:12",
-            "id": 3187113,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121642.dds": {
-            "name": "3121642.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:26:58",
-            "id": 3121642,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154371.dds": {
-            "name": "3154371.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:58:03",
-            "id": 3154371,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236193.dds": {
-            "name": "3236193.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:10",
-            "id": 3236193,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745073.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236185.dds": {
-            "name": "3236185.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:28",
-            "id": 3236185,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236194.dds": {
-            "name": "3236194.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:05:20",
-            "id": 3236194,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252626.dds": {
-            "name": "3252626.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:34",
-            "id": 3252626,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236233.dds": {
-            "name": "3236233.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:17",
-            "id": 3236233,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n44/3137978.dds": {
-            "name": "3137978.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:35:59",
-            "id": 3137978,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252624.dds": {
-            "name": "3252624.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:59",
-            "id": 3252624,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138011.dds": {
-            "name": "3138011.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:25",
-            "id": 3138011,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137889.dds": {
-            "name": "3137889.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:08:54",
-            "id": 3137889,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121656.dds": {
-            "name": "3121656.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 16:21:21",
-            "id": 3121656,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203505.dds": {
-            "name": "3203505.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:25:32",
-            "id": 3203505,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e012n45/3154376.dds": {
-            "name": "3154376.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:35:41",
-            "id": 3154376,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745080.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138018.dds": {
-            "name": "3138018.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:35:22",
-            "id": 3138018,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121657.dds": {
-            "name": "3121657.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:22:34",
-            "id": 3121657,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745056.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105218.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138025.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154393.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105234.dds": {
             "height": 4096,
-            "last_modified": "2025-09-02 21:35:21",
-            "id": 1745056,
+            "last_modified": "2025-09-05 18:40:47",
+            "id": 3105234,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121610.dds": {
-            "name": "3121610.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:52:29",
-            "id": 3121610,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121616.dds": {
-            "name": "3121616.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:20:49",
-            "id": 3121616,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137912.dds": {
-            "name": "3137912.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:08:41",
-            "id": 3137912,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187121.dds": {
-            "name": "3187121.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:59:37",
-            "id": 3187121,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121648.dds": {
-            "name": "3121648.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:22:34",
-            "id": 3121648,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105267.dds": {
-            "name": "3105267.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:19:11",
-            "id": 3105267,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n44/3170738.dds": {
-            "name": "3170738.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:00:22",
-            "id": 3170738,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203481.dds": {
-            "name": "3203481.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:25:50",
-            "id": 3203481,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236234.dds": {
-            "name": "3236234.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:05:03",
-            "id": 3236234,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137992.dds": {
-            "name": "3137992.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:52:51",
-            "id": 3137992,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728690.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137913.dds": {
-            "name": "3137913.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:08:42",
-            "id": 3137913,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236210.dds": {
-            "name": "3236210.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:14",
-            "id": 3236210,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728698.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187091.dds": {
-            "name": "3187091.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:25:44",
-            "id": 3187091,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170768.dds": {
-            "name": "3170768.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:56:48",
-            "id": 3170768,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121633.dds": {
-            "name": "3121633.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:26:20",
-            "id": 3121633,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728683.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187098.dds": {
-            "name": "3187098.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:25:44",
-            "id": 3187098,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n45/3187144.dds": {
-            "name": "3187144.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:00:26",
-            "id": 3187144,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121651.dds": {
-            "name": "3121651.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:52:28",
-            "id": 3121651,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137906.dds": {
-            "name": "3137906.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:09:01",
-            "id": 3137906,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3137984.dds": {
-            "name": "3137984.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:26:56",
-            "id": 3137984,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138001.dds": {
-            "name": "3138001.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:25:51",
-            "id": 3138001,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236201.dds": {
-            "name": "3236201.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:05:20",
-            "id": 3236201,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252593.dds": {
-            "name": "3252593.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:24",
-            "id": 3252593,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745081.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3137992.dds": {
-            "name": "3137992.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:25:23",
-            "id": 3137992,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154394.dds": {
-            "name": "3154394.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:58:03",
-            "id": 3154394,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745048.dds": {
-            "height": 2048,
-            "last_modified": "2025-09-02 21:35:38",
-            "id": 1745048,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138002.dds": {
-            "name": "3138002.dds",
-            "height": 4096,
-            "last_modified": "2025-08-15 09:53:47",
-            "id": 3138002,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154370.dds": {
-            "name": "3154370.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:57:54",
-            "id": 3154370,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121625.dds": {
-            "name": "3121625.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:49:54",
-            "id": 3121625,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e012n45/3154392.dds": {
-            "name": "3154392.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:35:51",
-            "id": 3154392,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170762.dds": {
-            "name": "3170762.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:55:36",
-            "id": 3170762,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137984.dds": {
-            "name": "3137984.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:52:32",
-            "id": 3137984,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203504.dds": {
-            "name": "3203504.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:23:14",
-            "id": 3203504,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105243.dds": {
-            "name": "3105243.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:22:34",
-            "id": 3105243,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137987.dds": {
-            "name": "3137987.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:37",
-            "id": 3137987,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154384.dds": {
-            "name": "3154384.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:58:22",
-            "id": 3154384,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219867.dds": {
-            "name": "3219867.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:42:56",
-            "id": 3219867,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268985.dds": {
-            "name": "3268985.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:43",
-            "id": 3268985,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138009.dds": {
-            "name": "3138009.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:25:14",
-            "id": 3138009,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137898.dds": {
-            "name": "3137898.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:09:09",
-            "id": 3137898,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137986.dds": {
-            "name": "3137986.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:31",
-            "id": 3137986,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219874.dds": {
-            "name": "3219874.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:42:03",
-            "id": 3219874,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219881.dds": {
-            "name": "3219881.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:44:21",
-            "id": 3219881,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n43/3121523.dds": {
-            "name": "3121523.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:09:04",
-            "id": 3121523,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121643.dds": {
-            "name": "3121643.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:52:24",
-            "id": 3121643,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137880.dds": {
-            "name": "3137880.dds",
-            "height": 1024,
-            "last_modified": "2025-09-02 19:09:30",
-            "id": 3137880,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137896.dds": {
-            "name": "3137896.dds",
-            "height": 4096,
-            "last_modified": "2025-09-02 19:08:38",
-            "id": 3137896,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728691.dds": null,
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138025.dds": {
-            "name": "3138025.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:52:29",
-            "id": 3138025,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n44/3137920.dds": {
-            "name": "3137920.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:09:20",
-            "id": 3137920,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745048.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203488.dds": {
-            "name": "3203488.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:22:56",
-            "id": 3203488,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138032.dds": {
-            "name": "3138032.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:52:30",
-            "id": 3138032,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728682.dds": {
-            "height": 4096,
-            "last_modified": "2025-09-02 21:35:25",
-            "id": 1728682,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n44/3137922.dds": {
-            "name": "3137922.dds",
-            "height": 1024,
-            "last_modified": "2025-09-02 19:09:34",
-            "id": 3137922,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n44/3170747.dds": {
-            "name": "3170747.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:56:02",
-            "id": 3170747,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268977.dds": {
-            "name": "3268977.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:43",
-            "id": 3268977,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121650.dds": {
-            "name": "3121650.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:28:38",
-            "id": 3121650,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170760.dds": {
-            "name": "3170760.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:56:40",
-            "id": 3170760,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105242.dds": {
-            "name": "3105242.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:20:20",
-            "id": 3105242,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219848.dds": {
-            "name": "3219848.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:44:35",
-            "id": 3219848,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138026.dds": {
-            "name": "3138026.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:54:37",
-            "id": 3138026,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138017.dds": {
-            "name": "3138017.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:52:18",
-            "id": 3138017,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252618.dds": {
-            "name": "3252618.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:31",
-            "id": 3252618,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252617.dds": {
-            "name": "3252617.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:04",
-            "id": 3252617,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728675.dds": {
-            "height": 4096,
-            "last_modified": "2025-09-02 21:35:17",
-            "id": 1728675,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121616.dds": {
-            "name": "3121616.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:22:34",
-            "id": 3121616,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n44/3137977.dds": {
-            "name": "3137977.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:54:41",
-            "id": 3137977,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138024.dds": {
-            "name": "3138024.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:52:25",
-            "id": 3138024,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n44/3137921.dds": {
-            "name": "3137921.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:09:12",
-            "id": 3137921,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105251.dds": {
-            "name": "3105251.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 16:16:22",
-            "id": 3105251,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n45/3187137.dds": {
-            "name": "3187137.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:00:18",
-            "id": 3187137,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236217.dds": {
-            "name": "3236217.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:54",
-            "id": 3236217,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n44/3154354.dds": {
-            "name": "3154354.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:58:00",
-            "id": 3154354,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n44/3170731.dds": {
-            "name": "3170731.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:00:01",
-            "id": 3170731,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203496.dds": {
-            "name": "3203496.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:20:50",
-            "id": 3203496,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268953.dds": {
-            "name": "3268953.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:48",
-            "id": 3268953,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745072.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203512.dds": {
-            "name": "3203512.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:24:25",
-            "id": 3203512,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187107.dds": {
-            "name": "3187107.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:21:42",
-            "id": 3187107,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236243.dds": {
-            "name": "3236243.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:53",
-            "id": 3236243,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236187.dds": {
-            "name": "3236187.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:45",
-            "id": 3236187,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187115.dds": {
-            "name": "3187115.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:19:38",
-            "id": 3187115,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n44/3170739.dds": {
-            "name": "3170739.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:59:35",
-            "id": 3170739,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121603.dds": {
-            "name": "3121603.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:52:30",
-            "id": 3121603,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121611.dds": {
-            "name": "3121611.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:52:21",
-            "id": 3121611,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268976.dds": {
-            "name": "3268976.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:34",
-            "id": 3268976,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121634.dds": {
-            "name": "3121634.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:26:34",
-            "id": 3121634,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219849.dds": {
-            "name": "3219849.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:42:44",
-            "id": 3219849,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n44/3154352.dds": {
-            "name": "3154352.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:58:00",
-            "id": 3154352,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137897.dds": {
-            "name": "3137897.dds",
-            "height": 4096,
-            "last_modified": "2025-09-02 19:08:14",
-            "id": 3137897,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138010.dds": {
-            "name": "3138010.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 19:34:34",
-            "id": 3138010,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n44/3170746.dds": {
-            "name": "3170746.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:00:26",
-            "id": 3170746,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728699.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121641.dds": {
-            "name": "3121641.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:20:16",
-            "id": 3121641,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137985.dds": {
-            "name": "3137985.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:34",
-            "id": 3137985,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219850.dds": {
-            "name": "3219850.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:42:32",
-            "id": 3219850,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121618.dds": {
-            "name": "3121618.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:24:32",
-            "id": 3121618,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252595.dds": {
-            "name": "3252595.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:34",
-            "id": 3252595,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n43/3121531.dds": {
-            "name": "3121531.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:09:34",
-            "id": 3121531,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n41/1728706.dds": {
-            "height": 2048,
-            "last_modified": "2025-09-02 21:35:42",
-            "id": 1728706,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138002.dds": {
-            "name": "3138002.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 19:33:00",
-            "id": 3138002,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219866.dds": {
-            "name": "3219866.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:38:55",
-            "id": 3219866,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268984.dds": {
-            "name": "3268984.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:34",
-            "id": 3268984,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137905.dds": {
-            "name": "3137905.dds",
-            "height": 4096,
-            "last_modified": "2025-09-02 19:07:37",
-            "id": 3137905,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187128.dds": {
-            "name": "3187128.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 19:59:00",
-            "id": 3187128,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137993.dds": {
-            "name": "3137993.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:56:21",
-            "id": 3137993,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252603.dds": {
-            "name": "3252603.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:34",
-            "id": 3252603,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121649.dds": {
-            "name": "3121649.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:28:59",
-            "id": 3121649,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121627.dds": {
-            "name": "3121627.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 19:22:36",
-            "id": 3121627,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219875.dds": {
-            "name": "3219875.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:43:45",
-            "id": 3219875,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170761.dds": {
-            "name": "3170761.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:55:19",
-            "id": 3170761,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105235.dds": {
-            "name": "3105235.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:20:32",
-            "id": 3105235,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219856.dds": {
-            "name": "3219856.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:43:31",
-            "id": 3219856,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219843.dds": {
-            "name": "3219843.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:44:43",
-            "id": 3219843,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n44/3137978.dds": {
-            "name": "3137978.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:54:35",
-            "id": 3137978,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121609.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121609.dds": {
             "name": "3121609.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:22:34",
+            "height": 1024,
+            "last_modified": "2025-09-03 20:13:23",
             "id": 3121609,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121650.dds": {
-            "name": "3121650.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:22:34",
-            "id": 3121650,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e012n45/3154400.dds": {
-            "name": "3154400.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:35:57",
-            "id": 3154400,
             "size": 1048704,
             "width": 2048,
             "sizeId": 2
         },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138000.dds": {
-            "name": "3138000.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:17",
-            "id": 3138000,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n41/1745088.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121611.dds": {
-            "name": "3121611.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:25:39",
-            "id": 3121611,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n44/3154353.dds": {
-            "name": "3154353.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:58:33",
-            "id": 3154353,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728667.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121618.dds": {
-            "name": "3121618.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:28:10",
-            "id": 3121618,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105274.dds": {
-            "name": "3105274.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 16:21:29",
-            "id": 3105274,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252602.dds": {
-            "name": "3252602.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:18",
-            "id": 3252602,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138001.dds": {
-            "name": "3138001.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:56:19",
-            "id": 3138001,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121608.dds": {
-            "name": "3121608.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:22:36",
-            "id": 3121608,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n44/3137979.dds": {
-            "name": "3137979.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:56:54",
-            "id": 3137979,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121640.dds": {
-            "name": "3121640.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:24:14",
-            "id": 3121640,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745065.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e008n45/3088867.dds": {
             "height": 4096,
-            "last_modified": "2025-09-02 21:35:32",
-            "id": 1745065,
+            "last_modified": "2025-09-05 18:42:09",
+            "id": 3088867,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n44/3137929.dds": {
-            "name": "3137929.dds",
-            "height": 1024,
-            "last_modified": "2025-09-02 19:09:37",
-            "id": 3137929,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252586.dds": {
-            "name": "3252586.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:26",
-            "id": 3252586,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187122.dds": {
-            "name": "3187122.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:25:01",
-            "id": 3187122,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154369.dds": {
-            "name": "3154369.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154401.dds": {
             "height": 4096,
-            "last_modified": "2025-08-15 09:58:38",
-            "id": 3154369,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121649.dds": {
-            "name": "3121649.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:24:47",
-            "id": 3121649,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121619.dds": {
-            "name": "3121619.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:40",
-            "id": 3121619,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236227.dds": {
-            "name": "3236227.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:13",
-            "id": 3236227,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154401.dds": {
-            "name": "3154401.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:58:32",
+            "last_modified": "2025-09-05 18:47:51",
             "id": 3154401,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n44/3137979.dds": {
-            "name": "3137979.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:35:59",
-            "id": 3137979,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745056.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268961.dds": {
-            "name": "3268961.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:46",
-            "id": 3268961,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n44/3121539.dds": {
-            "name": "3121539.dds",
-            "height": 1024,
-            "last_modified": "2025-09-02 19:09:34",
-            "id": 3121539,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252619.dds": {
-            "name": "3252619.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:39",
-            "id": 3252619,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n41/1728707.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236235.dds": {
-            "name": "3236235.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:44",
-            "id": 3236235,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n44/3269001.dds": {
-            "name": "3269001.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:45",
-            "id": 3269001,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137888.dds": {
-            "name": "3137888.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:08:51",
-            "id": 3137888,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138024.dds": {
-            "name": "3138024.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:26:03",
-            "id": 3138024,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138027.dds": {
-            "name": "3138027.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:36:06",
-            "id": 3138027,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252609.dds": {
-            "name": "3252609.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:38",
-            "id": 3252609,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154387.dds": {
-            "name": "3154387.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:58:00",
-            "id": 3154387,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138026.dds": {
-            "name": "3138026.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:36:03",
-            "id": 3138026,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n44/3154362.dds": {
-            "name": "3154362.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:58:05",
-            "id": 3154362,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121625.dds": {
-            "name": "3121625.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:21:21",
-            "id": 3121625,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154377.dds": {
-            "name": "3154377.dds",
-            "height": 4096,
-            "last_modified": "2025-08-15 09:58:29",
-            "id": 3154377,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252570.dds": {
-            "name": "3252570.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:31",
-            "id": 3252570,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154378.dds": {
-            "name": "3154378.dds",
-            "height": 4096,
-            "last_modified": "2025-08-15 09:58:50",
-            "id": 3154378,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138003.dds": {
-            "name": "3138003.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:58:41",
-            "id": 3138003,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e012n45/3154384.dds": {
-            "name": "3154384.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:35:37",
-            "id": 3154384,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187129.dds": {
-            "name": "3187129.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:00:04",
-            "id": 3187129,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252585.dds": {
-            "name": "3252585.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:32",
-            "id": 3252585,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137890.dds": {
-            "name": "3137890.dds",
-            "height": 1024,
-            "last_modified": "2025-09-02 19:09:25",
-            "id": 3137890,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138003.dds": {
-            "name": "3138003.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 19:33:41",
-            "id": 3138003,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105275.dds": {
-            "name": "3105275.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:21:05",
-            "id": 3105275,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137914.dds": {
-            "name": "3137914.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:09:28",
-            "id": 3137914,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n44/3268992.dds": {
-            "name": "3268992.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:37",
-            "id": 3268992,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236225.dds": {
-            "name": "3236225.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:05:12",
-            "id": 3236225,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187105.dds": {
-            "name": "3187105.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:00:24",
-            "id": 3187105,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252610.dds": {
-            "name": "3252610.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:23",
-            "id": 3252610,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745064.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268969.dds": {
-            "name": "3268969.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:43",
-            "id": 3268969,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728699.dds": {
-            "height": 4096,
-            "last_modified": "2025-09-02 21:35:13",
-            "id": 1728699,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121632.dds": {
-            "name": "3121632.dds",
-            "height": 4096,
-            "last_modified": "2025-08-15 09:23:59",
-            "id": 3121632,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219865.dds": {
-            "name": "3219865.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:41:06",
-            "id": 3219865,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219858.dds": {
-            "name": "3219858.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:40:17",
-            "id": 3219858,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154379.dds": {
-            "name": "3154379.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:58:31",
-            "id": 3154379,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187112.dds": {
-            "name": "3187112.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:00:47",
-            "id": 3187112,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170754.dds": {
-            "name": "3170754.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:00:34",
-            "id": 3170754,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170769.dds": {
-            "name": "3170769.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:56:34",
-            "id": 3170769,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105266.dds": {
-            "name": "3105266.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:20:46",
-            "id": 3105266,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121635.dds": {
-            "name": "3121635.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:28:09",
-            "id": 3121635,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121651.dds": {
-            "name": "3121651.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 16:28:57",
-            "id": 3121651,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203480.dds": {
-            "name": "3203480.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:24:07",
-            "id": 3203480,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728683.dds": {
-            "height": 8192,
-            "last_modified": "2025-09-02 21:34:50",
-            "id": 1728683,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n43/3121507.dds": {
-            "name": "3121507.dds",
-            "height": 1024,
-            "last_modified": "2025-09-02 19:09:34",
-            "id": 3121507,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728691.dds": {
-            "height": 8192,
-            "last_modified": "2025-09-02 21:34:40",
-            "id": 1728691,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n44/3269009.dds": {
-            "name": "3269009.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:48",
-            "id": 3269009,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203513.dds": {
-            "name": "3203513.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:25:44",
-            "id": 3203513,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252578.dds": {
-            "name": "3252578.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:31",
-            "id": 3252578,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728690.dds": {
-            "height": 4096,
-            "last_modified": "2025-09-02 21:35:20",
-            "id": 1728690,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138008.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138035.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138008.dds": {
             "name": "3138008.dds",
             "height": 2048,
-            "last_modified": "2025-08-15 09:54:19",
+            "last_modified": "2025-09-03 20:13:12",
             "id": 3138008,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n41/1728706.dds": null,
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154392.dds": {
-            "name": "3154392.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:56:22",
-            "id": 3154392,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n44/3154360.dds": {
-            "name": "3154360.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:56:51",
-            "id": 3154360,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121643.dds": {
-            "name": "3121643.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:28:36",
-            "id": 3121643,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745073.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154424.dds": {
             "height": 4096,
-            "last_modified": "2025-09-02 21:35:28",
-            "id": 1745073,
+            "last_modified": "2025-09-05 18:47:37",
+            "id": 3154424,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121648.dds": {
-            "name": "3121648.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:19:23",
-            "id": 3121648,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219880.dds": {
-            "name": "3219880.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:44:41",
-            "id": 3219880,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n45/3187139.dds": {
-            "name": "3187139.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:25:46",
-            "id": 3187139,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n45/3187136.dds": {
-            "name": "3187136.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:59:55",
-            "id": 3187136,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728675.dds": null,
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n44/3154363.dds": {
-            "name": "3154363.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:58:02",
-            "id": 3154363,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n41/1745088.dds": {
-            "height": 4096,
-            "last_modified": "2025-09-02 21:35:35",
-            "id": 1745088,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236226.dds": {
-            "name": "3236226.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:24",
-            "id": 3236226,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105259.dds": {
-            "name": "3105259.dds",
-            "height": 4096,
-            "last_modified": "2025-09-02 19:06:57",
-            "id": 3105259,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187131.dds": {
-            "name": "3187131.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:23:57",
-            "id": 3187131,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745081.dds": {
-            "height": 2048,
-            "last_modified": "2025-09-02 21:35:40",
-            "id": 1745081,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138016.dds": {
-            "name": "3138016.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:27",
-            "id": 3138016,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154400.dds": {
-            "name": "3154400.dds",
-            "height": 1024,
-            "last_modified": "2025-08-15 09:56:22",
-            "id": 3154400,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236186.dds": {
-            "name": "3236186.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:10",
-            "id": 3236186,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121642.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121642.dds": {
             "name": "3121642.dds",
             "height": 2048,
-            "last_modified": "2025-08-15 09:24:22",
+            "last_modified": "2025-09-03 20:11:23",
             "id": 3121642,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121626.dds": {
-            "name": "3121626.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:26:52",
-            "id": 3121626,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154368.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:48:03",
+            "id": 3154368,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219872.dds": {
-            "name": "3219872.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:44:27",
-            "id": 3219872,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3137994.dds": {
-            "name": "3137994.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105264.dds": {
             "height": 4096,
-            "last_modified": "2025-08-06 19:33:59",
-            "id": 3137994,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203497.dds": {
-            "name": "3203497.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:25:18",
-            "id": 3203497,
+            "last_modified": "2025-09-05 18:41:16",
+            "id": 3105264,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121633.dds": {
-            "name": "3121633.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 18:46:12",
-            "id": 3121633,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n41/1728707.dds": {
-            "height": 4096,
-            "last_modified": "2025-09-02 21:35:31",
-            "id": 1728707,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n43/3121515.dds": {
-            "name": "3121515.dds",
-            "height": 2048,
-            "last_modified": "2025-09-02 19:09:19",
-            "id": 3121515,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187123.dds": {
-            "name": "3187123.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:22:57",
-            "id": 3187123,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105258.dds": {
-            "name": "3105258.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:19:49",
-            "id": 3105258,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252587.dds": {
-            "name": "3252587.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:35",
-            "id": 3252587,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3137995.dds": {
-            "name": "3137995.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 19:34:50",
-            "id": 3137995,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745064.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138010.dds": {
             "height": 8192,
-            "last_modified": "2025-09-02 21:35:10",
-            "id": 1745064,
+            "last_modified": "2025-09-05 18:46:03",
+            "id": 3138010,
             "size": 16777344,
             "width": 8192,
             "sizeId": 4
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3137986.dds": {
-            "name": "3137986.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:34:58",
-            "id": 3137986,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268960.dds": {
-            "name": "3268960.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:37",
-            "id": 3268960,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121626.dds": {
-            "name": "3121626.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:52:08",
-            "id": 3121626,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121610.dds": {
-            "name": "3121610.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 16:28:57",
-            "id": 3121610,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121641.dds": {
-            "name": "3121641.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105249.dds": {
             "height": 4096,
-            "last_modified": "2025-08-15 09:24:17",
-            "id": 3121641,
+            "last_modified": "2025-09-05 18:40:16",
+            "id": 3105249,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121690.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121648.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:44",
+            "id": 3121648,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n44/3137977.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:48:11",
+            "id": 3137977,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138018.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138032.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3137984.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n46/3121665.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105234.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105225.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:47",
+            "id": 3105225,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e008n45/3088867.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105226.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:34",
+            "id": 3105226,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121698.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e008n45/3088875.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138011.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154400.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:04",
+            "id": 3154400,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121651.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:24",
+            "id": 3121651,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105259.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105265.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138059.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121665.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:32",
+            "id": 3121665,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138003.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138048.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:42",
+            "id": 3138048,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138064.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121624.dds": {
+            "name": "3121624.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:12:31",
+            "id": 3121624,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n45/3121659.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138035.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:35",
+            "id": 3138035,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121619.dds": {
+            "name": "3121619.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:12:06",
+            "id": 3121619,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105297.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:43:20",
+            "id": 3105297,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121681.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 19:04:24",
+            "id": 3121681,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n46/3154432.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:48:07",
+            "id": 3154432,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121697.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105299.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:43:00",
+            "id": 3105299,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138002.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105289.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:57",
+            "id": 3105289,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138017.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:45:55",
+            "id": 3138017,
             "size": 16777344,
             "width": 8192,
             "sizeId": 4
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138017.dds": {
-            "name": "3138017.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:35:51",
-            "id": 3138017,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105289.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e008n45/3088859.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137995.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:06",
+            "id": 3137995,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252577.dds": {
-            "name": "3252577.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:53",
-            "id": 3252577,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236195.dds": {
-            "name": "3236195.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:05:10",
-            "id": 3236195,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105234.dds": {
-            "name": "3105234.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 16:21:23",
-            "id": 3105234,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268968.dds": {
-            "name": "3268968.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:34",
-            "id": 3268968,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728674.dds": null,
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121627.dds": {
-            "name": "3121627.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:50:05",
-            "id": 3121627,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219883.dds": {
-            "name": "3219883.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:44:37",
-            "id": 3219883,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n44/3269008.dds": {
-            "name": "3269008.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:40",
-            "id": 3269008,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154393.dds": {
-            "name": "3154393.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105267.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105233.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154384.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121699.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121611.dds": {
+            "name": "3121611.dds",
             "height": 2048,
-            "last_modified": "2025-08-15 09:56:39",
+            "last_modified": "2025-09-03 20:13:47",
+            "id": 3121611,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105235.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121673.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 20:15:14",
+            "id": 3121673,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138067.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121688.dds": {
+            "height": 2048,
+            "last_modified": "2025-09-05 19:04:41",
+            "id": 3121688,
+            "size": 1048704,
+            "width": 2048,
+            "sizeId": 2
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138009.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121625.dds": {
+            "name": "3121625.dds",
+            "height": 4096,
+            "last_modified": "2025-09-03 20:10:24",
+            "id": 3121625,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105233.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:19",
+            "id": 3105233,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105242.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105224.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:40",
+            "id": 3105224,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137985.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:27",
+            "id": 3137985,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138051.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:34",
+            "id": 3138051,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3137992.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121650.dds": {
+            "name": "3121650.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:13:09",
+            "id": 3121650,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105256.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n44/3137977.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121616.dds": {
+            "name": "3121616.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:13:31",
+            "id": 3121616,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154409.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:49",
+            "id": 3154409,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138041.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:57",
+            "id": 3138041,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121697.dds": {
+            "height": 2048,
+            "last_modified": "2025-09-05 19:04:29",
+            "id": 3121697,
+            "size": 1048704,
+            "width": 2048,
+            "sizeId": 2
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138042.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:51:47",
+            "id": 3138042,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e008n45/3088891.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105240.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:28",
+            "id": 3105240,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105282.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n46/3154441.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138065.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:04",
+            "id": 3138065,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105288.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:50",
+            "id": 3105288,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154393.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:40",
             "id": 3154393,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138016.dds": {
-            "name": "3138016.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154417.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e008n45/3088891.dds": {
             "height": 4096,
-            "last_modified": "2025-08-06 19:25:09",
-            "id": 3138016,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236211.dds": {
-            "name": "3236211.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:04",
-            "id": 3236211,
+            "last_modified": "2025-09-05 18:42:26",
+            "id": 3088891,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252594.dds": {
-            "name": "3252594.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:17",
-            "id": 3252594,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252579.dds": {
-            "name": "3252579.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:36",
-            "id": 3252579,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138008.dds": {
-            "name": "3138008.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105226.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138049.dds": {
             "height": 4096,
-            "last_modified": "2025-08-06 19:23:01",
-            "id": 3138008,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
+            "last_modified": "2025-09-05 18:47:43",
+            "id": 3138049,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
         },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154376.dds": {
-            "name": "3154376.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121680.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n46/3121664.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121618.dds": {
+            "name": "3121618.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:11:47",
+            "id": 3121618,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121667.dds": {
             "height": 4096,
-            "last_modified": "2025-08-15 09:56:34",
-            "id": 3154376,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3137987.dds": {
-            "name": "3137987.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:35:14",
-            "id": 3137987,
+            "last_modified": "2025-09-05 18:51:56",
+            "id": 3121667,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138032.dds": {
-            "name": "3138032.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:27:04",
-            "id": 3138032,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252568.dds": {
-            "name": "3252568.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:59",
-            "id": 3252568,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105259.dds": {
-            "name": "3105259.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:24:52",
-            "id": 3105259,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187130.dds": {
-            "name": "3187130.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:00:28",
-            "id": 3187130,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121634.dds": {
-            "name": "3121634.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:52:22",
-            "id": 3121634,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137995.dds": {
-            "name": "3137995.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:58:03",
-            "id": 3137995,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219857.dds": {
-            "name": "3219857.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 20:41:56",
-            "id": 3219857,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219882.dds": {
-            "name": "3219882.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:44:07",
-            "id": 3219882,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121617.dds": {
-            "name": "3121617.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 16:21:29",
-            "id": 3121617,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252601.dds": {
-            "name": "3252601.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:25",
-            "id": 3252601,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236241.dds": {
-            "name": "3236241.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:28",
-            "id": 3236241,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138019.dds": {
-            "name": "3138019.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:45",
-            "id": 3138019,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252600.dds": {
-            "name": "3252600.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:33",
-            "id": 3252600,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187099.dds": {
-            "name": "3187099.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:23:54",
-            "id": 3187099,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n44/3236242.dds": {
-            "name": "3236242.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:03:11",
-            "id": 3236242,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170763.dds": {
-            "name": "3170763.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:56:42",
-            "id": 3170763,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187114.dds": {
-            "name": "3187114.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:23:30",
-            "id": 3187114,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n45/3187145.dds": {
-            "name": "3187145.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:00:32",
-            "id": 3187145,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e012n45/3154368.dds": {
-            "name": "3154368.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:36:01",
-            "id": 3154368,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121635.dds": {
-            "name": "3121635.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:50:56",
-            "id": 3121635,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121609.dds": {
-            "name": "3121609.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 16:28:50",
-            "id": 3121609,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121632.dds": {
-            "name": "3121632.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 16:18:02",
-            "id": 3121632,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n45/3203520.dds": {
-            "name": "3203520.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:25:56",
-            "id": 3203520,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137904.dds": {
-            "name": "3137904.dds",
-            "height": 4096,
-            "last_modified": "2025-09-02 19:07:57",
-            "id": 3137904,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n44/3170730.dds": {
-            "name": "3170730.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:00:32",
-            "id": 3170730,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138009.dds": {
-            "name": "3138009.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:53:01",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138009.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:46:20",
             "id": 3138009,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138025.dds": {
-            "name": "3138025.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:26:42",
-            "id": 3138025,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n44/3269000.dds": {
-            "name": "3269000.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:40",
-            "id": 3269000,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219859.dds": {
-            "name": "3219859.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:43:08",
-            "id": 3219859,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w074n40/1745065.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252611.dds": {
-            "name": "3252611.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:36",
-            "id": 3252611,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170770.dds": {
-            "name": "3170770.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:56:44",
-            "id": 3170770,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n43/3268952.dds": {
-            "name": "3268952.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:40",
-            "id": 3268952,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138011.dds": {
-            "name": "3138011.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:34:58",
-            "id": 3138011,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3137985.dds": {
-            "name": "3137985.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:36:00",
-            "id": 3137985,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252625.dds": {
-            "name": "3252625.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:28",
-            "id": 3252625,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728698.dds": {
-            "height": 4096,
-            "last_modified": "2025-09-02 21:35:39",
-            "id": 1728698,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n44/3154361.dds": {
-            "name": "3154361.dds",
-            "height": 512,
-            "last_modified": "2025-08-15 09:57:57",
-            "id": 3154361,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745057.dds": {
-            "height": 2048,
-            "last_modified": "2025-09-02 21:35:40",
-            "id": 1745057,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e013n45/3170755.dds": {
-            "name": "3170755.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:56:28",
-            "id": 3170755,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138019.dds": {
-            "name": "3138019.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 19:35:34",
-            "id": 3138019,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121619.dds": {
-            "name": "3121619.dds",
-            "height": 4096,
-            "last_modified": "2025-08-06 19:24:11",
-            "id": 3121619,
             "size": 16777344,
             "width": 8192,
             "sizeId": 4
         },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138018.dds": {
-            "name": "3138018.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:54:39",
-            "id": 3138018,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219873.dds": {
-            "name": "3219873.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:42:29",
-            "id": 3219873,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105250.dds": {
-            "name": "3105250.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:19:37",
-            "id": 3105250,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121603.dds": {
-            "name": "3121603.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:26:52",
-            "id": 3121603,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728667.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105264.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105258.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n46/3154433.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137994.dds": {
             "height": 4096,
-            "last_modified": "2025-09-02 21:35:38",
-            "id": 1728667,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219851.dds": {
-            "name": "3219851.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:44:46",
-            "id": 3219851,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121624.dds": {
-            "name": "3121624.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:24:24",
-            "id": 3121624,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3138000.dds": {
-            "name": "3138000.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 19:36:03",
-            "id": 3138000,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137994.dds": {
-            "name": "3137994.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:55:38",
+            "last_modified": "2025-09-05 18:46:40",
             "id": 3137994,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219841.dds": {
-            "name": "3219841.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:44:31",
-            "id": 3219841,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138003.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:42",
+            "id": 3138003,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105274.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:26",
+            "id": 3105274,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138041.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138074.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:08",
+            "id": 3138074,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3137994.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138033.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105299.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121664.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:27",
+            "id": 3121664,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138073.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121690.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 19:04:39",
+            "id": 3121690,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105275.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3137987.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/4096/e010n40/e011n45/3138042.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138051.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n46/3154433.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:19",
+            "id": 3154433,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138067.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:51:54",
+            "id": 3138067,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105249.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138017.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105227.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138043.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:10",
+            "id": 3138043,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121657.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:19",
+            "id": 3121657,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154385.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:48",
+            "id": 3154385,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138065.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105219.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:54",
+            "id": 3105219,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121689.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 19:04:38",
+            "id": 3121689,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138001.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154384.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:13",
+            "id": 3154384,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105251.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:06",
+            "id": 3105251,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154376.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:30",
+            "id": 3154376,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121626.dds": {
+            "name": "3121626.dds",
+            "height": 4096,
+            "last_modified": "2025-09-03 20:09:59",
+            "id": 3121626,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138074.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121688.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121682.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 20:15:31",
+            "id": 3121682,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121633.dds": {
+            "name": "3121633.dds",
+            "height": 4096,
+            "last_modified": "2025-09-03 20:09:56",
+            "id": 3121633,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3137985.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105283.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:02",
+            "id": 3105283,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154368.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n45/3121658.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105219.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138010.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n44/3137978.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121691.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 19:04:34",
+            "id": 3121691,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105248.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121627.dds": {
+            "name": "3121627.dds",
+            "height": 4096,
+            "last_modified": "2025-09-03 20:15:12",
+            "id": 3121627,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105266.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:39:50",
+            "id": 3105266,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154408.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:01",
+            "id": 3154408,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n46/3121675.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3137993.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137987.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:29",
+            "id": 3137987,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n45/3121648.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105235.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:57",
+            "id": 3105235,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121641.dds": {
+            "name": "3121641.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:11:32",
+            "id": 3121641,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121608.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:16",
+            "id": 3121608,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n46/3154440.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:00",
+            "id": 3154440,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121681.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154401.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138058.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:58",
+            "id": 3138058,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105224.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105258.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:39:25",
+            "id": 3105258,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e008n45/3088883.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121674.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138016.dds": {
+            "name": "3138016.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:12:56",
+            "id": 3138016,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121698.dds": {
+            "height": 2048,
+            "last_modified": "2025-09-05 19:04:39",
+            "id": 3121698,
             "size": 1048704,
             "width": 2048,
             "sizeId": 2
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w075n40/1728674.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105259.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:40:03",
+            "id": 3105259,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138001.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:28",
+            "id": 3138001,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105280.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:52",
+            "id": 3105280,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e008n45/3088875.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:02",
+            "id": 3088875,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137986.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:19",
+            "id": 3137986,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138057.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:48:09",
+            "id": 3138057,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105283.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105298.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138059.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:51:51",
+            "id": 3138059,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n46/3154441.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:10",
+            "id": 3154441,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154416.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:11",
+            "id": 3154416,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105257.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:13",
+            "id": 3105257,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138000.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154417.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:56",
+            "id": 3154417,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105242.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:24",
+            "id": 3105242,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105241.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154425.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:13",
+            "id": 3154425,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105272.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:24",
+            "id": 3105272,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138050.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:16",
+            "id": 3138050,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138002.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:25",
+            "id": 3138002,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121683.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 19:04:25",
+            "id": 3121683,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154416.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154392.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:03",
+            "id": 3154392,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138026.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121640.dds": {
+            "name": "3121640.dds",
             "height": 2048,
-            "last_modified": "2025-09-02 21:35:37",
-            "id": 1728674,
+            "last_modified": "2025-09-03 20:12:37",
+            "id": 3121640,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138075.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:25",
+            "id": 3138075,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138066.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138019.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:14",
+            "id": 3138019,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e008n45/3088883.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:16",
+            "id": 3088883,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121699.dds": {
+            "height": 2048,
+            "last_modified": "2025-09-05 19:04:30",
+            "id": 3121699,
             "size": 1048704,
             "width": 2048,
             "sizeId": 2
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n45/3137993.dds": {
-            "name": "3137993.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121673.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105227.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:38",
+            "id": 3105227,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n46/3154432.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105250.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:39:38",
+            "id": 3105250,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138019.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138000.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:54",
+            "id": 3138000,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138043.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121675.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:09",
+            "id": 3121675,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138032.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:49",
+            "id": 3138032,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137984.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:36",
+            "id": 3137984,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n46/3121672.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138018.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:45:47",
+            "id": 3138018,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105275.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:32",
+            "id": 3105275,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121610.dds": {
+            "name": "3121610.dds",
             "height": 2048,
-            "last_modified": "2025-08-06 19:35:12",
+            "last_modified": "2025-09-03 20:13:17",
+            "id": 3121610,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105218.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:47",
+            "id": 3105218,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121689.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105291.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105267.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:11",
+            "id": 3105267,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137993.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:11",
             "id": 3137993,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236218.dds": {
-            "name": "3236218.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:04",
-            "id": 3236218,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n44/3137979.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3137992.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:16",
+            "id": 3137992,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252584.dds": {
-            "name": "3252584.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:05:13",
-            "id": 3252584,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252571.dds": {
-            "name": "3252571.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:39",
-            "id": 3252571,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745072.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121666.dds": {
             "height": 8192,
-            "last_modified": "2025-09-02 21:35:00",
-            "id": 1745072,
+            "last_modified": "2025-09-05 20:15:10",
+            "id": 3121666,
             "size": 16777344,
             "width": 8192,
             "sizeId": 4
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n43/3137881.dds": {
-            "name": "3137881.dds",
-            "height": 1024,
-            "last_modified": "2025-09-02 19:09:30",
-            "id": 3137881,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236219.dds": {
-            "name": "3236219.dds",
-            "height": 4096,
-            "last_modified": "2023-05-30 09:03:55",
-            "id": 3236219,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138034.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:51:30",
+            "id": 3138034,
             "size": 16777344,
             "width": 8192,
             "sizeId": 4
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121640.dds": {
-            "name": "3121640.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121643.dds": {
+            "name": "3121643.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:12:32",
+            "id": 3121643,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n45/3121651.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n46/3154440.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138050.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105298.dds": {
             "height": 4096,
-            "last_modified": "2025-08-06 16:18:43",
-            "id": 3121640,
+            "last_modified": "2025-09-05 18:42:55",
+            "id": 3105298,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154400.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121666.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105290.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n46/3154448.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:15",
+            "id": 3154448,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3137986.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105290.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:35",
+            "id": 3105290,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138024.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121659.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:48:01",
+            "id": 3121659,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e008n45/3088859.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:31",
+            "id": 3088859,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138066.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 20:15:20",
+            "id": 3138066,
             "size": 16777344,
             "width": 8192,
             "sizeId": 4
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e011n44/3137928.dds": {
-            "name": "3137928.dds",
-            "height": 1024,
-            "last_modified": "2025-09-02 19:09:39",
-            "id": 3137928,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154368.dds": {
-            "name": "3154368.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:55:43",
-            "id": 3154368,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e019n44/3268993.dds": {
-            "name": "3268993.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 08:48:46",
-            "id": 3268993,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236202.dds": {
-            "name": "3236202.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:33",
-            "id": 3236202,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219864.dds": {
-            "name": "3219864.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:43:37",
-            "id": 3219864,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138010.dds": {
-            "name": "3138010.dds",
-            "height": 2048,
-            "last_modified": "2025-08-15 09:56:15",
-            "id": 3138010,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252608.dds": {
-            "name": "3252608.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:54",
-            "id": 3252608,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved/1024/w070n40/w075n40/1728682.dds": null,
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236203.dds": {
-            "name": "3236203.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:23",
-            "id": 3236203,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e010n45/3121624.dds": {
-            "name": "3121624.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:19:23",
-            "id": 3121624,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e017n43/3236209.dds": {
-            "name": "3236209.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:05:02",
-            "id": 3236209,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252576.dds": {
-            "name": "3252576.dds",
-            "height": 1024,
-            "last_modified": "2023-05-30 09:02:24",
-            "id": 3252576,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n43/3252592.dds": {
-            "name": "3252592.dds",
-            "height": 2048,
-            "last_modified": "2023-05-30 09:04:43",
-            "id": 3252592,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/w070n40/w074n40/1745080.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n44/3137978.dds": {
             "height": 4096,
-            "last_modified": "2025-09-02 21:35:15",
-            "id": 1745080,
+            "last_modified": "2025-09-05 18:47:59",
+            "id": 3137978,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e012n45/3154385.dds": {
-            "name": "3154385.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n44/3137979.dds": {
             "height": 4096,
-            "last_modified": "2025-08-15 09:58:20",
-            "id": 3154385,
-            "size": 16777344,
-            "width": 8192,
-            "sizeId": 4
+            "last_modified": "2025-09-05 18:48:08",
+            "id": 3137979,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e000n40/e009n45/3105243.dds": {
-            "name": "3105243.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 16:18:52",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138075.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105256.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:54",
+            "id": 3105256,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154376.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105265.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:19",
+            "id": 3105265,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n45/3121656.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138034.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105281.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105282.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:52",
+            "id": 3105282,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105297.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138024.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:37",
+            "id": 3138024,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105243.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:29",
             "id": 3105243,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203489.dds": {
-            "name": "3203489.dds",
-            "height": 2048,
-            "last_modified": "2025-08-06 20:25:36",
-            "id": 3203489,
-            "size": 4194432,
-            "width": 4096,
-            "sizeId": 3
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e016n44/3219842.dds": {
-            "name": "3219842.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:44:31",
-            "id": 3219842,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
-        },
-        "/media/pclab01/Salvataggi/Salvataggi/Salvataggi 20240314/fgfs-scenery/photoscenery/Orthophotos/e010n40/e018n44/3252627.dds": {
-            "name": "3252627.dds",
-            "height": 512,
-            "last_modified": "2023-05-30 09:03:39",
-            "id": 3252627,
-            "size": 262272,
-            "width": 1024,
-            "sizeId": 1
-        },
-        "/media/pclab01/varie/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121617.dds": {
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154385.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n45/3121657.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121617.dds": {
             "name": "3121617.dds",
             "height": 2048,
-            "last_modified": "2025-08-15 09:24:31",
+            "last_modified": "2025-09-03 20:12:20",
             "id": 3121617,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e015n44/3203472.dds": {
-            "name": "3203472.dds",
-            "height": 1024,
-            "last_modified": "2025-08-06 20:25:54",
-            "id": 3203472,
-            "size": 1048704,
-            "width": 2048,
-            "sizeId": 2
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121656.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:05",
+            "id": 3121656,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
         },
-        "/media/pclab01/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos/e010n40/e014n44/3187106.dds": {
-            "name": "3187106.dds",
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105241.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:39",
+            "id": 3105241,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105257.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121634.dds": {
+            "name": "3121634.dds",
+            "height": 4096,
+            "last_modified": "2025-09-03 20:08:45",
+            "id": 3121634,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3137995.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138026.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 18:46:10",
+            "id": 3138026,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154425.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105281.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:20",
+            "id": 3105281,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138064.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:21",
+            "id": 3138064,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105272.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105232.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:42:00",
+            "id": 3105232,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121672.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:43:06",
+            "id": 3121672,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138011.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:31",
+            "id": 3138011,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154424.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105273.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138056.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105273.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:40:39",
+            "id": 3105273,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105274.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e010n45/3121608.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105217.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121632.dds": {
+            "name": "3121632.dds",
             "height": 2048,
-            "last_modified": "2025-08-06 20:24:41",
-            "id": 3187106,
+            "last_modified": "2025-09-03 20:13:30",
+            "id": 3121632,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121680.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 20:15:23",
+            "id": 3121680,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105266.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138027.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:27",
+            "id": 3138027,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121635.dds": {
+            "name": "3121635.dds",
+            "height": 4096,
+            "last_modified": "2025-09-03 20:13:38",
+            "id": 3121635,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105250.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105225.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105251.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154408.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138033.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:46:36",
+            "id": 3138033,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n46/3105291.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:43",
+            "id": 3105291,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105248.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:41:00",
+            "id": 3105248,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105243.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121691.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105280.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n46/3121674.dds": {
+            "height": 8192,
+            "last_modified": "2025-09-05 19:04:08",
+            "id": 3121674,
+            "size": 16777344,
+            "width": 8192,
+            "sizeId": 4
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138027.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n46/3138056.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:51:50",
+            "id": 3138056,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138057.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138040.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:47:17",
+            "id": 3138040,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154392.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138049.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121658.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 19:04:30",
+            "id": 3121658,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e000n40/e009n45/3105217.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:43:13",
+            "id": 3105217,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138048.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e012n45/3154409.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n46/3138058.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e010n45/3121649.dds": {
+            "name": "3121649.dds",
+            "height": 2048,
+            "last_modified": "2025-09-03 20:13:03",
+            "id": 3121649,
+            "size": 4194432,
+            "width": 4096,
+            "sizeId": 3
+        },
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/1024/e010n40/e010n46/3121682.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138042.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e010n40/e011n45/3138040.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105240.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n46/3105288.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved/2048/e000n40/e009n45/3105232.dds": null,
+        "/home/abassign/fgfs-scenery/photoscenery/Orthophotos/e010n40/e011n45/3138025.dds": {
+            "height": 4096,
+            "last_modified": "2025-09-05 18:52:03",
+            "id": 3138025,
             "size": 4194432,
             "width": 4096,
             "sizeId": 3
         }
     },
     "metadata": {
-        "last_scan": "2025-09-02 21:33:29",
+        "last_scan": "2025-09-05 18:35:04",
         "version": "1.0"
     }
 }

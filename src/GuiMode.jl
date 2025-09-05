@@ -131,24 +131,28 @@ function handle(req::HTTP.Request)
                 return h_get_map_servers(req)
             elseif p == "/api/app-config"
                 return h_app_config(req)
-        else
-            # If no API route matches, serve static files
-            return serve_static_file(req)
-        end
+            elseif p == "/api/paths"
+                return h_get_paths(req)
+            else
+                # If no API route matches, serve static files
+                return serve_static_file(req)
+            end
         elseif m == "POST"
-        if p == "/api/connect"
-                return h_connect(req)
-            elseif p == "/api/disconnect"
-                return h_disconnect(req)
-            elseif p == "/api/start-job"
-                return h_start_job(req)
-            elseif p == "/api/fill-holes"
-                return h_fill_holes(req)
-            elseif p == "/api/shutdown"
-                return h_shutdown(req)
-        else
-            return HTTP.Response(404, "Not found")
-        end
+            if p == "/api/connect"
+                    return h_connect(req)
+                elseif p == "/api/disconnect"
+                    return h_disconnect(req)
+                elseif p == "/api/start-job"
+                    return h_start_job(req)
+                elseif p == "/api/fill-holes"
+                    return h_fill_holes(req)
+                elseif p == "/api/shutdown"
+                    return h_shutdown(req)
+                elseif p == "/api/paths"
+                    return h_set_paths(req)
+            else
+                return HTTP.Response(404, "Not found")
+            end
     end
 
     return HTTP.Response(404, "Not found")
@@ -549,6 +553,48 @@ function h_app_config(req)
 end
 
 
+"""
+Restituisce i percorsi 'path' e 'save' attualmente in uso.
+"""
+function h_get_paths(req)
+    lock(FGFS_LOCK) do # Usiamo un lock per l'accesso sicuro alla config
+        payload = Dict(
+            "path" => get(APP_CONFIG[], "path", "N/A"),
+            "save" => get(APP_CONFIG[], "save", "N/A")
+            )
+        return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(payload))
+    end
+end
+
+"""
+Aggiorna i percorsi 'path' e 'save' nella configurazione di sessione.
+"""
+function h_set_paths(req)
+    try
+        params = JSON3.read(req.body)
+        new_path = get(params, "path", nothing)
+        new_save = get(params, "save", nothing)
+
+        lock(FGFS_LOCK) do
+            if new_path !== nothing
+                APP_CONFIG[][ "path" ] = new_path
+                mkpath(new_path) # Tentiamo di creare la cartella se non esiste
+            end
+            if new_save !== nothing
+                APP_CONFIG[][ "save" ] = new_save
+                mkpath(new_save)
+            end
+        end
+
+        @info "Percorsi aggiornati via API" path=new_path save=new_save
+        return HTTP.Response(200, "Paths updated successfully")
+        catch e
+        @error "Errore nell'aggiornamento dei percorsi via API" exception=(e, catch_backtrace())
+        return HTTP.Response(500, "Failed to update paths")
+    end
+end
+
+
 ###############################################################################
 # Background Worker Management
 #
@@ -758,11 +804,20 @@ function run(args::Vector{String}=ARGS)
     # Parse command line arguments for HTTP port configuration
     APP_CONFIG[] = AppConfig.parse_args(args) # Salva la config parsata
 
-    port = 8000
-    if (idx = findfirst(a -> startswith(a, "--http"), args)) !== nothing
-        val = split(args[idx], '=')
-        port = length(val) > 1 ? parse(Int, val[2]) : 8000
-    end
+    home_path = @__DIR__
+    _, _, initial_root_path, initial_save_path = GeoEngine.prepare_paths_and_location(APP_CONFIG[], home_path)
+    # 3. Salva i percorsi definitivi nella configurazione globale.
+    #    Da questo momento in poi, APP_CONFIG[] è la nostra "fonte di verità".
+    APP_CONFIG[][ "path" ] = initial_root_path
+    APP_CONFIG[][ "save" ] = initial_save_path
+
+    port = get(APP_CONFIG[], "http", 8000)
+
+    #if (idx = findfirst(a -> startswith(a, "--http"), args)) !== nothing
+    #    val = split(args[idx], '=')
+    #    port = length(val) > 1 ? parse(Int, val[2]) : 8000
+    #end
+
     host = "127.0.0.1"
 
     # Configure logging and start background services

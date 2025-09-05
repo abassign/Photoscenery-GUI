@@ -167,3 +167,15 @@ export function getMapServers() {
 export function getAppConfig() {
     return fetch('/api/app-config').then(r => r.json());
 }
+
+export function getPaths() {
+    return fetch('/api/paths').then(r => r.json());
+}
+
+export function setPaths(path, save) {
+    return fetch('/api/paths', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ path, save })
+    });
+}

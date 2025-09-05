@@ -14,6 +14,14 @@
     <script src="https://cdn.jsdelivr.net/gh/bbecquet/Leaflet.RotatedMarker/leaflet.rotatedMarker.js"></script>
 
     <style>
+
+        #controls h3 {
+            /* Imposta uno spazio di 20px sopra il titolo */
+            margin-top: 1px;
+            /* Riduci lo spazio sotto il titolo a 10px */
+            margin-bottom: 1px;
+        }
+
         /* Main layout styling */
         body {
             display: flex; font-family: sans-serif; margin: 0; height: 100vh;
@@ -307,6 +315,46 @@
             animation: pulse-red 2s infinite; /* Applica l'animazione */
         }
 
+        .collapsible-header {
+            cursor: pointer;
+            position: relative; /* Necessario per posizionare la freccia */
+            padding-right: 20px; /* Spazio per la freccia */
+            user-select: none; /* Evita che il testo venga selezionato al doppio click */
+        }
+
+        /* Crea la freccia usando un pseudo-elemento */
+        .collapsible-header::after {
+            content: '▼'; /* Freccia verso il basso (aperto) */
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8em;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Quando il titolo ha la classe 'collapsed', la freccia punta a destra */
+        .collapsible-header.collapsed::after {
+            transform: translateY(-50%) rotate(-90deg); /* Freccia verso destra (chiuso) */
+        }
+
+        /* Stile per il contenuto collassabile (per l'animazione) */
+        .collapsible-content {
+            max-height: 500px; /* Un valore abbastanza grande da contenere tutto */
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        /* Stato collassato: altezza zero */
+        .collapsible-content.collapsed {
+            max-height: 0;
+            padding-top: 0;    /* Rimuove anche il padding per un collasso pulito */
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            border: none;
+        }
+
         @keyframes pulse-red {
             0% {
                 background-color: #ffebee; /* Rosso chiaro */
@@ -417,13 +465,19 @@
                 </select>
         </div>
 
-        <!--
-        <div class="control-group" style="margin-top: 10px;">
-            <input type="text" id="queue-info" value="Download flow info here..."
-                readonly
-                style="width:100%; box-sizing: border-box; text-align:center; background:#f8f8f8; border:1px solid #ccc; color:#555;"/>
+        <div class="control-group">
+            <h3 class="collapsible-header">Directory Settings</h3>
+
+            <div id="directory-settings-content" class="collapsible-content">
+                <label for="output-path-input">Output Path (`--path`):</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="output-path-input" readonly style="flex-grow: 1;">
+                    <button id="btn-edit-paths" style="width: 80px;">Edit</button>
+                </div>
+                <label for="backup-path-input" style="margin-top: 5px;">Backup Path (`--save`):</label>
+                <input type="text" id="backup-path-input" readonly>
+            </div>
         </div>
-        -->
 
         <hr>
 
@@ -436,15 +490,17 @@
             <button id="btn-connect" class="disconnected" title="Toggle FGFS Connection"></button>
         </div>
 
+        <h3>Tile preview</h3>
+        <!-- Tile preview section -->
+
         <!-- Tile opacity control -->
         <div class="control-group" style="display: flex; align-items: center; gap: 8px;">
             <label for="opacity-slider" style="white-space: nowrap; margin: 0;">Tile opacity:</label>
             <input type="range" id="opacity-slider" min="0" max="0.4" step="0.05" value="0.5" style="flex-grow: 1;">
         </div>
 
-        <!-- Tile preview section -->
         <div class="control-group">
-            <label>Tile preview</label>
+            <label> </label>
             <img id="tilePreview" style="width:100%; max-width:300px; display:none;" />
             <button id="downloadBtn" style="display:none;">Download</button>
         </div>
