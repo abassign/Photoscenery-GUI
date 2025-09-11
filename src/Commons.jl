@@ -20,6 +20,7 @@ export tileWidth, index, coordFromIndex, tile_dirs, tile_dest_dir, findFile, get
 export getDDSSize, getPNGSize, getSizePixel, getSizeFromWidth, getSizeAndCols # <-- AGGIUNTA QUI
 export FileFinder, CursorAnimator, MapCoordinates, TileMetadata, ChunkJob, chunk_pixel_size
 export adaptive_size_id
+export TileGroup, CHUNK_RE
 
 
 # --- Constants and Definitions ---
@@ -622,6 +623,20 @@ Variant per casi in cui width/cols non coincidono con quelli nel TileMetadata (e
     aspect::Float64 = (abs(float(Δlon)) < 1e-12) ? 1.0 : abs(float(Δlat)/float(Δlon))
     h::Int = max(1, Int(round(w * aspect)))
     return (width = w, height = h)
+end
+
+
+# Regex per file: tileId_sizeId_total_y_x_overMODE.png
+# Reso opzionale il gruppo `_over` con (?:...)? e cattura la cifra con ([0-2])
+const CHUNK_RE = r"^(\d+)_(\d+)_([1-9]\d*)_([1-9]\d*)_([1-9]\d*)(?:_over([0-2]))?\.png$"
+
+# Struttura per un gruppo di chunk pronto per l'assemblaggio
+struct TileGroup
+    tile_id::Int
+    size_id::Int
+    total_chunks::Int
+    over_mode::Int
+    files::Vector{String}
 end
 
 

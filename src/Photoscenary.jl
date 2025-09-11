@@ -13,59 +13,66 @@
 module Photoscenary
 
 # -----------------------------------------------------------------------------
-# External Dependencies
+# 1. Moduli Base e di Utilità (più indipendenti possibile)
 # -----------------------------------------------------------------------------
-
-# Set this environment variable to suppress warnings when methods are overwritten,
-# which can occur frequently during interactive development and testing.
-if !haskey(ENV, "JULIA_WARN_OVERWRITE")
-    ENV["JULIA_WARN_OVERWRITE"] = "no"
-end
-
-# -----------------------------------------------------------------------------
-# Internal Modules (Order is important due to inter-dependencies)
-# -----------------------------------------------------------------------------
-
-# Module loading order is critical for dependency resolution
-
-# Base modules with no internal dependencies
-# 1. Moduli Base (poche o nessuna dipendenza interna)
 include("png2ddsDXT1.jl")
 include("dds2pngDXT1.jl")
 include("Geodesics.jl")
-include("Connector.jl")         # Dipende da Geodesics
-include("Commons.jl")
 include("AppLogger.jl")
-include("ScanDir.jl")
-include("ddsFindScanner.jl")    # Dipende da Commons
-include("TileAssembler.jl")     # Dipende da Commons, png2ddsDXT1, ddsFindScanner
+include("ScanDir.jl") # <-- Dipendenza mancante, aggiunta qui
+
+# Connector è una dipendenza di Commons
+include("Connector.jl")
+
+# Commons è usato da quasi tutti, quindi va caricato subito dopo le sue dipendenze
+include("Commons.jl")
+using .Commons
+
+# -----------------------------------------------------------------------------
+# 2. Moduli Funzionali (dipendono dai moduli base)
+# -----------------------------------------------------------------------------
+include("ddsFindScanner.jl") # Ora può trovare ScanDir
 include("StatusMonitor.jl")
+include("JobFactory.jl")
+include("TileProcessor.jl")
+include("Route.jl")
 
-# 2. Moduli di Utilità (dipendono dai moduli base)
-include("JobFactory.jl")        # Dipende da Commons
-include("TileProcessor.jl")     # Dipende da Commons
-include("Route.jl")             # Dipende da Commons, Geodesics
-include("Downloader.jl")        # Dipende da Commons, JobFactory, StatusMonitor
-include("AssemblyMonitor.jl")   # Dipende da Commons
+# AssemblyMonitor ha bisogno di TileProcessor
+include("AssemblyMonitor.jl")
+using .AssemblyMonitor
 
-# 3. Moduli Principali (usano i moduli di utilità)
-include("GeoEngine.jl")         # Dipende da molti moduli, va caricato dopo di essi
-using .GeoEngine                # <-- Rende 'GeoEngine' visibile ai file inclusi dopo
+# -----------------------------------------------------------------------------
+# 3. Moduli di Orchestrazione e Logica Principale
+# -----------------------------------------------------------------------------
+include("Downloader.jl")
+include("GeoEngine.jl")
+using .GeoEngine
 
-# 4. Moduli di alto livello (interfaccia e configurazione)
+# -----------------------------------------------------------------------------
+# 4. Moduli di Avvio e Interfaccia (usano tutto il resto)
+# -----------------------------------------------------------------------------
 include("AppConfig.jl")
-
 include("BatchMode.jl")
-include("GuiMode.jl")           # Dipende da quasi tutto, va caricato per ultimo
+include("GuiMode.jl")
 
-using .dds2pngDXT1
+# Esporta i punti di ingresso principali
+export BatchMode, GuiMode, GeoEngine, run_cli
 
-# -----------------------------------------------------------------------------
-# Public Symbols
-# -----------------------------------------------------------------------------
+# Funzione di avvio unificata
+function run_cli(args=ARGS)
+    cfg = AppConfig.parse_args(args)
+    # Controlla se l'opzione --http è stata fornita
+    is_gui_mode = false
+    if haskey(cfg, "http") && cfg["http"] !== nothing
+        is_gui_mode = true
+    end
 
-export BatchMode, GuiMode
-export GeoEngine
+    if is_gui_mode
+        GuiMode.run(args)
+    else
+        BatchMode.run(args)
+    end
+end
 
 end # module Photoscenary
 

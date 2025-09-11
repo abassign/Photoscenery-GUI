@@ -35,7 +35,7 @@ module GuiMode
 
 export run
 
-using ..Connector, ..GeoEngine, ..ddsFindScanner, ..Photoscenary.dds2pngDXT1, ..Commons, ..Downloader, ..Route, ..AppConfig
+using ..Connector, ..GeoEngine, ..ddsFindScanner, ..Photoscenary.dds2pngDXT1, ..Commons, ..Downloader, ..Route, ..AppConfig, ..AssemblyMonitor
 using Logging, JSON3, HTTP, Images, Dates, LightXML
 using Base.Threads: @spawn
 using Base.Threads: Atomic, atomic_add!
@@ -801,32 +801,37 @@ end
 #       terminated by the operating system.
 
 function run(args::Vector{String}=ARGS)
-    # Parse command line arguments for HTTP port configuration
-    APP_CONFIG[] = AppConfig.parse_args(args) # Salva la config parsata
+    # 1. Parsa gli argomenti e inizializza la configurazione globale
+    APP_CONFIG[] = AppConfig.parse_args(args)
 
+    # 2. Determina i percorsi una sola volta all'avvio
     home_path = @__DIR__
     _, _, initial_root_path, initial_save_path = GeoEngine.prepare_paths_and_location(APP_CONFIG[], home_path)
-    # 3. Salva i percorsi definitivi nella configurazione globale.
-    #    Da questo momento in poi, APP_CONFIG[] è la nostra "fonte di verità".
+
+    # 3. Salva i percorsi definitivi nella configurazione globale
     APP_CONFIG[][ "path" ] = initial_root_path
     APP_CONFIG[][ "save" ] = initial_save_path
 
+    # 4. Definisci tmp_dir qui, dove è visibile a tutta la funzione
+    tmp_dir = joinpath(initial_save_path, "tmp")
+    mkpath(tmp_dir) # Assicurati che la cartella tmp esista
+
+    # Esegui il recupero dei tile orfani prima di avviare i servizi principali
+    GeoEngine.recover_orphaned_tiles(tmp_dir, initial_root_path, initial_save_path, APP_CONFIG[])
+
     port = get(APP_CONFIG[], "http", 8000)
-
-    #if (idx = findfirst(a -> startswith(a, "--http"), args)) !== nothing
-    #    val = split(args[idx], '=')
-    #    port = length(val) > 1 ? parse(Int, val[2]) : 8000
-    #end
-
     host = "127.0.0.1"
 
-    # Configure logging and start background services
+    # 5. Configura il logger e avvia i servizi in background
     global_logger(ConsoleLogger(stderr, Logging.Info))
     @async ddsFindScanner.startFind()
     start_background_worker()
 
+    # 6. Usa le variabili corrette (`initial_...` e `tmp_dir`) per avviare il monitor
+    runtime_cfg = Dict{String, Any}(APP_CONFIG[])
+    @async AssemblyMonitor.monitor_and_assemble(initial_root_path, initial_save_path, tmp_dir, runtime_cfg)
+
     @info "Web GUI server running at http://$host:$port/"
-    # Start HTTP server with custom error handler
     HTTP.serve(handle, host, port; on_error=handle_server_error, verbose=false)
 end
 

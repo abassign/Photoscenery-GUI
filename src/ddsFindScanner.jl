@@ -608,9 +608,6 @@ Funzione centralizzata e intelligente per posizionare un file tile.
 3.  Sposta il file sorgente (`source_path`) nella destinazione finale.
 4.  Aggiorna l'indice dei file in tutte le fasi.
 """
-
-# In src/ddsFindScanner.jl
-
 function place_tile!(
     source_path::String,
     tile::Commons.TileMetadata,
@@ -625,49 +622,56 @@ function place_tile!(
 
     try
         dir10, dir1 = Commons.tile_dirs(tile.latLL, tile.lonLL)
-        filename = basename(source_path)
+        file_extension = splitext(source_path)[2]
+        filename = "$(tile.id)$(file_extension)" # Nome finale corretto
         final_dest_dir = joinpath(rootPath, dir10, dir1)
         final_dest_path = joinpath(final_dest_dir, filename)
 
-        if normpath(source_path) == normpath(final_dest_path)
-            @info "ddsFindScanner.place_tile: Source is already at final destination. No action needed."
-            return true
-        end
-
         # Se un file esiste già a destinazione...
         if isfile(final_dest_path)
-            overwrite_mode = get(cfg, "over", 0)
+            overwrite_mode = get(cfg, "over", 1)
 
-            # Logica per --over 0 (non sovrascrivere)
+            # --- Blocco logica di sovrascrittura ---
             if overwrite_mode == 0
-                @info "ddsFindScanner.place_tile: Tile $(final_dest_path) exists. Skipping as for --over 0"
-                rm(source_path, force=true)
+                @info "ddsFindScanner.place_tile: Tile $(tile.id) exists. Archiving new tile as per --over 0 rule."
+                # Archiviamo il nuovo file invece di cancellarlo
+                backup_dir = joinpath(rootPath_saved, string(tile.width), dir10, dir1)
+                backup_path = joinpath(backup_dir, filename) # Usa il nome finale corretto
+                mkpath(backup_dir)
+                mv(source_path, backup_path, force=true)
+                # (Opzionale: aggiornare l'indice per il file archiviato)
                 return true
             end
 
-            # Tentiamo di leggere la larghezza del file esistente.
+            # Se siamo in over=1 o over=2, dobbiamo confrontare le dimensioni
             is_success, actual_width, _ = Commons.getDDSSize(final_dest_path)
             if !is_success; is_success, actual_width, _ = Commons.getPNGSize(final_dest_path); end
 
+            # Check point di debug: stampa i valori prima del confronto
+            println("--- DEBUG place_tile! ---")
+            println("Tile ID: $(tile.id)")
+            println("Larghezza NUOVO tile (tile.width): $(tile.width)")
+            println("Larghezza VECCHIO tile (actual_width): $(actual_width)")
+            println("Overwrite Mode: $overwrite_mode")
+            println("-------------------------")
+
             if !is_success
-                # Se non riusciamo a leggere il file, è corrotto o un link rotto.
-                # Lo rimuoviamo invece di tentare uno spostamento che fallirebbe.
-                @warn "ddsFindScanner.place_tile: Could not read existing file at '$(final_dest_path)'. It might be corrupt. Removing it to make way for the new file."
-                try
-                    rm(final_dest_path, force=true)
-                catch e
-                    @error "ddsFindScanner.place_tile: Failed to remove problematic file '$final_dest_path'." exception=(e, catch_backtrace())
-                end
+                @warn "Impossibile leggere il file esistente a '$(final_dest_path)'. Verrà rimosso."
+                try; rm(final_dest_path, force=true); catch e; @error "Impossibile rimuovere il file corrotto" exception=(e, catch_backtrace()); end
             else
-                # Se la lettura ha successo, procediamo con la logica di sovrascrittura
                 if overwrite_mode == 1 && tile.width <= actual_width
-                    @info "ddsFindScanner.place_tile: Existing tile ($actual_width) px is larger or same size. Skipping."
-                    rm(source_path, force=true)
+                    @info "Tile esistente ($actual_width px) è migliore o uguale. Archivio il nuovo tile ($tile.width px)."
+
+                    backup_dir = joinpath(rootPath_saved, string(tile.width), dir10, dir1)
+                    backup_path = joinpath(backup_dir, filename)
+                    mkpath(backup_dir)
+                    mv(source_path, backup_path, force=true)
+                    # (Opzionale: aggiornare l'indice)
                     return true
                 end
 
                 # Se siamo qui, dobbiamo sovrascrivere. Spostiamo il vecchio file nel backup.
-                @info "ddsFindScanner.place_tile: Backing up existing file from '$final_dest_path'..."
+                @info "Backup del file esistente da '$final_dest_path'..."
                 backup_dir = joinpath(rootPath_saved, string(actual_width), dir10, dir1)
                 backup_path = joinpath(backup_dir, filename)
                 mkpath(backup_dir)
@@ -683,7 +687,7 @@ function place_tile!(
         end
 
         # A questo punto, la destinazione finale è libera. Spostiamo il nuovo file.
-        @info "ddsFindScanner.place_tile: Placing file from '$source_path' to '$final_dest_path'."
+        @info "Posizionamento e rinomina del file da '$source_path' a '$final_dest_path'."
         mkpath(final_dest_dir)
         mv(source_path, final_dest_path, force=true)
 
@@ -693,18 +697,16 @@ function place_tile!(
             _existing_data[final_dest_path] = Dict(
                 "id" => tile.id, "size" => stat_info.size,
                 "last_modified" => Dates.format(now(), "yyyy-mm-dd HH:MM:SS"),
-                "sizeId" => tile.size_id, "width" => tile.width,
-                "height" => tile.width
-                )
+                "sizeId" => tile.size_id, "width" => tile.width, "height" => tile.width
+            )
             save_data(DEFAULT_METADATA, _existing_data)
         end
         return true
-        catch e
-            @error "ddsFindScanner.place_tile: Error during tile placement exception=$(e)"
+    catch e
+        @error "Errore durante il posizionamento del tile" exception=(e, catch_backtrace())
         return false
     end
 end
-
 
 function moveImage(rootPath::String, rootPath_saved::String, id::Int, target_sizeId::Int, cfg::Dict)
     @info "ddsFindScanner.moveImage: Ricerca tile da cache per ID $id, sizeId $target_sizeId"

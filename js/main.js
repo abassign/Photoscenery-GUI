@@ -26,7 +26,7 @@ const log = (...a) => window.DEBUG_FGFS && console.log('[DEBUG-JS]', ...a);
 
 // --- Aircraft-auto-queue settings ---
 const RADIUS_AROUND_AC = 20;   // NM of each circle
-const OVERLAP_FACTOR   = 0.4;  // ⅔ diameter offset
+const OVERLAP_FACTOR   = 0.33;  // ⅔ diameter offset
 const MIN_JOB_INTERVAL_MS = 3000; // anti-flood throttle
 
 const DATE_FILTER_LABELS = ["This Session", "Today", "Yesterday", "Last Week", "Last Month", "Last Year", "All Time"];

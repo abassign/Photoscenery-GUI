@@ -37,7 +37,7 @@ using ..AssemblyMonitor
 using ..ddsFindScanner, ..JobFactory
 using .Commons: chunk_pixel_size
 
-export prepare_paths_and_location, process_target_area, create_precoverage_jobs, create_chunk_jobs, process_fill_holes
+export prepare_paths_and_location, process_target_area, create_precoverage_jobs, create_chunk_jobs, process_fill_holes, recover_orphaned_tiles
 
 function generate_all_tiles(
     area::MapCoordinates,
@@ -140,116 +140,64 @@ Viene generato un solo "chunk job" per ogni tile.
 """
 function create_precoverage_jobs(
     tiles::Vector{TileMetadata},
-    precover_size_id::Int,   # es. viene da cfg["sdwn"]
+    precover_size_id::Int,
     tmp_dir::String
     )::Vector{ChunkJob}
     jobs = Vector{ChunkJob}()
-    # livello preview: 1×1 per tile, ma con height proporzionata a Δlat/Δlon
-    # ricavo una width coerente per quel livello
     width, _ = Commons.getSizeAndCols(precover_size_id)
-    retries = 3  # oppure rendilo un parametro, se preferisci
+    retries = 3
 
     for tile in tiles
-        # bbox unico: copre l’intero tile
-        bbox = (
-            lonLL = tile.lonLL, latLL = tile.latLL,
-            lonUR = tile.lonUR, latUR = tile.latUR
-            )
-
-        # dimensioni chunk coerenti (1×1) = usa la variant tipizzata
-        ps = Commons.chunk_pixel_size(
-            width, 1,
-            tile.latUR - tile.latLL,
-            tile.lonUR - tile.lonLL
-        )
-
-        # naming coerente con l’assembler: tileId_sizeId_total_yflipped_x.png
-        total_chunks = 1
-        x, y = 1, 1
-        y_flipped = 1
-        temp_filename = "$(tile.id)_$(precover_size_id)_$(total_chunks)_$(y_flipped)_$(x).png"
+        bbox = (lonLL = tile.lonLL, latLL = tile.latLL, lonUR = tile.lonUR, latUR = tile.latUR)
+        ps = Commons.chunk_pixel_size(width, 1, tile.latUR - tile.latLL, tile.lonUR - tile.lonLL)
+        # Definiamo sia x che y. Per un singolo chunk, sono entrambi 1.
+        total_chunks = 1; x = 1; y = 1; y_flipped = 1;
+        over_mode = 1
+        temp_filename = "$(tile.id)_$(precover_size_id)_$(total_chunks)_$(y_flipped)_$(x)_over$(over_mode).png"
         temp_path = joinpath(tmp_dir, temp_filename)
-
-        # se già presente e “sano”, segna completato e salta
         if isfile(temp_path) && filesize(temp_path) > 64
-            StatusMonitor.update_chunk_state(tile.id, (x, y), :completed, filesize(temp_path))
             continue
         end
-
-        push!(jobs, ChunkJob(
-            tile.id,
-            precover_size_id,
-            (x, y),
-            bbox,
-            (width = ps.width, height = ps.height),
-            temp_path,
-            retries
-        ))
+        push!(jobs, ChunkJob(tile.id, precover_size_id, (x, y), bbox, (width = ps.width, height = ps.height), temp_path, retries))
     end
     return jobs
 end
 
 
+# In src/GeoEngine.jl
 function create_chunk_jobs(
     tiles::Vector{TileMetadata},
     cfg::Dict,
     tmp_dir::String
     )::Vector{ChunkJob}
     jobs = Vector{ChunkJob}()
-    # accetta sia "attempts" che lo storico "attemps"
     retries = get(cfg, "attempts", get(cfg, "attemps", 5))
 
+    # Recupera la modalità di sovrascrittura dalla configurazione del job
+    over_mode = get(cfg, "over", 1) # Default a 1 per sicurezza
+
     for tile in tiles
-        # passo angolare di un chunk in gradi
         ΔLon_deg = (tile.lonUR - tile.lonLL) / tile.cols
         ΔLat_deg = (tile.latUR - tile.latLL) / tile.cols
-        abs(ΔLon_deg) < 1e-12 && continue  # evita div/0 ai poli
+        abs(ΔLon_deg) < 1e-12 && continue
 
-        # dimensioni pixel del chunk (coerenti tra producer e assembler)
         ps = Commons.chunk_pixel_size(tile)
-        chunk_w = ps.width
-        chunk_h = ps.height
-        chunk_h <= 0 && continue
-
         total_chunks = tile.cols * tile.cols
 
         for y in 1:tile.cols, x in 1:tile.cols
-            # flip Y per compatibilità con l’assembler
             y_flipped = tile.cols - y + 1
-
-            # nome file: tileId_sizeId_total_yflipped_x.png
-            temp_filename = "$(tile.id)_$(tile.size_id)_$(total_chunks)_$(y_flipped)_$(x).png"
+            # nome file: tileId_sizeId_total_yflipped_x_overMODE.png
+            temp_filename = "$(tile.id)_$(tile.size_id)_$(total_chunks)_$(y_flipped)_$(x)_over$(over_mode).png"
             temp_path = joinpath(tmp_dir, temp_filename)
-
-            # se già presente e "sano", segna completato e salta
-            if isfile(temp_path) && filesize(temp_path) > 1024
-                StatusMonitor.update_chunk_state(tile.id, (x, y), :completed, filesize(temp_path))
+            if isfile(temp_path) && filesize(temp_path) >= get(cfg, "min_chunk_bytes", 64)
                 continue
             end
-
-            # bbox del chunk
             chunk_lonLL = tile.lonLL + (x - 1) * ΔLon_deg
             chunk_latLL = tile.latLL + (y - 1) * ΔLat_deg
-            chunk_bbox  = (
-                lonLL = chunk_lonLL,
-                latLL = chunk_latLL,
-                lonUR = chunk_lonLL + ΔLon_deg,
-                latUR = chunk_latLL + ΔLat_deg
-            )
-
-            # job
-            push!(jobs, ChunkJob(
-                tile.id,
-                tile.size_id,
-                (x, y),
-                chunk_bbox,
-                (width = chunk_w, height = chunk_h),
-                temp_path,
-                retries
-            ))
+            chunk_bbox  = (lonLL = chunk_lonLL, latLL = chunk_latLL, lonUR = chunk_lonLL + ΔLon_deg, latUR = chunk_latLL + ΔLat_deg)
+            push!(jobs, ChunkJob(tile.id, tile.size_id, (x, y), chunk_bbox, (width = ps.width, height = ps.height), temp_path, retries))
         end
     end
-
     return jobs
 end
 
@@ -301,8 +249,7 @@ function process_target_area(
     tmp_dir = joinpath(save_path, "tmp")
     mkpath(tmp_dir)
 
-    # --- 1. PREPARAZIONE ---
-    # Genera la lista di tile ad alta risoluzione necessari.
+    # 1. Genera la lista di tile necessari (logica invariata)
     tiles = generate_all_tiles(
         area, cfg, root_path, save_path;
         heading_deg=heading_deg, alt_ft=alt_ft
@@ -312,89 +259,64 @@ function process_target_area(
         return nothing
     end
 
-    # Avvia i servizi in background che ascolteranno le code.
-    monitor_task = @async AssemblyMonitor.monitor_and_assemble(
-        root_path, save_path, tmp_dir,
-        merge(cfg, Dict("monitor_debug" => true)),   # <— attiva snapshot/log del monitor
-        [t.id for t in tiles]
-    )
+    # --- MODIFICA CHIAVE ---
+    # La riga che avviava il monitor qui è stata RIMOSSA.
+    # Il monitor ora è un servizio globale avviato da GuiMode.run.
+
+    # 2. Avvia i worker di download (logica invariata)
     nworkers = get(cfg, "workers", 8)
     Downloader.start_chunk_downloads_parallel!(nworkers, map_server, cfg, root_path, save_path, tmp_dir)
 
-    # --- 2. LOGICA DI PRE-COPERTURA (dinamica) ---
-    # Scegli un SOLO livello di preview in [0..2] in funzione del fabbisogno reale dell'area.
-    # 1) peak_id = livello massimo richiesto tra i tile (più fine)
-    # 2) dyn_preview = peak_id - 2 (clamp a [0,2]) per ridurre il "gap"
-    # 3) sdwn_floor = rispetto il minimo scelto dall'utente (clamp a [0,2])
-    # 4) precover_id = max(dyn_preview, sdwn_floor)
-
-    # 1) ricavo il livello minimo effettivo richiesto dai tile generati
+    # 3. Logica di pre-copertura e download principale (invariata)
     min_required_unclamped = minimum(t -> t.size_id, tiles)
-
-    # 2) gap configurabile (default 1), clamp a [0,2] e senza superare la size target
-    precover_gap   = get(cfg, "precover_gap", 1)
+    precover_gap = get(cfg, "precover_gap", 1)
     precover_level = clamp(min_required_unclamped - precover_gap, 0, 2)
-    precover_level = min(precover_level, get(cfg, "size", 4))  # di fatto è già ≤2, ma resta coerente con size
+    precover_level = min(precover_level, get(cfg, "size", 4))
 
-    @info "GeoEngine: Fase 1 - Pre-coverage livello $(precover_level) (min_area=$(min_required_unclamped), gap=$(precover_gap))"
+    @info "GeoEngine: Fase 1 - Pre-coverage livello $(precover_level)"
     precoverage_jobs = create_precoverage_jobs(tiles, precover_level, tmp_dir)
     if !isempty(precoverage_jobs)
-        @info "GeoEngine: Accodamento di $(length(precoverage_jobs)) job di pre-copertura (lvl=$(precover_level))."
         Downloader.enqueue_high!(precoverage_jobs)
     end
 
-    # --- 3. LOGICA DI DOWNLOAD PRINCIPALE ---
     @info "GeoEngine: Fase 2 - Generazione job ad alta risoluzione..."
     high_res_jobs = create_chunk_jobs(tiles, cfg, tmp_dir)
-    @info "GeoEngine: Accodamento di $(length(high_res_jobs)) chunk-job ad alta risoluzione."
-    ##Downloader.enqueue_chunk_jobs!(Downloader.CHUNK_QUEUE, high_res_jobs)
+
     if get(cfg, "mode", "manual") == "daa"
+        # Logica DAA per la priorità (invariata)
         frac = get(cfg, "daa_priority_frac", 0.35)
         cut  = clamp(ceil(Int, length(high_res_jobs) * frac), 1, length(high_res_jobs))
         jobs_hi = high_res_jobs[1:cut]
         jobs_lo = cut < length(high_res_jobs) ? high_res_jobs[(cut+1):end] : Commons.ChunkJob[]
         Downloader.enqueue_high!(jobs_hi)
         Downloader.enqueue_low!(jobs_lo)
-        @info "GeoEngine: enqueue HI=$(length(jobs_hi)) / LO=$(length(jobs_lo)) (frac=$(frac))"
     else
         Downloader.enqueue_low!(high_res_jobs)
     end
 
-
-    # --- 4. ATTESA COMPLETAMENTO ---
-    # Il ciclo di attesa rimane invariato, gestirà il completamento di TUTTI i job accodati.
+    # 4. Attesa completamento DOWNLOAD (questa parte rimane utile)
+    #    Aspettiamo che la coda dei download si svuoti, ma non più l'assemblaggio.
     total_chunks = Downloader.PENDING_JOBS[]
     timeout_seconds = 600
     start_time = time()
 
-    @info "In attesa del completamento di $total_chunks chunk totali (pre-copertura + alta risoluzione)..."
+    @info "In attesa del completamento del download di $total_chunks chunks..."
     while true
         if Downloader.PENDING_JOBS[] == 0 && !isready(Downloader.FALLBACK_QUEUE)
             sleep(2) # Periodo di grazia
             if Downloader.PENDING_JOBS[] == 0 && !isready(Downloader.FALLBACK_QUEUE)
-                @info "Tutti i lavori e i potenziali fallback sono completati."
+                @info "Tutti i download e i potenziali fallback sono completati."
                 break
             end
         end
-
         if time() - start_time > timeout_seconds
-            @warn "Timeout attesa download superato! Procedo con l'assemblaggio."
+            @warn "Timeout attesa download superato! I download rimanenti continueranno in background."
             break
         end
-
-        if second(now()) % 10 == 0
-            percent_done = round((total_chunks - Downloader.PENDING_JOBS[]) / total_chunks * 100, digits=1)
-            @info "Download in corso... $(Downloader.PENDING_JOBS[]) chunks rimanenti ($percent_done %)"
-            sleep(1)
-        end
-
         sleep(1)
     end
 
-    @info "Fase di download terminata. Attendo l'assemblaggio finale..."
-    wait(monitor_task)
-
-    @info "GeoEngine: process_target_area terminato."
+    @info "GeoEngine: Fase di download per process_target_area terminata."
 end
 
 
@@ -485,18 +407,20 @@ function process_fill_holes(bounds, cfg::Dict, map_server::Downloader.MapServer,
         return
     end
 
-    @info "GeoEngine: Trovati $(length(missing_tiles)) buchi da riempire. Generazione dei job..."
+    @info "GeoEngine: Trovati $(length(missing_tiles)) buchi da riempire. Avvio processi..."
 
-    # 1. Avvia i servizi in background (worker e fallback manager) che ascolteranno le code.
-    #    Questo è il passaggio che mancava.
+    # 1. Avvia i worker di download
     nworkers = get(cfg, "workers", 8)
     Downloader.start_chunk_downloads_parallel!(nworkers, map_server, cfg, root_path, save_path, tmp_dir)
 
-    # 2. Crea e accoda i job (questa parte era già presente e corretta)
+    # 2. Crea e accoda i job
     high_res_jobs = create_chunk_jobs(missing_tiles, cfg, tmp_dir)
     Downloader.enqueue_low!(high_res_jobs)
-
     @info "GeoEngine: $(length(high_res_jobs)) chunk job accodati per riempire i buchi."
+
+    # Anche qui, non c'è nessuna chiamata a monitor_and_assemble o wait.
+    # La funzione termina qui, e i servizi in background faranno il resto.
+    @info "GeoEngine: Job per 'fill holes' accodati. Download e assemblaggio procederanno in background."
 end
 
 
@@ -603,6 +527,70 @@ function prepare_paths_and_location(cfg::Dict{String,Any}, home_path::AbstractSt
     end
 
     return route_vec, position_on_route, root_path, save_path
+end
+
+
+"""
+    recover_orphaned_tiles(tmp_dir, root_path, save_path, cfg)
+
+Scansiona la cartella `tmp` all'avvio alla ricerca di tile già assemblati
+(es. 1234567.dds) ma non ancora posizionati. Tenta di recuperarli
+e posizionarli correttamente, pulendo la cartella da file completati.
+"""
+function recover_orphaned_tiles(tmp_dir::String, root_path::String, save_path::String, cfg::Dict)
+    @info "GeoEngine: Avvio scansione di recupero per tile orfani in: $tmp_dir"
+    recovered_count = 0
+
+    # Pattern per i file assemblati: 7 cifre seguite da .dds o .png
+    assembled_file_re = r"^(\d{7})\.(dds|png)$"
+
+    try
+        for filename in readdir(tmp_dir)
+            m = match(assembled_file_re, filename)
+            if m !== nothing
+                source_path = joinpath(tmp_dir, filename)
+                tile_id = parse(Int, m.captures[1])
+                is_dds = lowercase(m.captures[2]) == "dds"
+
+                @info "Trovato potenziale tile orfano: $filename"
+
+                # 1. Dobbiamo dedurre il size_id leggendo le dimensioni del file
+                success, width, _ = is_dds ? Commons.getDDSSize(source_path) : Commons.getPNGSize(source_path)
+                if !success
+                    @warn "Impossibile leggere le dimensioni del file orfano $filename, lo ignoro."
+                    continue
+                end
+
+                size_id = Commons.getSizeFromWidth(width)
+                if size_id === nothing
+                    @warn "Dimensioni non standard per il file orfano $filename, lo ignoro."
+                    continue
+                end
+
+                # 2. Ricostruisci i metadati minimi necessari per place_tile!
+                lonC, latC, lonLL, latLL, xidx, yidx, _, _ = Commons.coordFromIndex(tile_id)
+                _, cols = Commons.getSizeAndCols(size_id)
+                lon_step = Commons.tileWidth(latC)
+                tile_meta = Commons.TileMetadata(tile_id, size_id, lonLL, latLL, lonLL + lon_step, latLL + 0.125, xidx, yidx, lonC, latC, lon_step, width, cols)
+
+                # 3. Chiama la funzione di posizionamento
+                @info "Tentativo di recupero e posizionamento per tile ID $tile_id..."
+                if ddsFindScanner.place_tile!(source_path, tile_meta, root_path, save_path, cfg)
+                    recovered_count += 1
+                    @info "Recupero tile ID $tile_id completato con successo."
+                else
+                    @warn "Posizionamento del tile orfano ID $tile_id fallito."
+                end
+            end
+        end
+        if recovered_count > 0
+            @info "GeoEngine: Recuperati e posizionati con successo $recovered_count tile orfani."
+        else
+            @info "GeoEngine: Nessun tile orfano da recuperare trovato."
+        end
+    catch e
+        @error "Errore durante il processo di recupero dei tile orfani" exception=(e, catch_backtrace())
+    end
 end
 
 
