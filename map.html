@@ -355,6 +355,42 @@
             border: none;
         }
 
+        /* Aggiungi questo CSS alla fine della sezione <style> */
+
+        #route-drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        #route-drop-zone.drag-over {
+            background-color: #e8f0fe; /* Un leggero blu quando si trascina sopra */
+            border-color: #4285f4;
+        }
+
+        #route-waypoint-list ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        #route-waypoint-list li {
+            padding: 4px 8px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+        }
+
+        /* Colori di stato per i waypoint */
+        .wp-status-pending { color: black; }
+        .wp-status-processing { color: white; background-color: #d9534f; font-weight: bold; } /* Rosso */
+        .wp-status-done { color: white; background-color: #4285f4; } /* Blu */
+
         @keyframes pulse-red {
             0% {
                 background-color: #ffebee; /* Rosso chiaro */
@@ -479,6 +515,19 @@
             </div>
         </div>
 
+        <hr>
+
+        <div class="control-group">
+            <hr>
+            <h3 class="collapsible-header">Download Along Route</h3>
+            <div id="route-section-content" class="collapsible-content">
+                <div id="route-drop-zone">
+                    <p>Drag & Drop your .gpx or .xml route file here</p>
+                </div>
+                <div id="route-waypoint-list">
+                    </div>
+            </div>
+        </div>
         <hr>
 
         <!-- FlightGear connection controls -->

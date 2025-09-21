@@ -297,6 +297,11 @@ function _parse_commandline(args)
         nargs = '?'         # Accetta zero o più valori (restituirà un array)
         constant = 8000
         default = nothing   # Se non presente, il valore è nothing
+        "--low-detail-threshold"
+        help = "Detail score threshold below which a tile is marked as low-info (default 1.0)"
+        arg_type = Float64
+        default = 0.8
+        dest_name = "low_detail_threshold" # Nome pulito per il dizionario cfg
     end
 
     # parse_args gestisce automaticamente gli argomenti passati

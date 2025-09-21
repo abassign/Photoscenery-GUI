@@ -31,6 +31,10 @@ using .Commons
 # -----------------------------------------------------------------------------
 # 2. Moduli Funzionali (dipendono dai moduli base)
 # -----------------------------------------------------------------------------
+
+include("DetailScore.jl")
+using .DetailScore  # rende disponibili le API pubbliche
+
 include("ddsFindScanner.jl") # Ora può trovare ScanDir
 include("StatusMonitor.jl")
 include("JobFactory.jl")

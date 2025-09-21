@@ -548,7 +548,11 @@ end
 function h_app_config(req)
     # Legge il valore "server" dalla config salvata, con un default di 1 se non presente
     default_server_id = get(APP_CONFIG[], "server", 1)
-    payload = Dict("default_server" => default_server_id)
+    low_detail_threshold = get(APP_CONFIG[], "low_detail_threshold", 1.0)
+    payload = Dict(
+        "default_server" => default_server_id,
+        "low_detail_threshold" => low_detail_threshold
+    )
     return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(payload))
 end
 
@@ -817,7 +821,17 @@ function run(args::Vector{String}=ARGS)
     mkpath(tmp_dir) # Assicurati che la cartella tmp esista
 
     # Esegui il recupero dei tile orfani prima di avviare i servizi principali
-    GeoEngine.recover_orphaned_tiles(tmp_dir, initial_root_path, initial_save_path, APP_CONFIG[])
+    ## GeoEngine.recover_orphaned_tiles(tmp_dir, initial_root_path, initial_save_path, APP_CONFIG[])
+    @async begin
+        while true
+            sleep(60) # ogni 1 minuti, regola a piacere
+            try
+                GeoEngine.recover_orphaned_tiles(tmp_dir, initial_root_path, initial_save_path, APP_CONFIG[])
+                catch e
+                @error "Recover orphaned tiles periodic failed" exception=(e, catch_backtrace())
+            end
+        end
+    end
 
     port = get(APP_CONFIG[], "http", 8000)
     host = "127.0.0.1"

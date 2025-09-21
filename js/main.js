@@ -1,4 +1,7 @@
 // Save as: js/main.js (final version)
+
+import * as route from './route.js';
+
 import * as api from './api.js';
 import {
     elements,
@@ -17,7 +20,8 @@ import {
     updateHandleStyles,
     linkRadiusHandleToInput,
     updateFgfsIndicator,
-    populateMapServerSelector
+    populateMapServerSelector,
+    drawCircle
 } from './ui.js';
 
 // ---------- DEBUG SWITCH ----------
@@ -50,11 +54,13 @@ const state = {
     lastDaaCenterPoint: null,       // centro dell’ultimo cerchio verde
     lastAutoLaunchTs: 0,            // timestamp ultimo invio autoù
     lastDaaCircleLayer: null,       // riferimento diretto all’ultimo cerchio verde
-    daaArmed: false,                 // isteresi: diventa true solo dopo essere entrati sotto ARM_TH
-    defaultServerId: 1
+    daaArmed: false,                // isteresi: diventa true solo dopo essere entrati sotto ARM_TH
+    defaultServerId: 1,
+    lowDetailThreshold: 1.0
 };
 
 const activeCircles = {};           // Stores active job circles on the map
+const jobCompletionCallbacks = window.jobCompletionCallbacks || (window.jobCompletionCallbacks = new Map());
 let pendingCircle = null;           // Temporary Leaflet circle object
 
 /**
@@ -77,7 +83,7 @@ function mainUpdateLoop() {
         const allowedResolutions = new Set(
             state.resState.map((active, i) => active ? i : -1).filter(i => i !== -1)
         );
-        updateMapCoverage(coverageData, allowedResolutions, state.currentOpacity, state.dateFilterIndex, state.sessionStartTime);
+        updateMapCoverage(coverageData, allowedResolutions, state.currentOpacity, state.dateFilterIndex, state.sessionStartTime, state.lowDetailThreshold);
     });
 }
 
@@ -119,29 +125,6 @@ function updatePreview() {
 }
 
 /**
- * Draws a circle on the map for a job
- * @param {string} jobId - Unique job identifier
- * @param {number} lat - Latitude coordinate
- * @param {number} lon - Longitude coordinate
- * @param {number} radiusKm - Circle radius in kilometers
- */
-function drawCircle(jobId, lat, lon, radiusKm) {
-    if (activeCircles[jobId]) return;
-
-    const circle = L.circle([lat, lon], {
-        radius: radiusKm * 1852,
-        color: '#00cc00',
-        fillColor: '#00cc00',
-        fillOpacity: 0.15,
-        weight: 1.5
-    }).addTo(elements.map);
-
-    activeCircles[jobId] = circle;
-    state.lastDaaCenterPoint = circle.getLatLng();
-    state.lastDaaCircleLayer = circle;
-}
-
-/**
  * Removes a job circle from the map
  * @param {string} jobId - Unique job identifier
  */
@@ -157,13 +140,18 @@ function clearCircle(jobId) {
  * Checks for and clears circles of completed jobs
  */
 function checkCompletedJobs() {
-    if (state.followAircraftActive) {
-        return; // Esce immediatamente dalla funzione.
-    }
     api.getCompletedJobs().then(ids => {
-        if (ids.length) {
-            ids.forEach(id => clearCircle(id));        // remove green circle
-            processQueueSequentially();                // start next preview → green
+        if (ids.length > 0) {
+            ids.forEach(id => {
+                // 1. Rimuovi il cerchio dalla mappa (come prima)
+                clearCircle(id);
+                // 2. Controlla se c'è una callback registrata per questo job e eseguila
+                if (jobCompletionCallbacks.has(id)) {
+                    const callback = jobCompletionCallbacks.get(id);
+                    callback(id); // Esegui la callback
+                    jobCompletionCallbacks.delete(id); // Rimuovila dopo l'uso
+                }
+            });
         }
     });
 }
@@ -651,6 +639,9 @@ function createPreviewCircleAt(lat, lon) {
             });
             activeCircles[data.jobId] = circle;
             areaState.isFixed = true; // ormai è “confermato”
+            // Call the imported drawCircle function, passing activeCircles
+            drawCircle(data.jobId, data.lat, data.lon, data.radius, activeCircles);
+            areaState.isFixed = true;
         })
         .catch(err => {
             alert(`Error starting job: ${err.message}`);
@@ -831,6 +822,7 @@ window.addEventListener('DOMContentLoaded', () => {
             console.log("Configurazione ricevuta dal backend:", config);
             // Salva l'ID del server di default nello stato globale
             state.defaultServerId = config.default_server;
+            state.lowDetailThreshold = config.low_detail_threshold;
             // Imposta il valore nel selettore a discesa per renderlo visibile all'utente
             elements.mapServerSelect.value = state.defaultServerId;
         })
@@ -843,6 +835,34 @@ window.addEventListener('DOMContentLoaded', () => {
             elements.outputPathInput.value = paths.path;
             elements.backupPathInput.value = paths.save;
         });
+        const dropZone = elements.routeDropZone;
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+    });
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.name.endsWith('.gpx') || file.name.endsWith('.xml')) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    // Delega tutto il lavoro al modulo route
+                    route.handleRouteFile(event.target.result, file.name, activeCircles, state);
+                };
+                reader.readAsText(file);
+            } else {
+                alert("Per favore, trascina un file .gpx o .xml valido.");
+            }
+        }
+    });
 
     // Gestione della sezione collassabile "Directory Settings"
     elements.directorySettingsHeader.addEventListener('click', () => {
@@ -853,6 +873,11 @@ window.addEventListener('DOMContentLoaded', () => {
     elements.directorySettingsHeader.classList.add('collapsed');
     elements.directorySettingsContent.classList.add('collapsed');
 
+    // Gestione della sezione collassabile "Download Along Route"
+    elements.routeSettingsHeader.addEventListener('click', () => {
+        elements.routeSettingsHeader.classList.toggle('collapsed');
+        elements.routeSettingsContent.classList.toggle('collapsed');
+    });
 
     // Avvia il loop periodic
     mainUpdateLoop();

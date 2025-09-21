@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" creator="SkyVector" version="1.1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <rte>
+    <name>LIME-LIMJ</name>
+    <rtept lat="45.668889" lon="9.700278">
+      <name>LIME</name>
+      <overfly>false</overfly>
+    </rtept>
+    <rtept lat="45.658797" lon="9.376619">
+      <name>D266N</name>
+      <overfly>false</overfly>
+    </rtept>
+    <rtept lat="45.645972" lon="9.021583">
+      <name>SRN</name>
+      <overfly>false</overfly>
+    </rtept>
+    <rtept lat="44.964583" lon="8.970194">
+      <name>VOG</name>
+      <overfly>false</overfly>
+    </rtept>
+    <rtept lat="44.865278" lon="8.991389">
+      <name>ULCOR</name>
+      <overfly>false</overfly>
+    </rtept>
+    <rtept lat="44.424444" lon="9.082333">
+      <name>GEN</name>
+      <overfly>false</overfly>
+    </rtept>
+    <rtept lat="44.325704" lon="9.592819">
+      <name>SV001</name>
+      <overfly>false</overfly>
+    </rtept>
+    <rtept lat="44.313695" lon="9.328842">
+      <name>SV002</name>
+      <overfly>false</overfly>
+    </rtept>
+    <rtept lat="44.413333" lon="8.837500">
+      <name>LIMJ</name>
+      <overfly>false</overfly>
+    </rtept>
+
+  </rte>
+</gpx>

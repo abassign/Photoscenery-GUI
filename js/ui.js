@@ -39,6 +39,10 @@ const elements = {
     btnEditPaths: document.getElementById('btn-edit-paths'),
     directorySettingsHeader: document.getElementById('directory-settings-content').previousElementSibling,
     directorySettingsContent: document.getElementById('directory-settings-content'),
+    routeDropZone: document.getElementById('route-drop-zone'),
+    routeWaypointList: document.getElementById('route-waypoint-list'),
+    routeSettingsHeader: document.getElementById('route-section-content').previousElementSibling,
+    routeSettingsContent: document.getElementById('route-section-content'),
     dateFilterSlider: document.getElementById('date-filter-slider'),
     dateFilterLabel: document.getElementById('date-filter-label')
 };
@@ -68,62 +72,78 @@ let aircraftMarker = null;
  * @param {Array} coverageData - Tile coverage information
  * @param {Set} allowedResolutions - Set of allowed resolution IDs
  * @param {number} currentOpacity - Current opacity setting
+ * @param {number} dateFilterIndex - The index for the date filter
+ * @param {Date} sessionStartTime - The start time of the current session
+ * @param {number} lowDetailThreshold - The detail score threshold for marking tiles
  */
-function updateMapCoverage(coverageData, allowedResolutions, currentOpacity, dateFilterIndex, sessionStartTime) {
+// ▼▼▼ MODIFICA QUI: Aggiungi "lowDetailThreshold" come ultimo parametro ▼▼▼
+function updateMapCoverage(coverageData, allowedResolutions, currentOpacity, dateFilterIndex, sessionStartTime, lowDetailThreshold) {
     coverageLayer.clearLayers();
     const now = new Date();
 
     coverageData.forEach(tile => {
         // --- LOGICA DI FILTRO TEMPORALE ---
-        // Se il filtro è su "All Time" (indice 5), saltiamo tutti i controlli sulla data.
         if (dateFilterIndex !== 6) {
-            // Per qualsiasi altro filtro attivo, il tile DEVE avere una data valida.
             if (!tile.last_modified || typeof tile.last_modified !== 'string') {
-                return; // Se non ha una data, lo nascondiamo e passiamo al prossimo.
+                return;
             }
-
             const tileDate = new Date(tile.last_modified.replace(' ', 'T'));
-            let showTile = false; // Il default ora è NASCONDERE.
+            let showTile = false;
 
             switch (dateFilterIndex) {
-                case 0: // Sessione
+                case 0:
                     if (sessionStartTime) showTile = tileDate >= sessionStartTime;
                     break;
-                case 1: // Oggi (ultime 24 ore)
+                case 1:
                     showTile = (now - tileDate) < (24 * 3600 * 1000);
                     break;
-                case 2: // Ieri (ultime 48 ore)
+                case 2:
                     const today = new Date();
                     const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
                     const startOfYesterday = new Date(startOfToday);
                     startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-                    // Il tile deve essere compreso tra l'inizio di ieri e l'inizio di oggi
                     showTile = tileDate >= startOfYesterday && tileDate < startOfToday;
                     break;
-                case 3: // Ultima Settimana
+                case 3:
                     showTile = (now - tileDate) < (7 * 24 * 3600 * 1000);
                     break;
-                case 4: // Ultimo Mese (30 giorni)
+                case 4:
                     showTile = (now - tileDate) < (30 * 24 * 3600 * 1000);
                     break;
-                case 5: // Ultimo Anno (365 giorni)
+                case 5:
                     showTile = (now - tileDate) < (365 * 24 * 3600 * 1000);
                     break;
             }
-
             if (!showTile) {
-                return; // Se il tile non passa il controllo specifico, lo nascondiamo.
+                return;
             }
         }
-        // --- FINE LOGICA FILTRO ---
 
-        // Filtro per risoluzione.
         if (!allowedResolutions.has(tile.sizeId)) return;
 
-        // Disegno del tile sulla mappa (invariato)
-        const popupHtml = `ID: ${tile.id}<br>Resolution: ${tile.sizeId}<br><button class="preview-button" data-tile-id="${tile.id}" data-size-id="${tile.sizeId}">View Preview</button>`;
+        // Disegno del tile sulla mappa
+        const popupHtml = `ID: ${tile.id}<br>Resolution: ${tile.sizeId}<br><b>Score: ${tile.detail_score.toFixed(3)}</b><br><button class="preview-button" data-tile-id="${tile.id}" data-size-id="${tile.sizeId}">View Preview</button>`;
         const bounds = [[tile.bbox.latLL, tile.bbox.lonLL], [tile.bbox.latUR, tile.bbox.lonUR]];
         L.rectangle(bounds, {...getStyleForSizeId(tile.sizeId), fillOpacity: currentOpacity, opacity: 1}).addTo(coverageLayer).bindPopup(popupHtml);
+
+        // Ora la variabile "lowDetailThreshold" esisterà e questo controllo funzionerà
+        if (tile.detail_score !== -1.0 && tile.detail_score < lowDetailThreshold) {
+            const centerLat = (tile.bbox.latLL + tile.bbox.latUR) / 2;
+            const centerLon = (tile.bbox.lonLL + tile.bbox.lonUR) / 2;
+            const point1 = L.latLng(centerLat, tile.bbox.lonLL);
+            const point2 = L.latLng(centerLat, tile.bbox.lonUR);
+            const widthInMeters = point1.distanceTo(point2);
+            const dotRadius = widthInMeters * 0.05;
+
+            L.circle([centerLat, centerLon], {
+                radius: dotRadius,
+                color: 'black',
+                fillColor: 'black',
+                fillOpacity: 0.7,
+                weight: 1,
+                interactive: false
+            }).addTo(coverageLayer);
+        }
     });
 }
 
@@ -178,6 +198,28 @@ function updateAircraftPosition(data) {
         aircraftMarker.setRotationAngle(data.heading);
         aircraftMarker.setTooltipContent(tooltipContent);
     }
+}
+
+/**
+ * Draws a confirmed green job circle on the map.
+ * @param {string} jobId - Unique job identifier
+ * @param {number} lat - Latitude coordinate
+ * @param {number} lon - Longitude coordinate
+ * @param {number} radiusNm - Circle radius in nautical miles
+ * @param {Object} activeCircles - The registry of active circles to update
+ */
+function drawCircle(jobId, lat, lon, radiusNm, activeCircles) {
+    if (activeCircles[jobId]) return;
+
+    const circle = L.circle([lat, lon], {
+        radius: radiusNm * 1852, // Convert NM to meters
+        color: '#00cc00',
+        fillColor: '#00cc00',
+        fillOpacity: 0.15,
+        weight: 1.5
+    }).addTo(elements.map);
+
+    activeCircles[jobId] = circle;
 }
 
 /**
@@ -240,6 +282,27 @@ function populateMapServerSelector(servers) {
         option.textContent = `${server.id}: ${server.name}`;
         select.appendChild(option);
     });
+}
+
+/**
+ * Disegna la lista dei waypoint nel vassoio della rotta.
+ * @param {Array<Object>} waypoints - L'array dei waypoint.
+ * @param {string} fileName - Il nome del file caricato.
+ */
+export function renderWaypointList(waypoints, fileName) {
+    const listContainer = elements.routeWaypointList;
+    if (!waypoints || waypoints.length === 0) {
+        listContainer.innerHTML = '';
+        return;
+    }
+
+    let html = `<strong>${fileName}</strong><ul>`;
+    waypoints.forEach((wp, index) => {
+        // Applica la classe CSS in base allo stato del waypoint
+        html += `<li class="wp-status-${wp.status}">${wp.name}</li>`;
+    });
+    html += `</ul>`;
+    listContainer.innerHTML = html;
 }
 
 /**
@@ -514,7 +577,8 @@ export {
     updateHandleStyles,
     linkRadiusHandleToInput,
     updateFgfsIndicator,
-    populateMapServerSelector
+    populateMapServerSelector,
+    drawCircle
 };
 
 

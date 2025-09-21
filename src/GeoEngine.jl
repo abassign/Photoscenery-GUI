@@ -168,7 +168,8 @@ end
 function create_chunk_jobs(
     tiles::Vector{TileMetadata},
     cfg::Dict,
-    tmp_dir::String
+    tmp_dir::String,
+    precover_level::Int = 0
     )::Vector{ChunkJob}
     jobs = Vector{ChunkJob}()
     retries = get(cfg, "attempts", get(cfg, "attemps", 5))
@@ -177,6 +178,18 @@ function create_chunk_jobs(
     over_mode = get(cfg, "over", 1) # Default a 1 per sicurezza
 
     for tile in tiles
+
+        # Applica il controllo solo per i tile con risoluzione > 2
+        if tile.size_id > 2
+            # Controlla lo score della versione a bassa risoluzione (pre-copertura)
+            precover_score = ddsFindScanner.get_tile_score(tile.id, precover_level)
+
+            if precover_score != -1.0 && precover_score < low_detail_threshold
+                @warn "GeoEngine: Download inibito per tile ID $(tile.id) (sizeId: $(tile.size_id)). Score pre-copertura ($(precover_score)) è inferiore alla soglia ($(low_detail_threshold))."
+                continue
+            end
+        end
+
         ΔLon_deg = (tile.lonUR - tile.lonLL) / tile.cols
         ΔLat_deg = (tile.latUR - tile.latLL) / tile.cols
         abs(ΔLon_deg) < 1e-12 && continue
@@ -249,41 +262,61 @@ function process_target_area(
     tmp_dir = joinpath(save_path, "tmp")
     mkpath(tmp_dir)
 
-    # 1. Genera la lista di tile necessari (logica invariata)
     tiles = generate_all_tiles(
         area, cfg, root_path, save_path;
         heading_deg=heading_deg, alt_ft=alt_ft
-    )
+        )
     if isempty(tiles)
         @info "GeoEngine: Nessun tile da processare per l'area specificata."
         return nothing
     end
 
-    # --- MODIFICA CHIAVE ---
-    # La riga che avviava il monitor qui è stata RIMOSSA.
-    # Il monitor ora è un servizio globale avviato da GuiMode.run.
-
-    # 2. Avvia i worker di download (logica invariata)
     nworkers = get(cfg, "workers", 8)
     Downloader.start_chunk_downloads_parallel!(nworkers, map_server, cfg, root_path, save_path, tmp_dir)
 
-    # 3. Logica di pre-copertura e download principale (invariata)
     min_required_unclamped = minimum(t -> t.size_id, tiles)
     precover_gap = get(cfg, "precover_gap", 1)
-    precover_level = clamp(min_required_unclamped - precover_gap, 0, 2)
-    precover_level = min(precover_level, get(cfg, "size", 4))
+    desired_level = min_required_unclamped - precover_gap
+    precover_level = clamp(desired_level, 0, 2)
 
-    @info "GeoEngine: Fase 1 - Pre-coverage livello $(precover_level)"
+    # --- FASE 1: PRE-COVERAGE E ATTESA ---
+    @info "GeoEngine: Fase 1 - Avvio pre-coverage (livello $(precover_level)) e attesa completamento..."
     precoverage_jobs = create_precoverage_jobs(tiles, precover_level, tmp_dir)
     if !isempty(precoverage_jobs)
         Downloader.enqueue_high!(precoverage_jobs)
-    end
 
-    @info "GeoEngine: Fase 2 - Generazione job ad alta risoluzione..."
-    high_res_jobs = create_chunk_jobs(tiles, cfg, tmp_dir)
+        # ATTENDI che i download di pre-copertura finiscano
+        while Downloader.PENDING_JOBS[] > 0
+            sleep(1)
+        end
+        @info "GeoEngine: Download di pre-copertura completati. Attesa assemblaggio e indicizzazione..."
+        # ATTENDI che l'assemblaggio e l'indicizzazione finiscano (con un timeout)
+        # Diamo al sistema fino a 60 secondi per processare i file scaricati.
+        wait_time = 0
+        max_wait = 60
+        while wait_time < max_wait
+            # Controlliamo se l'ULTIMO tile della lista è stato indicizzato.
+            # È un buon indicatore che il processo è completo.
+            last_tile_id = tiles[end].id
+            if ddsFindScanner.get_tile_score(last_tile_id, precover_level) != -1.0
+                @info "GeoEngine: Indicizzazione pre-copertura completata."
+                break
+            end
+            sleep(2)
+            wait_time += 2
+        end
+        if wait_time >= max_wait
+            @warn "GeoEngine: Timeout attesa indicizzazione pre-copertura. I controlli di score potrebbero non essere accurati."
+        end
+    end
+    # --- FINE FASE 1 ---
+
+    # --- FASE 2: ALTA RISOLUZIONE CON CONTROLLO ---
+    @info "GeoEngine: Fase 2 - Generazione job ad alta risoluzione con controllo dello score..."
+    # La chiamata ora passa i parametri extra necessari
+    high_res_jobs = create_chunk_jobs(tiles, cfg, tmp_dir, precover_level)
 
     if get(cfg, "mode", "manual") == "daa"
-        # Logica DAA per la priorità (invariata)
         frac = get(cfg, "daa_priority_frac", 0.35)
         cut  = clamp(ceil(Int, length(high_res_jobs) * frac), 1, length(high_res_jobs))
         jobs_hi = high_res_jobs[1:cut]
@@ -293,30 +326,9 @@ function process_target_area(
     else
         Downloader.enqueue_low!(high_res_jobs)
     end
+    # --- FINE FASE 2 ---
 
-    # 4. Attesa completamento DOWNLOAD (questa parte rimane utile)
-    #    Aspettiamo che la coda dei download si svuoti, ma non più l'assemblaggio.
-    total_chunks = Downloader.PENDING_JOBS[]
-    timeout_seconds = 600
-    start_time = time()
-
-    @info "In attesa del completamento del download di $total_chunks chunks..."
-    while true
-        if Downloader.PENDING_JOBS[] == 0 && !isready(Downloader.FALLBACK_QUEUE)
-            sleep(2) # Periodo di grazia
-            if Downloader.PENDING_JOBS[] == 0 && !isready(Downloader.FALLBACK_QUEUE)
-                @info "Tutti i download e i potenziali fallback sono completati."
-                break
-            end
-        end
-        if time() - start_time > timeout_seconds
-            @warn "Timeout attesa download superato! I download rimanenti continueranno in background."
-            break
-        end
-        sleep(1)
-    end
-
-    @info "GeoEngine: Fase di download per process_target_area terminata."
+    @info "GeoEngine: Job ad alta risoluzione accodati. Il processo continuerà in background."
 end
 
 

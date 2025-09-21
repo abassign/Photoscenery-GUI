@@ -15,15 +15,19 @@ PROGRAM_VERSION = "0.1.0"
 using ..Commons
 using ..AppLogger
 using ..ScanDir
+using ..DetailScore
+
 
 using JSON
 using FilePathsBase
 
-
 # --- Exports ---
 # Functions made available when this module is used by other code
-export startFind, find_file_by_id, moveImage, set_data_file_path!, syncScan, printStats, place_tile!, generate_coverage_json, has_suitable_tile
+export startFind, find_file_by_id, moveImage, set_data_file_path!, syncScan, printStats, place_tile!, generate_coverage_json, has_suitable_tile, get_tile_score
 
+
+const SCORE_CACHE = Dict{Tuple{String,Int64}, Tuple{Float64,Int}}()
+const SCORE_LOCK  = ReentrantLock()
 
 const SKIP_NOACCESS = e -> begin
     dir = hasproperty(e, :path) ? getproperty(e, :path) :
@@ -102,6 +106,27 @@ end
 # --- Utility Functions ---
 
 
+function get_score_complex(path::String;
+                           min_samples::Int=150, max_samples::Int=2000, batch::Int=100,
+                           gedge::Int=25, tol_rel::Float64=0.06)
+
+    mt  = isfile(path) ? Int64(mtime(path)) : 0
+    key = (path, mt)
+
+    if haskey(SCORE_CACHE, key)
+        sc, ns = SCORE_CACHE[key]
+        return sc, ns
+    end
+
+    r = detail_score_file(path; min_samples=min_samples, max_samples=max_samples,
+                          batch=batch, gedge=gedge, tol_rel=tol_rel)
+    lock(SCORE_LOCK) do
+        SCORE_CACHE[key] = (r.score, r.samples)
+    end
+    return r.score, r.samples
+end
+
+
 function set_data_file_path!(path::String)
     _data_file[] = path
     @dinfo "Index file path set to: $(_data_file[])"
@@ -142,50 +167,50 @@ end
 
 
 """
-    get_file_info(path::String, isDDS::Bool=false, isPNG::Bool=false) -> Tuple
-
-Gathers file metadata including dimensions (using Commons module), size,
-extracted ID, modification time, and calculated sizeId.
-
-Returns a tuple: (isValid, path, size, id, last_modified_str, sizeId, width, height)
+Gathers file metadata including dimensions, size, ID, modification time,
+sizeId, and the new detail score.
+Returns a tuple: (isValid, path, size, id, last_modified_str, sizeId, width, height, score)
 `isValid` is true if dimensions could be read.
 """
 function get_file_info(path::String, isDDS::Bool = false, isPNG::Bool = false)
-
     try
         stat_info = stat(path)
         size = stat_info.size
         id = _extract_id_from_filename(path)
-        dimension = (false, 0, 0) # Default invalid dimension
+        dimension = (false, 0, 0)
 
         if isDDS
             dimension = Commons.getDDSSize(path)
-        elseif isPNG
+            elseif isPNG
             dimension = Commons.getPNGSize(path)
         end
 
-        # Check if dimensions were successfully read
         if dimension[1]
             width = dimension[2]
             height = dimension[3]
-
             sizeId = Commons.getSizeFromWidth(width)
-            if sizeId == nothing
-                return (false, path, 0, nothing, "", -1, 0, 0)
+
+            # Calcoliamo lo score solo per i file validi e con dimensioni.
+            # Usiamo i valori di default per min_samples per non rallentare troppo la scansione.
+            score_result = detail_score_file(path; min_samples=150, max_samples=1000)
+            score = score_result.score
+
+            if sizeId === nothing
+                # Restituiamo una tupla con il numero corretto di elementi
+                return (false, path, 0, nothing, "", -1, 0, 0, -1.0)
             end
 
             last_modified = Dates.format(Dates.unix2datetime(stat_info.mtime), "yyyy-mm-dd HH:MM:SS")
-            return (true, path, size, id, last_modified, sizeId, width, height)
+            # Aggiungiamo lo score alla tupla restituita
+            return (true, path, size, id, last_modified, sizeId, width, height, score)
         else
-            # Dimensions could not be read
-            return (false, path, 0, nothing, "", -1, 0, 0)
+            return (false, path, 0, nothing, "", -1, 0, 0, -1.0)
         end
     catch e
         @dinfo "Error getting file info for $path: $e"
-        return (false, path, 0, nothing, "", -1, 0, 0)
+        return (false, path, 0, nothing, "", -1, 0, 0, -1.0)
     end
 end
-
 
 # --- Core Functionality ---
 
@@ -382,7 +407,8 @@ function scan_directories(dirs_to_scan::Vector{String})
                         if (is_dds || is_png) && filename_pattern_match
                             info = get_file_info(full_path, is_dds, is_png)
                             if info[1]
-                                push!(file_data, info[2:8])
+                                # Ora prendiamo 8 elementi (fino allo score)
+                                push!(file_data, info[2:9]) # MODIFICATO: da 2:8 a 2:9
                                 is_dds ? (dds_count += 1) : (png_count += 1)
                             end
                         end
@@ -429,6 +455,7 @@ function generate_coverage_json()
             # Leggiamo la data, con un valore di default per sicurezza
             last_mod = get(record, "last_modified", "1970-01-01 00:00:00")
 
+            detail_score = get(record, "detail_score", -1.0)
             (tile_id === nothing || size_id === nothing) && continue
 
             is_in_ortho = occursin("/Orthophotos/", path) && !occursin("/Orthophotos-saved/", path)
@@ -437,7 +464,8 @@ function generate_coverage_json()
             current_candidate = Dict(
                 "sizeId" => size_id,
                 "isInOrtho" => is_in_ortho,
-                "last_modified" => last_mod
+                "last_modified" => last_mod,
+                "detail_score"  => detail_score
                 )
 
             if !haskey(tile_candidates, tile_id)
@@ -466,8 +494,9 @@ function generate_coverage_json()
         push!(output_data, Dict(
             "id"            => tile_id,
             "bbox"          => get_tile_bbox_from_id(tile_id),
-            "sizeId"        => info["sizeId"], # Virgola corretta
-            "last_modified" => info["last_modified"]
+            "sizeId"        => info["sizeId"],
+            "last_modified" => info["last_modified"],
+            "detail_score"  => info["detail_score"]
             ))
     end
 
@@ -567,17 +596,20 @@ function update_data(existing_data::Dict{String, Any}, new_scan_results::Vector)
     updated_count = 0
     added_count = 0
 
-    for (path, size, id, last_modified_str, sizeId, width, height) in new_scan_results
+    # Aggiungiamo 'score' alla lista di variabili estratte dalla tupla
+    for (path, size, id, last_modified_str, sizeId, width, height, score) in new_scan_results
         new_record = Dict(
             "id" => id,
             "size" => size,
             "last_modified" => last_modified_str,
             "sizeId" => sizeId,
             "width" => width,
-            "height" => height
+            "height" => height,
+            "detail_score" => score
         )
 
         if haskey(existing_data, path)
+            # La logica di aggiornamento basata su mtime non cambia
             existing_last_modified_str = existing_data[path]["last_modified"]
             try
                 parsed_existing = Dates.DateTime(existing_last_modified_str, "yyyy-mm-dd HH:MM:SS")
@@ -594,7 +626,6 @@ function update_data(existing_data::Dict{String, Any}, new_scan_results::Vector)
             added_count += 1
         end
     end
-    # Ritorna i conteggi al chiamante
     return added_count, updated_count
 end
 
@@ -692,12 +723,18 @@ function place_tile!(
         mv(source_path, final_dest_path, force=true)
 
         # Aggiorna l'indice con il nuovo file
+        score_result = detail_score_file(final_dest_path; min_samples=150, max_samples=1000)
+        score = score_result.score
         lock(_data_lock) do
             stat_info = stat(final_dest_path)
             _existing_data[final_dest_path] = Dict(
-                "id" => tile.id, "size" => stat_info.size,
-                "last_modified" => Dates.format(now(), "yyyy-mm-dd HH:MM:SS"),
-                "sizeId" => tile.size_id, "width" => tile.width, "height" => tile.width
+                "id"             => tile.id,
+                "size"           => stat_info.size,
+                "last_modified"  => Dates.format(now(), "yyyy-mm-dd HH:MM:SS"),
+                "sizeId"         => tile.size_id,
+                "width"          => tile.width,
+                "height"         => tile.width,
+                "detail_score"   => score
             )
             save_data(DEFAULT_METADATA, _existing_data)
         end
@@ -1003,7 +1040,7 @@ function syncScan()
                     is_png = endswith(lowercase(file), ".png")
 
                     if is_dds || is_png
-                        is_valid, _, size, id, last_modified, sizeId, width, height = get_file_info(fullpath, is_dds, is_png)
+                        is_valid, _, size, id, last_modified, sizeId, width, height, score = get_file_info(fullpath, is_dds, is_png)
 
                         # Aggiungiamo il record all'indice solo se è un'immagine valida
                         if is_valid && id !== nothing
@@ -1014,7 +1051,8 @@ function syncScan()
                                 "last_modified" => last_modified,
                                 "sizeId"        => sizeId,        # Classe dimensionale 0..6
                                 "width"         => width,
-                                "height"        => height
+                                "height"        => height,
+                                "detail_score"  => score
                             )
                         end
                     end
@@ -1029,6 +1067,24 @@ function syncScan()
 
         @info "ddsFindScanner.syncScan: Synchronous scan complete. Found $(length(_existing_data)) valid image entries."
     end
+end
+
+
+"""
+get_tile_score(id::Int, size_id::Int) -> Float64
+
+Cerca nell'indice un tile specifico per ID e sizeId e restituisce il suo
+`detail_score`. Ritorna -1.0 se il tile non viene trovato o non ha uno score.
+"""
+function get_tile_score(id::Int, size_id::Int)::Float64
+    lock(_data_lock) do
+        for (path, record) in _existing_data
+            if get(record, "id", -1) == id && get(record, "sizeId", -1) == size_id
+                return get(record, "detail_score", -1.0)
+            end
+        end
+    end
+    return -1.0 # Non trovato
 end
 
 
