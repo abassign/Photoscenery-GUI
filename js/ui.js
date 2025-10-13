@@ -24,6 +24,10 @@ const elements = {
     btnGetCoords: document.getElementById('btn-get-coords'),
     btnConnect: document.getElementById('btn-connect'),
     fgfsPortInput: document.getElementById('fgfs-port'),
+    flightPathControls: document.getElementById('flight-path-controls'),
+    btnTogglePath: document.getElementById('btn-toggle-path'),
+    btnSavePath: document.getElementById('btn-save-path'),
+    btnClearPath: document.getElementById('btn-clear-path'),
     btnSelectFromMap: document.getElementById('btn-select-from-map'),
     controlsPanel: document.getElementById('controls'),
     resSvgContainer: document.getElementById('res-svg-container'),
@@ -62,6 +66,7 @@ const AIRPLANE_SVG_ICON_HTML = '<svg xmlns="http://www.w3.org/2000/svg" width="2
 // Map layers and markers
 let coverageLayer = L.layerGroup().addTo(elements.map);
 let aircraftMarker = null;
+let flightPathPolyline = null;
 
 /**
  * Initializes the base map with OpenStreetMap tiles
@@ -184,7 +189,8 @@ function updateAircraftPosition(data) {
         const icon = L.divIcon({
             html: aircraftSVG,
             className: 'aircraft-icon',
-            iconSize: [28, 28]
+            iconSize: [28, 28],
+            iconAnchor: [14, 14]
         });
 
         aircraftMarker = L.marker(latLng, {
@@ -199,6 +205,46 @@ function updateAircraftPosition(data) {
         aircraftMarker.setTooltipContent(tooltipContent);
     }
 }
+
+
+/**
+ * Disegna, aggiorna o nasconde la linea del percorso di volo.
+ * @param {Array<Object>} flightPath - L'array dei punti del percorso.
+ * @param {boolean} isVisible - Se la linea deve essere visibile.
+ */
+function updateFlightPathPolyline(flightPath, isVisible) {
+    // Se non deve essere visibile, rimuovi la linea e fermati.
+    if (!isVisible) {
+        if (flightPathPolyline) {
+            elements.map.removeLayer(flightPathPolyline);
+        }
+        return;
+    }
+
+    // Se deve essere visibile e ci sono abbastanza punti...
+    if (flightPath && flightPath.length >= 2) {
+        const latLngs = flightPath.map(p => [p.lat, p.lon]);
+        if (flightPathPolyline) {
+            // Se la linea esiste già, aggiorna i suoi punti e assicurati che sia sulla mappa
+            flightPathPolyline.setLatLngs(latLngs);
+            if (!elements.map.hasLayer(flightPathPolyline)) {
+                flightPathPolyline.addTo(elements.map);
+            }
+        } else {
+            // Altrimenti, creala da zero
+            flightPathPolyline = L.polyline(latLngs, {
+                color: '#ff00ff', weight: 3, opacity: 0.7
+            }).addTo(elements.map);
+        }
+    } else {
+        // Se non ci sono abbastanza punti, assicurati che la linea sia rimossa
+        if (flightPathPolyline) {
+            elements.map.removeLayer(flightPathPolyline);
+            flightPathPolyline = null;
+        }
+    }
+}
+
 
 /**
  * Draws a confirmed green job circle on the map.
@@ -243,11 +289,28 @@ function populateSdwnDropdown() {
  * Updates UI elements based on FlightGear connection state
  * @param {boolean} isConnected - Current connection status
  */
-function updateFgfsIndicator(isConnected) {
-    if (isConnected) {
-        elements.btnConnect.classList.add('active'); // 'btnConnect' ora è il nostro toggle
+function updateFgfsIndicator(status) {
+    const btn = elements.btnConnect;
+    // Rimuove tutte le classi di stato precedenti per una gestione pulita
+    btn.classList.remove('active', 'connecting', 'disconnected');
+
+    // --- NUOVA LOGICA DI CONTROLLO ---
+    // Gestisce sia il booleano 'true' che la stringa 'connected' come stato attivo.
+    if (status === 'connected' || status === true) {
+        btn.classList.add('active');
+        btn.textContent = 'FGFS On';
+        // MOSTRA i pulsanti del percorso di volo
+        elements.flightPathControls.classList.remove('hidden');
     } else {
-        elements.btnConnect.classList.remove('active');
+        // NASCONDI i pulsanti del percorso di volo
+        elements.flightPathControls.classList.add('hidden');
+        if (status === 'connecting') {
+            btn.classList.add('connecting');
+            btn.textContent = 'Wait...';
+        } else { // disconnected o false
+            btn.classList.add('disconnected');
+            btn.textContent = 'FGFS Off';
+        }
     }
 }
 
@@ -565,6 +628,7 @@ export {
     initializeMap,
     updateMapCoverage,
     updateAircraftPosition,
+    updateFlightPathPolyline,
     populateSdwnDropdown,
     getJobParameters,
     renderSvgButtons,

@@ -43,6 +43,10 @@
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
         }
 
+        .hidden {
+            display: none !important; /* !important per assicurare che nasconda sempre l'elemento */
+        }
+
         /* This class applies our custom cursor using an embedded SVG (Data URI) */
         .map-selection-active {
             /* This avoids needing an external assets/crosshair.svg file. The '16 16' part centers the 32x32px cursor's hotspot.*/
@@ -537,6 +541,14 @@
             <label for="fgfs-port">FGFS Port:</label>
             <input type="number" id="fgfs-port" value="5000">
             <button id="btn-connect" class="disconnected" title="Toggle FGFS Connection"></button>
+        </div>
+
+        <div class="control-group" id="fgfs-container">
+            <div id="flight-path-controls" class="control-group hidden" style="display: flex; gap: 10px; margin-top: 10px;">
+                <button id="btn-toggle-path" title="Show/Hide the flight path on the map">Hide Path</button>
+                <button id="btn-save-path" title="Save the recorded flight path to a JSON file">Save Path</button>
+                <button id="btn-clear-path" title="Clear the current flight path from the map">Clear Path</button>
+            </div>
         </div>
 
         <h3>Tile preview</h3>

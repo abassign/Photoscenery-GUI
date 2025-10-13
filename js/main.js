@@ -8,6 +8,7 @@ import {
     initializeMap,
     updateMapCoverage,
     updateAircraftPosition,
+    updateFlightPathPolyline,
     populateSdwnDropdown,
     getJobParameters,
     renderSvgButtons,
@@ -56,6 +57,8 @@ const state = {
     lastDaaCircleLayer: null,       // riferimento diretto all’ultimo cerchio verde
     daaArmed: false,                // isteresi: diventa true solo dopo essere entrati sotto ARM_TH
     defaultServerId: 1,
+    flightPath: [],
+    isFlightPathVisible: true,
     lowDetailThreshold: 1.0
 };
 
@@ -73,6 +76,23 @@ function mainUpdateLoop() {
         api.getFgfsStatus().then(data => {
             // Prima aggiorna la posizione sulla mappa
             updateAircraftPosition(data);
+            if (data.active) {
+                const lastPoint = state.flightPath.length > 0 ? state.flightPath[state.flightPath.length - 1] : null;
+                // Aggiungi un punto solo se la posizione è cambiata
+                if (!lastPoint || lastPoint.lat !== data.lat || lastPoint.lon !== data.lon) {
+                    state.flightPath.push({
+                        lat: data.lat,
+                        lon: data.lon,
+                        heading: data.heading,
+                        altitude_ft: data.altitude, // Quota MSL
+                        // NOTA: Il backend attualmente non fornisce la quota AGL.
+                        // Se la aggiungerai in futuro, andrà inserita qui.
+                        speed_kts: data.speed
+                    });
+                    // Aggiorna la linea sulla mappa
+                    updateFlightPathPolyline(state.flightPath, state.isFlightPathVisible);
+                }
+            }
             // POI salva la rotta nello stato globale
             state.currentHeading = data.heading;
         });
@@ -420,54 +440,48 @@ function processQueueSequentially() {
 function checkAutoFollow() {
     const now = Date.now();
     const throttleOk = (now - state.lastAutoLaunchTs) >= MIN_JOB_INTERVAL_MS;
-    if (!state.followAircraftActive) return;
-    if (state.isAutoJobPending) { log('DAA skip: pending'); return; }
-    if (!throttleOk) { log('DAA skip: throttle'); return; }
+    if (!state.followAircraftActive || state.isAutoJobPending || !throttleOk) {
+        return;
+    }
 
     api.getFgfsStatus().then(data => {
         if (!data.active) return;
 
-        // Usa prima il layer salvato; se manca, prova con l'ID
-        const lastCircle =
-        state.lastDaaCircleLayer ||
-        (state.lastDaaCircleId ? activeCircles[state.lastDaaCircleId] : null);
+        // --- NUOVO CONTROLLO DI SICUREZZA ---
+        // Se l'aereo è troppo lento (es. meno di 10 kts), non fare nulla.
+        // Questo previene errori con dati di heading instabili da fermo.
+        if (data.speed < 10) {
+            // Resettiamo lo stato di "armo" per essere pronti quando la velocità aumenta
+            state.daaArmed = false;
+            return;
+        }
+        // --- FINE CONTROLLO ---
+
+        const lastCircle = state.lastDaaCircleLayer || (state.lastDaaCircleId ? window.activeCircles[state.lastDaaCircleId] : null);
 
         if (!lastCircle) {
-            if (state.lastDaaCenterPoint) {
-                const acPos  = L.latLng(data.lat, data.lon);
-                const radius = (parseFloat(elements.radiusInput.value) || 20) * 1852; // metri
-                const distToCtr = acPos.distanceTo(state.lastDaaCenterPoint);
-                if (distToCtr > radius * OVERLAP_FACTOR) {
-                    log('DAA Fallback trigger (no layer, using saved centre)');
-                    state.isAutoJobPending = true;
-                    startAutomaticFollowJob();
-                }
-            }
+            // Se non c'è un cerchio attivo, e siamo in modalità DAA, ne creiamo uno
+            startAutomaticFollowJob();
             return;
         }
 
         const acPos   = L.latLng(data.lat, data.lon);
-        const radius  = lastCircle.getRadius();                    // metri
+        const radius  = lastCircle.getRadius();
         const centre  = state.lastDaaCenterPoint || lastCircle.getLatLng();
 
         const distToCtr = acPos.distanceTo(centre);
-        const FIRE_TH   = radius * OVERLAP_FACTOR;       // es. 0.4·R
-        const ARM_TH    = radius * (OVERLAP_FACTOR * 0.7); // isteresi: es. 0.28·R
+        const FIRE_TH   = radius * OVERLAP_FACTOR;
+        const ARM_TH    = radius * (OVERLAP_FACTOR * 0.7);
 
-        // 1) Se NON armati, armiamoci solo quando entriamo “sotto” ARM_TH
         if (!state.daaArmed) {
             if (distToCtr <= ARM_TH) {
                 state.daaArmed = true;
-                log('DAA armed: dist=', Math.round(distToCtr), 'arm=', Math.round(ARM_TH));
             }
-            return; // fino a quando non siamo armati, niente trigger
+            return;
         }
-        // 2) Se armati, spara quando torniamo SOPRA FIRE_TH (e throttle OK)
+
         if (distToCtr >= FIRE_TH) {
-            log('DAA fire: dist=', Math.round(distToCtr), 'fire=', Math.round(FIRE_TH));
-            state.isAutoJobPending = true;
             startAutomaticFollowJob();
-            // disarma per il ciclo successivo (verrà riaramato quando ci si riavvicina)
             state.daaArmed = false;
         }
     });
@@ -877,6 +891,44 @@ window.addEventListener('DOMContentLoaded', () => {
     elements.routeSettingsHeader.addEventListener('click', () => {
         elements.routeSettingsHeader.classList.toggle('collapsed');
         elements.routeSettingsContent.classList.toggle('collapsed');
+    });
+    // Gestore per il salvataggio della traccia
+    elements.btnSavePath.addEventListener('click', () => {
+        if (state.flightPath.length < 2) {
+            alert("Nessun percorso di volo registrato da salvare.");
+            return;
+        }
+
+        const jsonData = JSON.stringify(state.flightPath, null, 2); // Il 2 formatta il JSON per essere leggibile
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+        a.download = `flight-path-${timestamp}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // Gestore per la pulizia della traccia
+    elements.btnClearPath.addEventListener('click', () => {
+        if (confirm("Sei sicuro di voler cancellare la traccia di volo corrente?")) {
+            state.flightPath = [];
+            updateFlightPathPolyline(state.flightPath, state.isFlightPathVisible);
+        }
+    });
+
+
+    elements.btnTogglePath.addEventListener('click', () => {
+        // Inverti lo stato di visibilità
+        state.isFlightPathVisible = !state.isFlightPathVisible;
+        // Aggiorna il testo del pulsante
+        elements.btnTogglePath.textContent = state.isFlightPathVisible ? 'Hide Path' : 'Show Path';
+        // Chiama la funzione di disegno per applicare il nuovo stato
+        updateFlightPathPolyline(state.flightPath, state.isFlightPathVisible);
     });
 
     // Avvia il loop periodic
