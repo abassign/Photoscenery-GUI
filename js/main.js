@@ -1,14 +1,32 @@
 // Save as: js/main.js (final version)
 
 import * as route from './route.js';
+import { saveActivatedRouteAsGpx } from './route.js';
+import { openSaveRouteModal } from './route.js';
+import {
+    setManualRouteMode,
+    isManualRouteMode,
+    addWaypointManual,
+    clearManualRoute,
+    removeWaypointAt,
+    highlightWaypoint,
+    computeLegDistancesNM,
+    getManualRouteWaypoints
+} from './route.js';
 
 import * as api from './api.js';
+
+import { startPollers, fetchCoverageOnce } from './api.js';
+import { resolveIcao, airportsSearch } from './api.js';
+
+import { showSearchMarker, removeSearchMarker } from './ui.js';
+
 import {
     elements,
     initializeMap,
     updateMapCoverage,
     updateAircraftPosition,
-    updateFlightPathPolyline,
+    renderFlightPath,
     populateSdwnDropdown,
     getJobParameters,
     renderSvgButtons,
@@ -22,8 +40,23 @@ import {
     linkRadiusHandleToInput,
     updateFgfsIndicator,
     populateMapServerSelector,
-    drawCircle
+    drawCircle,
+    showIcaoSuggestions,
+    hideIcaoSuggestions,
+    drawNavaids,
+    drawAirports,
+    airportMarkers,
+    ICAO_SUGGESTION_ID,
+    renderVisibilityFilters
 } from './ui.js';
+
+window.setManualRouteMode = setManualRouteMode;
+window.isManualRouteMode  = isManualRouteMode;
+window.addWaypointManual  = addWaypointManual;
+window.clearManualRoute   = clearManualRoute;
+window.removeWaypointAt   = removeWaypointAt;
+window.highlightWaypoint  = highlightWaypoint;
+window.computeLegDistancesNM = computeLegDistancesNM;
 
 // ---------- DEBUG SWITCH ----------
 window.DEBUG_FGFS = true;        // flip to false to silence
@@ -59,12 +92,160 @@ const state = {
     defaultServerId: 1,
     flightPath: [],
     isFlightPathVisible: true,
-    lowDetailThreshold: 1.0
+    lowDetailThreshold: 1.0,
+    isAirportsVisible: true,
+    visibilityFilters: {
+        tiles: true,                // Visibilità copertura Tiles (DDS)
+        airports: true,             // Visibilità Marker Aeroporti (non implementato, ma preparato)
+        navaids: true,              // Visibilità Marker Navaids
+        route: true,                // Visibilità Polilinea Rotta
+        minorAirports: false,       // Visibilità aeroporti
+        heliports: false            // Visibilità eliporti
+    }
 };
 
 const activeCircles = {};           // Stores active job circles on the map
 const jobCompletionCallbacks = window.jobCompletionCallbacks || (window.jobCompletionCallbacks = new Map());
+
 let pendingCircle = null;           // Temporary Leaflet circle object
+
+let navaidsLoadTimer = null;
+
+
+// ---------- Utils centro->esterno ----------
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const toRad = d => d * Math.PI / 180;
+  const R = 6371.0088;
+  const dLat = toRad(lat2 - lat1);
+  let dLon = lon2 - lon1;
+  // gestisci antimeridiano
+  if (dLon > 180) dLon -= 360;
+  if (dLon < -180) dLon += 360;
+  dLon = toRad(dLon);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
+}
+
+
+/**
+ * Carica e disegna solo i layer realmente visualizzabili, in base allo span corrente:
+ * - > 60°: niente (protezione)
+ * - 30°..60°: solo airports_major + navaids (se togglati)
+ * - ≤ 30°: airports_major (+etichette), airports_minor, heliports, navaids (se togglati)
+ */
+async function loadAndDrawNavaids(mapInstance) {
+  const MAX_SPAN_MAJOR_AP_NAVAID = 60.0;
+  const MAX_SPAN_MINOR_AP        = 10.0;
+  const MAX_RESULTS_TOTAL        = 1500;   // cap totale (server gestirà per-tipo)
+
+  const b = mapInstance.getBounds();
+  const nwLat = b.getNorth(), nwLon = b.getWest();
+  const seLat = b.getSouth(), seLon = b.getEast();
+
+  const latSpan = nwLat - seLat;
+  const lonSpan = (nwLon <= seLon) ? (seLon - nwLon) : (seLon + 360 - nwLon);
+
+  const isMajorAreaTooBig = latSpan > MAX_SPAN_MAJOR_AP_NAVAID || lonSpan > MAX_SPAN_MAJOR_AP_NAVAID;
+  const isMinorAreaTooBig = latSpan > MAX_SPAN_MINOR_AP || lonSpan > MAX_SPAN_MINOR_AP;
+
+  // protezione
+  if (isMajorAreaTooBig) {
+    console.warn(`GeoData: area > ${MAX_SPAN_MAJOR_AP_NAVAID}° — niente fetch.`);
+    drawNavaids([], mapInstance);
+    drawAirports([], mapInstance, false, false, false);
+    return;
+  }
+
+  // Costruisci l’elenco dei tipi realmente visualizzabili
+  const wantNavaids   = state.visibilityFilters.navaids && true; // consentiti fino a 60°
+  const wantMajor     = state.visibilityFilters.airports && true; // consentiti fino a 60°
+  const wantMinor     = state.visibilityFilters.minorAirports && !isMinorAreaTooBig;
+  const wantHeliports = state.visibilityFilters.heliports && !isMinorAreaTooBig;
+
+  const types = [];
+  if (wantNavaids)   types.push('navaids');
+  if (wantMajor)     types.push('airports_major'); // <=60°
+  if (wantMinor)     types.push('airports_minor'); // solo ≤30°
+  if (wantHeliports) types.push('heliports');      // solo ≤30°
+
+  // Se non c'è nulla da mostrare, pulisci e basta
+  if (types.length === 0) {
+    drawNavaids([], mapInstance);
+    drawAirports([], mapInstance, false, false, false);
+    return;
+  }
+
+  // Unica chiamata (server esteso con sottotipi) + fallback “vecchio server”
+  const base = `/api/geo/box?nw_lat=${nwLat}&nw_lon=${nwLon}&se_lat=${seLat}&se_lon=${seLon}`;
+  const url  = `${base}&types=${encodeURIComponent(types.join(','))}&max_total=${MAX_RESULTS_TOTAL}`;
+
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('non-200');
+    const data = await r.json();
+
+    // Etichette major solo se ≤30°
+    const allowMajorLabels = !isMinorAreaTooBig;
+
+    // Combina i sottotipi richiesti (INCLUSI gli HELIPORTS)
+    const airportsCombined = []
+      .concat(wantMajor     ? (data.airports_major  || []) : [])
+      .concat(wantMinor     ? (data.airports_minor  || []) : [])
+      .concat(wantHeliports ? (data.heliports       || []) : []);
+
+    // Disegna
+    drawNavaids(data.navaids || [], mapInstance);
+    drawAirports(
+      airportsCombined,
+      mapInstance,
+      !!wantMinor,     // showMinor
+      !!wantMajor,     // showMajor
+      !!wantHeliports, // showHeliports
+      allowMajorLabels
+    );
+
+  } catch (e) {
+    // Fallback: server non supporta sottotipi → due fetch come prima (airports + navaids), ma con filtri lato client
+    console.warn('Server senza sottotipi types=…, uso fallback:', e);
+
+    // 1) Navaids (se richiesti)
+    if (wantNavaids) {
+      try {
+        const rn = await fetch(`${base}&types=navaids&max_navaids=${MAX_RESULTS_TOTAL}`);
+        const dn = rn.ok ? await rn.json() : { navaids: [] };
+        drawNavaids(dn.navaids || [], mapInstance);
+      } catch { drawNavaids([], mapInstance); }
+    } else {
+      drawNavaids([], mapInstance);
+    }
+
+    // 2) Airports (filtro client per major/minor/heli)
+    try {
+      const ra = await fetch(`${base}&types=airports&max_airports=${MAX_RESULTS_TOTAL}`);
+      const da = ra.ok ? await ra.json() : { airports: [] };
+      const all = da.airports || [];
+
+      // separa i sottotipi in fallback: usa 'type' (OurAirports) o 'kind' come alternativa
+      const getType = a => String(a.type ?? a.kind ?? "").toLowerCase();
+      const helis  = all.filter(a => /heliport/.test(getType(a)));
+      const majors = all.filter(a => /large_airport|medium_airport/.test(getType(a)) || (a.iata && String(a.iata).length > 0));
+      const minors = all.filter(a => !helis.includes(a) && !majors.includes(a));
+
+      const allowMajorLabels = !isMinorAreaTooBig;
+
+      drawAirports(
+        (wantMinor ? minors : []).concat(wantHeliports ? helis : []).concat(wantMajor ? majors : []),
+        mapInstance,
+        !!wantMinor,
+        !!wantMajor,
+        !!wantHeliports,
+        allowMajorLabels
+      );
+    } catch {
+      drawAirports([], mapInstance, false, false, false);
+    }
+  }
+}
 
 /**
  * Main update loop that runs periodically
@@ -87,10 +268,11 @@ function mainUpdateLoop() {
                         altitude_ft: data.altitude, // Quota MSL
                         // NOTA: Il backend attualmente non fornisce la quota AGL.
                         // Se la aggiungerai in futuro, andrà inserita qui.
-                        speed_kts: data.speed
+                        speed_kts: data.speed,
+                        isActivated: false
                     });
                     // Aggiorna la linea sulla mappa
-                    updateFlightPathPolyline(state.flightPath, state.isFlightPathVisible);
+                    renderFlightPath(state.flightPath, state.isFlightPathVisible && state.visibilityFilters.route);
                 }
             }
             // POI salva la rotta nello stato globale
@@ -99,11 +281,55 @@ function mainUpdateLoop() {
         updateFollowAircraftAvailability();
     }
 
-    api.getCoverageData().then(coverageData => {
+    api.fetchCoverageOnce((coverageData) => {
+        // -------------------------------------------------------------
+        // NUOVO CONTROLLO: Se il filtro Tiles è disattivato, pulisci e termina.
+        if (!state.visibilityFilters.tiles) {
+            // La variabile 'coverageLayer' è definita in ui.js e usata in updateMapCoverage.
+            // Poiché non puoi accedere a 'coverageLayer' direttamente in main.js,
+            // devi pulire il layer all'interno di updateMapCoverage se il filtro è false,
+            // oppure aggiungere una funzione 'clearCoverage' in ui.js.
+
+            // OPZIONE A (PIÙ PULITA, richiede una funzione in ui.js):
+            // clearCoverageLayer();
+
+            // OPZIONE B (PIÙ SEMPLICE, basata sull'ultima modifica del piano):
+            // Se non chiami updateMapCoverage, le tiles rimangono visibili.
+            // Devi forzare la pulizia se il filtro è disattivo.
+
+            // PER ORA: Ci affidiamo alla logica che DOPO aver aggiornato lo stato
+            // e chiamato mainUpdateLoop, il filtro verrà applicato.
+
+            // ******************************************************************
+            // Modifica la funzione 'updateMapCoverage' in ui.js per gestire la pulizia
+            // e qui aggiungiamo il controllo:
+            // ******************************************************************
+
+            // Chiamiamo la funzione di aggiornamento con dati vuoti per forzare la pulizia
+            updateMapCoverage(
+                [], // Passa un array vuoto
+                new Set(),
+                state.currentOpacity,
+                state.dateFilterIndex,
+                state.sessionStartTime,
+                state.lowDetailThreshold
+            );
+            return; // Termina la callback
+        }
+        // -------------------------------------------------------------
+
         const allowedResolutions = new Set(
             state.resState.map((active, i) => active ? i : -1).filter(i => i !== -1)
         );
-        updateMapCoverage(coverageData, allowedResolutions, state.currentOpacity, state.dateFilterIndex, state.sessionStartTime, state.lowDetailThreshold);
+
+        updateMapCoverage(
+            coverageData,
+            allowedResolutions,
+            state.currentOpacity,
+            state.dateFilterIndex,
+            state.sessionStartTime,
+            state.lowDetailThreshold
+        );
     });
 }
 
@@ -352,7 +578,7 @@ function startAutomaticFollowJob() {
             lat: ahead.lat,
             lon: ahead.lon,
             radius: radiusNm,
-            over: 2,
+            over: parseInt(elements.overSelect.value, 10) || 1,
             size: parseInt(elements.sizeInput.value, 10) || 4,
             sdwn: parseInt(elements.sdwnSelect.value, 10) || 0,
             mode: 'daa',
@@ -366,6 +592,8 @@ function startAutomaticFollowJob() {
             fillOpacity: 0.15,
             weight: 1.5
         }).addTo(elements.map);
+
+        state.lastDaaCircleLayer = circle;
 
         // SALVA il centro del cerchio corrente per il prossimo trigger
         state.lastDaaCenterPoint = circle.getLatLng();
@@ -457,10 +685,10 @@ function checkAutoFollow() {
         }
         // --- FINE CONTROLLO ---
 
-        const lastCircle = state.lastDaaCircleLayer || (state.lastDaaCircleId ? window.activeCircles[state.lastDaaCircleId] : null);
+        const lastCircle = state.lastDaaCircleLayer;
 
         if (!lastCircle) {
-            // Se non c'è un cerchio attivo, e siamo in modalità DAA, ne creiamo uno
+            // If there is no active DAA circle, and we are in DAA mode, we create one
             startAutomaticFollowJob();
             return;
         }
@@ -509,6 +737,66 @@ function clearAllDaaCircles() {
 }
 
 
+/**
+ * Filtra i punti attivati dal percorso di volo e li salva in un file XML
+ * formattato per FlightGear.
+ */
+// RINOMINATA LA FUNZIONE
+function saveRouteToXml(flightPath) {
+    // 1. Filtra solo i punti che l'utente ha attivato cliccandoci sopra.
+    const activatedPoints = flightPath.filter(p => p.isActivated);
+
+    if (activatedPoints.length === 0) {
+        alert("Nessun waypoint è stato attivato. Clicca sui punti arancioni del percorso per selezionarli prima di salvare.");
+        return;
+    }
+
+    // 2. Costruisce la stringa XML (invariato).
+    let xmlString = '<?xml version="1.0"?>\n<FlightPlan>\n';
+    activatedPoints.forEach((point, index) => {
+        const ident = `WP${index + 1}`;
+        const lat = point.lat.toFixed(6);
+        const lon = point.lon.toFixed(6);
+        const alt = Math.round(point.altitude_ft);
+
+        xmlString += '    <waypoint>\n';
+        xmlString += `        <ident>${ident}</ident>\n`;
+        xmlString += `        <lat>${lat}</lat>\n`;
+        xmlString += `        <lon>${lon}</lon>\n`;
+        xmlString += `        <alt>${alt}</alt>\n`;
+        xmlString += '    </waypoint>\n';
+    });
+    xmlString += '</FlightPlan>';
+
+    // 3. --- BLOCCO DI SALVATAGGIO MODIFICATO ---
+    const blob = new Blob([xmlString], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+
+    // Crea il nome del file con il timestamp, come per "Save Path"
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    a.download = `flight-route-${timestamp}.xml`; // Nuovo nome file
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// Funzione per mostrare/nascondere il layer degli aeroporti
+function toggleAirportsVisibility(isVisible) {
+    state.isAirportsVisible = isVisible;
+    if (isVisible) {
+        elements.map.addLayer(airportMarkers);
+        // Forza un aggiornamento per caricare i dati (se il layer era spento)
+        // updateMapDataAndOverlays(); // La funzione che effettua il fetch dei dati
+    } else {
+        elements.map.removeLayer(airportMarkers);
+    }
+}
+
+
 // ------------------------------------------------------------------
 // Map click handler for coordinate selection
 // ------------------------------------------------------------------
@@ -526,50 +814,6 @@ window.addEventListener('DOMContentLoaded', () => {
     api.connectToFgfs(port);
 });
 
-// ---------- Traffic-light poller ----------
-import {getFgfsConnectionState} from './api.js';  // Tenere o togliere ?
-// Sostituisci il vecchio poller alla fine di main.js con questo
-setInterval(() => {
-    fetch('/api/connection-state')
-    .then(r => {
-        if (!r.ok) { throw new Error(`Il server ha risposto ${r.status}`); }
-        return r.json();
-    })
-    .then(response => { // <<< CORREZIONE CHIAVE: rinominata la variabile per evitare conflitti
-        const btn = elements.btnConnect;
-        const connectionStatus = response.state; // Estraiamo lo stato (es. "connecting")
-
-    // Rimuove tutte le classi di stato precedenti per una gestione pulita
-    btn.classList.remove('active', 'connecting', 'disconnected');
-
-    switch (connectionStatus) {
-        case 'connected':
-            btn.classList.add('active');
-            btn.title = 'FGFS connected';
-            // Ora modifichiamo l'oggetto globale 'state' corretto
-            state.isConnected = true;
-            break;
-        case 'connecting':
-            btn.classList.add('connecting');
-            btn.title = 'FGFS connecting…';
-            // Ora modifichiamo l'oggetto globale 'state' corretto
-            state.isConnected = false;
-            break;
-        default: // 'disconnected'
-            btn.classList.add('disconnected');
-            btn.title = 'FGFS disconnected';
-            // Ora modifichiamo l'oggetto globale 'state' corretto
-            state.isConnected = false;
-    }
-    })
-    .catch((err) => {
-        console.error("Impossibile ottenere lo stato della connessione:", err);
-        const btn = elements.btnConnect;
-        btn.classList.remove('active', 'connecting');
-        btn.classList.add('disconnected');
-        state.isConnected = false;
-    });
-}, 1500);
 
 /**
  * Creates a complete, interactive preview circle at a specific location.
@@ -692,7 +936,6 @@ function createPreviewCircleAt(lat, lon) {
     });
 
     circle.on('pm:markerdrag', updateButtons);
-    circle.on('pm:markerdrag', updateButtons);
 
     // Wait for Geoman to fire the 'pm:enable' event, which signals
     // that the editing handles have been created and are ready.
@@ -702,40 +945,134 @@ function createPreviewCircleAt(lat, lon) {
     });
 
     elements.radiusInput.addEventListener('input', () => {
-        // Find the currently active (un-fixed) preview circle
-        const preview = state.previewAreas.find(a => !a.isFixed);
-        if (preview && preview.circle) {
-            // Update its radius from the input value
-            const newRadiusMeters = (parseFloat(elements.radiusInput.value) || 0) * 1852;
-            if (newRadiusMeters > 0) {
-                preview.circle.setRadius(newRadiusMeters);
-            }
+    const preview = state.previewAreas.find(a => !a.isFixed);
+    if (preview && preview.circle) {
+        const newRadiusMeters = (parseFloat(elements.radiusInput.value) || 0) * 1852;
+        if (newRadiusMeters > 0) {
+        preview.circle.setRadius(newRadiusMeters);
         }
+    }
     });
 }
 
-elements.icaoInput.addEventListener('keydown', (e) => {
-    // Controlla se il tasto premuto è 'Invio' e se il campo non è vuoto
-    if (e.key === 'Enter' && elements.icaoInput.value.trim() !== '') {
-        e.preventDefault(); // Impedisce l'invio di un form (comportamento di default)
+// --- Autocompletamento e Debouncing per il campo ICAO ---
+let debounceTimer;
 
-    const icao = elements.icaoInput.value.trim().toUpperCase();
+elements.icaoInput.addEventListener('input', () => {
+    const q = elements.icaoInput.value.trim();
+    hideIcaoSuggestions(); // Nascondi prima di tutto
 
-    // Chiama l'API per ottenere le coordinate
-    api.resolveIcao(icao)
-    .then(coords => {
-        // Successo! Crea il cerchio di anteprima con le coordinate ricevute
-        createPreviewCircleAt(coords.lat, coords.lon);
+    if (q.length < 2) return; // Non cercare con meno di 2 caratteri
 
-        // Centra la mappa sulla nuova posizione
-        elements.map.setView([coords.lat, coords.lon], 10);
-    })
-    .catch(err => {
-        // Gestisce l'errore se l'ICAO non viene trovato
-        alert(`Error: Could not resolve ICAO '${icao}'.`);
-    });
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async () => {
+        try {
+            // Chiama la tua API di ricerca
+            const { items } = await api.airportsSearch(q, 10);
+
+            // Callback da eseguire quando l'utente seleziona una voce
+            const onSelect = (airport) => {
+                //elements.icaoInput.value = airport.icao;
+                //elements.latInput.value = airport.lat.toFixed(6);
+                //elements.lonInput.value = airport.lon.toFixed(6);
+                //elements.map.setView([airport.lat, airport.lon], elements.map.getZoom());
+
+                clearTimeout(debounceTimer);
+
+                const lat = airport.lat;
+                const lon = airport.lon;
+
+                // 1. Aggiornamento Input e Centramento Mappa
+                elements.icaoInput.value = airport.icao;
+                elements.latInput.value = lat.toFixed(6);
+                elements.lonInput.value = lon.toFixed(6);
+                elements.map.setView([lat, lon], elements.map.getZoom());
+
+                // 2. LOGICA MARKER: Replica esattamente il flusso dell'handler Invio
+                // Aggiungiamo il marker a goccia (che si assume sia implementato in showSearchMarker)
+                const marker = showSearchMarker(lat, lon); // <-- Aggiunge il marker "a goccia"
+
+                // Al click sul marker: rimuovi il marker di ricerca e disegna il cerchio di preview
+                marker.once('click', () => {
+                    removeSearchMarker();
+                    createPreviewCircleAt(lat, lon);    // <-- Disegna il cerchio (che non è il marker "a goccia")
+                });
+
+                // 3. Chiudi la popup
+                hideIcaoSuggestions();
+
+
+            };
+
+            showIcaoSuggestions(items, elements.icaoInput, onSelect);
+
+        } catch (e) {
+            console.error("Airport search failed:", e);
+            hideIcaoSuggestions();
+        }
+    }, 300); // Debounce di 300ms per evitare di sovraccaricare il server
+});
+
+// Aggiungi un listener globale per nascondere la popup quando si clicca fuori
+document.addEventListener('click', (e) => {
+    if (!e.target.closest(`#${ICAO_SUGGESTION_ID}`) && e.target !== elements.icaoInput) {
+        hideIcaoSuggestions();
     }
 });
+
+elements.icaoInput.addEventListener('keydown', async (ev) => {
+  if (ev.key !== 'Enter') return;
+  ev.preventDefault();
+  hideIcaoSuggestions();
+
+  const q = ev.target.value.trim();
+  if (!q) return;
+
+  try {
+    // UNIFICHIAMO IL FLUSSO: usiamo SEMPRE airportsSearch
+    const { items } = await airportsSearch(q, 5); // 5 è sufficiente per l'alert
+
+    if (!items || !items.length) {
+      alert("Nessun aeroporto trovato per: " + q);
+      return;
+    }
+
+    const a = items[0];
+    const lat = a.lat;
+    const lon = a.lon;
+
+    // Aggiorna il campo con il codice ICAO (che è il risultato preferito)
+    ev.target.value = a.icao || ev.target.value;
+
+    if (items.length > 1) {
+      // Se ci sono più risultati, mostriamo i dettagli nell'alert
+      const suggested = items.map(i => {
+          const iata = i.iata_code ? `(${i.iata_code})` : '';
+          const muni = i.municipality ? ` - ${i.municipality}` : '';
+          return `${i.icao} ${iata} ${i.name}${muni}`;
+      }).join('\n');
+      console.info(`Trovati ${items.length} candidati: si usa ${a.icao}. \nAltri: \n${suggested}`);
+    }
+
+    // centra mappa + aggiorna pannello
+    elements.map.setView([lat, lon], elements.map.getZoom());
+    elements.latInput.value = lat.toFixed(6);
+    elements.lonInput.value = lon.toFixed(6);
+
+    // mostra SOLO il marker e usa lo stesso flusso del “+” al click
+    const marker = showSearchMarker(lat, lon);
+    marker.once('click', () => {
+        removeSearchMarker();
+        createPreviewCircleAt(lat, lon);
+    });
+
+  } catch (e) {
+    // Questo catch catturerà solo errori 500 o fallimenti di rete, non l'ambiguità.
+    console.error(e);
+    alert("Lookup fallito: " + (e?.message ?? e));
+  }
+});
+
 
 elements.btnFillHoles.addEventListener('click', () => {
     // 1. Disattiva subito il pulsante e applica lo stile "working"
@@ -803,15 +1140,56 @@ elements.btnEditPaths.addEventListener('click', () => {
     }
 });
 
+// Toggle "Create Path"
+document.getElementById('btn-create-route').addEventListener('click', () => {
+  const on = !isManualRouteMode();
+  setManualRouteMode(on);
+  const b = document.getElementById('btn-create-route');
+  b.textContent = on ? 'Create Path (ON)' : 'Create Path';
+  b.style.backgroundColor = on ? '#28a745' : '';
+  b.style.color = on ? '#fff' : '';
+});
+
+elements.btnClearPath.addEventListener('click', () => {
+  clearManualRoute();
+});
+
 // ------------------------------------------------------------------
 // 4. Initialization
 // ------------------------------------------------------------------
 window.addEventListener('DOMContentLoaded', () => {
     initializeMap();
+    if (!state._routeClickBound) {
+        elements.map.on('click', (e) => {
+            if (!isManualRouteMode()) return;
+            addWaypointManual({
+                lat: e.latlng.lat,
+                lon: e.latlng.lng,
+                type: 'Fix',          // o lascia pure null se non ti piace
+                source: 'map'
+            });
+        });
+        state._routeClickBound = true;
+    }
     populateSdwnDropdown();
     renderSvgButtons(state.resState, handleResFilterClick);
     setupInteractiveSelection();
     toggleMapSelectionMode(state.isMapSelectionMode);
+
+    // 1. Funzione di debounce per il ricaricamento
+    const reloadNavaids = () => {
+        clearTimeout(navaidsLoadTimer);
+        navaidsLoadTimer = setTimeout(() => {
+            loadAndDrawNavaids(elements.map); // elementi.map è l'istanza Leaflet
+        }, 500); // Ritardo di 500ms
+    };
+
+    // 2. Attivazione dei Listener
+    elements.map.on('moveend', reloadNavaids);
+    elements.map.on('zoomend', reloadNavaids);
+
+    // 3. Primo Caricamento
+    reloadNavaids();
 
     // Primo sync tra DAA e Execute Job
     updateFollowAircraftAvailability();
@@ -822,6 +1200,19 @@ window.addEventListener('DOMContentLoaded', () => {
     }).catch(err => {
         console.error("Impossibile recuperare l'ora della sessione:", err);
     });
+
+    const handleFilterClick = (filterId) => {
+        state.visibilityFilters[filterId] = !state.visibilityFilters[filterId];
+        // Ridisegna immediatamente i pulsanti
+        renderVisibilityFilters(state.visibilityFilters, handleFilterClick);
+        // Forza l'aggiornamento della mappa per applicare il filtro
+        mainUpdateLoop();
+        reloadNavaids(); // Forza il ricaricamento dei navaid/aeroporti
+    };
+
+    // INIZIALIZZA I FILTRI VISIVI
+    renderVisibilityFilters(state.visibilityFilters, handleFilterClick);
+
     // Popola il selettore dei map server al caricamento
     api.getMapServers()
         .then(servers => {
@@ -849,49 +1240,59 @@ window.addEventListener('DOMContentLoaded', () => {
             elements.outputPathInput.value = paths.path;
             elements.backupPathInput.value = paths.save;
         });
-        const dropZone = elements.routeDropZone;
 
-    dropZone.addEventListener('dragover', (e) => {
+    const dropZone = elements.routeDropZone;
+
+    if (dropZone) {
+        dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropZone.classList.add('drag-over');
-    });
-    dropZone.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('drag-over');
-    });
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('drag-over');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            const file = files[0];
-            if (file.name.endsWith('.gpx') || file.name.endsWith('.xml')) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    // Delega tutto il lavoro al modulo route
-                    route.handleRouteFile(event.target.result, file.name, activeCircles, state);
-                };
-                reader.readAsText(file);
-            } else {
-                alert("Per favore, trascina un file .gpx o .xml valido.");
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.name.endsWith('.gpx') || file.name.endsWith('.xml')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        route.handleRouteFile(event.target.result, file.name, activeCircles, state);
+                    };
+                    reader.readAsText(file);
+                } else {
+                    alert("Per favore, trascina un file .gpx o .xml valido.");
+                }
             }
-        }
-    });
+        });
+    } else {
+        console.warn("routeDropZone non trovato: drag&drop rotta disabilitato.");
+    }
 
     // Gestione della sezione collassabile "Directory Settings"
-    elements.directorySettingsHeader.addEventListener('click', () => {
-        elements.directorySettingsHeader.classList.toggle('collapsed');
-        elements.directorySettingsContent.classList.toggle('collapsed');
-    });
-    // Per avviare la sezione come chiusa di default, aggiungi queste due righe:
-    elements.directorySettingsHeader.classList.add('collapsed');
-    elements.directorySettingsContent.classList.add('collapsed');
+    if (elements.directorySettingsHeader && elements.directorySettingsContent) {
+        elements.directorySettingsHeader.addEventListener('click', () => {
+            elements.directorySettingsHeader.classList.toggle('collapsed');
+            elements.directorySettingsContent.classList.toggle('collapsed');
+        });
+        elements.directorySettingsHeader.classList.add('collapsed');
+        elements.directorySettingsContent.classList.add('collapsed');
+    }
 
     // Gestione della sezione collassabile "Download Along Route"
-    elements.routeSettingsHeader.addEventListener('click', () => {
-        elements.routeSettingsHeader.classList.toggle('collapsed');
-        elements.routeSettingsContent.classList.toggle('collapsed');
-    });
+    if (elements.routeSettingsHeader && elements.routeSettingsContent) {
+        elements.routeSettingsHeader.addEventListener('click', () => {
+            elements.routeSettingsHeader.classList.toggle('collapsed');
+            elements.routeSettingsContent.classList.toggle('collapsed');
+        });
+    }
+
     // Gestore per il salvataggio della traccia
     elements.btnSavePath.addEventListener('click', () => {
         if (state.flightPath.length < 2) {
@@ -913,11 +1314,43 @@ window.addEventListener('DOMContentLoaded', () => {
         URL.revokeObjectURL(url);
     });
 
+    // Salvataggio rotta: usa la rotta manuale se presente, altrimenti la traccia di volo
+    elements.btnSaveRoute.addEventListener('click', () => {
+        let flightPathForSave = state.flightPath;
+
+        try {
+            const manualWps = getManualRouteWaypoints ? getManualRouteWaypoints() : [];
+
+            if (Array.isArray(manualWps) && manualWps.length >= 2) {
+                // Costruisco un "flightPath" fittizio dai waypoint manuali.
+                // Tutti i punti sono considerati "attivati".
+                flightPathForSave = manualWps.map((wp, idx) => ({
+                    name: wp.name || `WP${idx + 1}`,
+                    lat: wp.lat,
+                    lon: wp.lon,
+                    altitude_ft: 0,     // se vuoi in futuro puoi mettere una quota reale
+                    isActivated: true,
+                }));
+            }
+        } catch (e) {
+            console.warn('Impossibile leggere la rotta manuale, uso la traccia di volo:', e);
+        }
+
+        openSaveRouteModal(flightPathForSave);
+    });
+
     // Gestore per la pulizia della traccia
+    // Pulisce sia la TRACCIA DI VOLO che la ROTTA MANUALE (waypoint)
     elements.btnClearPath.addEventListener('click', () => {
-        if (confirm("Sei sicuro di voler cancellare la traccia di volo corrente?")) {
-            state.flightPath = [];
-            updateFlightPathPolyline(state.flightPath, state.isFlightPathVisible);
+        if (!confirm("Cancellare traccia di volo e rotta manuale?")) return;
+
+        // 1) Traccia di volo (linea blu/arancio registrata dal FGFS)
+        state.flightPath = [];
+        renderFlightPath(state.flightPath, state.isFlightPathVisible);
+
+        // 2) Rotta manuale (waypoint creati con Create Route)
+        if (typeof window.clearManualRoute === 'function') {
+            window.clearManualRoute();  // rimuove waypoint + polilinea rotta
         }
     });
 
@@ -928,12 +1361,43 @@ window.addEventListener('DOMContentLoaded', () => {
         // Aggiorna il testo del pulsante
         elements.btnTogglePath.textContent = state.isFlightPathVisible ? 'Hide Path' : 'Show Path';
         // Chiama la funzione di disegno per applicare il nuovo stato
-        updateFlightPathPolyline(state.flightPath, state.isFlightPathVisible);
+        renderFlightPath(state.flightPath, state.isFlightPathVisible);
     });
 
     // Avvia il loop periodic
     mainUpdateLoop();
 });                          // Initial update on startup
+
+// Pollers
+
+startPollers({
+  onConnectionState: (data) => {
+    const btn = elements.btnConnect;
+    btn.classList.remove('active', 'connecting', 'disconnected');
+    switch (data.state) {
+      case 'connected':
+        btn.classList.add('active');
+        btn.title = 'FGFS connected';
+        state.isConnected = true;
+        break;
+      case 'connecting':
+        btn.classList.add('connecting');
+        btn.title = 'FGFS connecting…';
+        state.isConnected = false;
+        break;
+      default:
+        btn.classList.add('disconnected');
+        btn.title = 'FGFS disconnected';
+        state.isConnected = false;
+    }
+  },
+  onCompletedJobs: (n) => {
+    console.log(`Completed jobs: ${n}`);
+    // puoi anche richiamare checkCompletedJobs() se vuoi aggiornare la mappa
+    checkCompletedJobs();
+  }
+});
+
 
 // Set up periodic updates
 setInterval(checkCompletedJobs, 3000);      // Check completed jobs every 3 seconds

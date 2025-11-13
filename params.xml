@@ -6,6 +6,11 @@
         <year>2025</year>
         <licence>GPL 2</licence>
     </versioning>
+
+    <settings>
+        <scan_interval_seconds>300</scan_interval_seconds>
+    </settings>
+
     <servers>
         <server>
             <id>1</id>
@@ -36,4 +41,19 @@
             <url-command>REQUEST=GetMap|VERSION=1.3.0|TRANSPARENT=TRUE|LAYERS=RASTER|STYLES=|CRS=CRS:84|EXCEPTIONS=xml|BBOX={lonLL},{latLL},{lonUR},{latUR}|WIDTH={szWidth}|HEIGHT={szHight}|FORMAT=image/png</url-command>
         </server>
     </servers>
-<presets><id name="fast-phnl">-i phnl -r 20 -s 2</id></presets></params>
+
+    <external_files>
+        <time_to_update_days>7</time_to_update_days>
+        <airports>
+            <url>https://davidmegginson.github.io/ourairports-data/airports.csv</url>
+            <file_path>airports.csv</file_path>
+            <date>2025-11-11</date>
+        </airports>
+        <navaids>
+            <url>https://davidmegginson.github.io/ourairports-data/navaids.csv</url>
+            <file_path>navaids.csv</file_path>
+            <date>2025-11-11</date>
+        </navaids>
+    </external_files>
+    <presets><id name="fast-phnl">-i phnl -r 20 -s 2</id></presets>
+</params>

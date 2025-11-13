@@ -376,19 +376,43 @@
             border-color: #4285f4;
         }
 
-        #route-waypoint-list ul {
-            list-style-type: none;
-            padding: 0;
-            margin-top: 10px;
-            font-family: monospace;
-            font-size: 13px;
+        #route-waypoint-list ul.route-wp-list { list-style: none; padding-left: 0; }
+        #route-waypoint-list li { display:flex; justify-content:space-between; align-items:center; padding:4px 6px; border-radius:4px; }
+        #route-waypoint-list li.wp-hover { background: #ffe6e6; } /* rosso chiaro */
+        #route-waypoint-list .wp-del { border:none; background:transparent; cursor:pointer; font-size:14px; }
+        #route-waypoint-list .wp-del:hover { filter: brightness(0.85); }
+
+        .route-wp-list { list-style: none; padding: 0; margin: 0; }
+
+        .route-wp-list li {
+        display: flex;                 /*  nome+info a sinistra, cestino a destra  */
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 4px 6px;
+        border-radius: 4px;
         }
 
-        #route-waypoint-list li {
-            padding: 4px 8px;
-            border-bottom: 1px solid #eee;
-            transition: all 0.3s;
+        .route-wp-list .wp-main {
+        display: flex;
+        flex-direction: column;        /* nome sopra, meta sotto */
+        align-items: flex-start;
         }
+
+        .route-wp-list .wp-name { font-weight: 600; }
+
+        .route-wp-list .wp-meta {
+        font-size: 0.85em;
+        color: #444;
+        }
+
+        .route-wp-list .wp-del {
+        background: none;
+        border: none;
+        cursor: pointer;
+        }
+
+        .route-wp-list li.wp-hover { background: #ffecec; }
 
         /* Colori di stato per i waypoint */
         .wp-status-pending { color: black; }
@@ -421,6 +445,179 @@
         /* Stato Connesso (Verde) */
         #btn-connect.active { background-color: #4CAF50; }
         #btn-connect.active::before { content: 'FGFS On'; }
+
+        /* Barra pulsanti rotta – versione compatta */
+        .route-bar {
+            display: flex;
+            flex-wrap: nowrap;       /* una sola riga */
+            gap: 4px;                /* meno spazio */
+            margin-top: 6px;
+        }
+
+        .route-bar button {
+            flex: 1 1 0;
+            min-width: 50px;         /* prima 90+ */
+            padding: 4px 6px;        /* prima 6px 4px */
+            font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+            font-size: 12px;         /* prima 13px */
+            line-height: 1.15;
+            text-align: center;
+            background: #f6f6f6;
+            border: 1px solid #cfcfcf;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background .15s, transform .08s;
+            white-space: normal;     /* consenti 2 righe */
+        }
+
+        .route-bar button strong {
+            display: block;
+            font-size: 12.5px;       /* prima 14px */
+            color: #003366;
+        }
+
+        .route-bar button small {
+            display: block;
+            font-size: 10.5px;       /* prima 11px */
+            color: #555;
+        }
+
+        .route-bar button:hover { background: #eaf2ff; }
+        .route-bar button:active { transform: translateY(0); }
+
+        /* Rendi cliccabili i marker DivIcon */
+        .leaflet-marker-icon.route-clickable { pointer-events: auto; }
+        .leaflet-marker-icon.route-clickable * { pointer-events: none; } /* lascia l'evento al contenitore */
+
+        /* Cursore coerente quando Create Route è ON (opzionale) */
+        body.create-route-on .leaflet-marker-icon.route-clickable { cursor: crosshair; }
+
+        /* stato attivo del Create Route */
+        /* stato attivo del Create Route */
+        #btn-create-route.active {
+            background: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
+        #btn-create-route.active strong,
+        #btn-create-route.active small { color:#fff; }
+
+        /* Se la colonna è davvero stretta (<320px), passa automaticamente in 2 righe */
+        @media (max-width: 320px) {
+            .route-bar { flex-wrap: wrap; }
+            .route-bar button { flex: 1 1 calc(50% - 4px); min-width: 0; }
+        }
+
+
+        /* pulsante attivo Create Route ON */
+        #btn-create-route.active {
+            background: #007bff;
+            color: white;
+            }
+
+        #btn-create-route.active strong,
+        #btn-create-route.active small {
+            color: white;
+            }
+
+        /* Stili base per icone Navaid */
+        .navaid-icon {
+            background-color: transparent;
+            border: none;
+            width: 16px;
+            height: 16px;
+            /* Rende il punto di ancoraggio il centro del div */
+            margin-top: -8px;
+            margin-left: -8px;
+            /* Simbolo VOR (esempio: un cerchio nero) */
+            border: 2px solid black;
+            border-radius: 50%;
+            box-sizing: border-box; /* Include bordo nel w/h */
+        }
+        .navaid-icon.ndb {
+            background-color: black;
+            border-radius: 0; /* Simbolo NDB (quadrato pieno) */
+        }
+        .navaid-icon.dme {
+            /* Aggiungi stili per DME */
+            border: 2px solid black;
+            width: 12px; height: 12px;
+            transform: rotate(45deg); /* Trasforma in X per DME */
+        }
+        .navaid-icon-container {
+            /* Rende il div contenitore invisibile, lasciando solo l'SVG */
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: black;
+            opacity: 0.5;
+        }
+        .airport-marker {
+            text-align: center;
+            /* Rendi la scatola dell'icona invisibile ma il testo cliccabile */
+            background: none;
+            border: none;
+            box-shadow: none;
+            pointer-events: auto; /* Abilita il click */
+            cursor: pointer;
+        }
+        .airport-marker span {
+            display: inline-block;
+            font-weight: bold;
+            color: #0000ff; /* Colore blu */
+            background: rgba(255, 255, 255, 0.7); /* Sfondo chiaro per leggibilità */
+            border: 1px solid #0000ff;
+            border-radius: 3px;
+            padding: 1px 4px;
+            font-size: 10px;
+            line-height: 1.2;
+            white-space: nowrap;
+            user-select: none; /* Impedisce la selezione del testo */
+        }
+
+        /* Stile per i pulsanti di filtro */
+        .filter-button {
+            width: 32px; /* Diamo un po' più di spazio per un pulsante gradevole */
+            height: 32px;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #f7f7f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .filter-button.active {
+            background-color: #4CAF50; /* Verde, attivo */
+            border-color: #4CAF50;
+        }
+
+        .filter-button.inactive {
+            opacity: 0.4; /* Sbiadito, inattivo */
+            background-color: #eee;
+        }
+
+        .filter-icon {
+        width: 18px;
+        height: 18px;
+        color: #333; /* colore di base (stato inattivo) */
+        }
+
+        .heliport-marker svg {
+            filter: drop-shadow(0 0 2px rgba(255,255,255,0.6))
+                    drop-shadow(0 0 3px rgba(0,0,0,0.4));
+        }
+
+        .airport-symbol-marker svg { display:block; color:#333; }
+        .filter-button.active .airport-symbol-marker svg { color:#fff; }
+
+        /* stato attivo: il bottone diventa verde e il tratto diventa bianco */
+        /*.filter-button.active { background-color: #4CAF50; border-color: #4CAF50; color: #fff; }*/
+        .filter-button.inactive { opacity: 0.45; background-color: #eee; color: #555; }
+
     </style>
 </head>
 <body>
@@ -428,11 +625,16 @@
     <div id="controls">
         <h3>Scenery Controls</h3>
 
+        <div class="control-group">
+            <div id="map-visibility-filters" style="display: flex; justify-content: space-around; margin-bottom: 1px;">
+                </div>
+        </div>
+
         <!-- Location selection controls -->
         <div class="control-group">
             <label for="icao">ICAO or City:</label>
             <div id="icao-container" style="display: flex; gap: 5px;">
-                <input type="text" id="icao" value="LIME" style="flex-grow: 1;">
+                <input type="text" id="icao" value="LIME" style="flex-grow: 1;" autocomplete="off">
                 <!-- Aircraft icon button to get coords from FlightGear -->
                 <button id="btn-get-coords" title="Get coordinates from FGFS" style="width: auto; padding: 0 10px; display: none;">✈️</button>
                 <!-- Map selection button -->
@@ -543,12 +745,22 @@
             <button id="btn-connect" class="disconnected" title="Toggle FGFS Connection"></button>
         </div>
 
-        <div class="control-group" id="fgfs-container">
-            <div id="flight-path-controls" class="control-group hidden" style="display: flex; gap: 10px; margin-top: 10px;">
-                <button id="btn-toggle-path" title="Show/Hide the flight path on the map">Hide Path</button>
-                <button id="btn-save-path" title="Save the recorded flight path to a JSON file">Save Path</button>
-                <button id="btn-clear-path" title="Clear the current flight path from the map">Clear Path</button>
-            </div>
+        <div id="route-controls" class="route-bar">
+            <button id="btn-create-route">
+                <strong>Create Route</strong><br><small>Click map & objects</small>
+            </button>
+            <button id="btn-toggle-path">
+                <strong>Show Hide</strong><br><small>Toggle path</small>
+            </button>
+            <button id="btn-save-path">
+                <strong>Save Path</strong><br><small>Track JSON</small>
+            </button>
+            <button id="btn-save-route">
+                <strong>Save Route</strong><br><small>Export GPX/XML</small>
+            </button>
+            <button id="btn-clear-path">
+                <strong>Clear Path</strong><br><small>Remove all</small>
+            </button>
         </div>
 
         <h3>Tile preview</h3>
@@ -590,5 +802,63 @@
 
     <!-- Main application script (loaded at end for DOM readiness) -->
     <script type="module" src="js/main.js"></script>
+
+    <!-- Save Route Modal -->
+    <div id="saveRouteModal" class="modal hidden">
+    <div class="modal-content">
+        <h3>Save Flight Route (GPX)</h3>
+
+        <div class="row">
+        <label>Departure (ICAO or name)</label>
+        <input id="depInput" type="text" placeholder="LIME / Bergamo Orio al Serio" autocomplete="off">
+        <ul id="depSuggest" class="suggest hidden"></ul>
+        </div>
+
+        <div class="row">
+        <label>Arrival (ICAO or name)</label>
+        <input id="arrInput" type="text" placeholder="LIMJ / Genova Sestri" autocomplete="off">
+        <ul id="arrSuggest" class="suggest hidden"></ul>
+        </div>
+
+        <div class="row">
+        <label>Route summary</label>
+        <div id="routeSummary" class="summary"></div>
+        </div>
+
+        <div class="actions">
+        <button id="saveRouteConfirm">Save GPX</button>
+        <button id="saveRouteCancel">Cancel</button>
+        </div>
+    </div>
+    </div>
+
+    <style>
+    .hidden{display:none}
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .modal-content{background:#fff;max-width:720px;width:92%;padding:16px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .row{margin:10px 0}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input[type=text]{width:100%;padding:8px 10px;border:1px solid #aaa;border-radius:8px}
+    .suggest {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-height: 250px;
+        overflow: auto;
+        background: #fff;
+    }
+    .suggest li {
+        padding: 6px 10px;
+        cursor: pointer;
+        white-space: nowrap;
+        /* Se la larghezza è fissa, prova ad aumentarla */
+    }
+    .suggest li:hover{background:#f0f0f0}
+    .summary{max-height:260px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:8px;font-family:monospace;white-space:pre}
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+    </style>
+
 </body>
 </html>

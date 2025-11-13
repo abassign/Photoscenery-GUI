@@ -104,21 +104,6 @@ export function shutdownServer() {
 }
 
 /**
- * Resolves an ICAO code to geographic coordinates via the backend.
- * @param {string} icao - The ICAO code to resolve.
- * @returns {Promise<Object>} A promise that resolves with {lat, lon}.
- */
-export function resolveIcao(icao) {
-    return fetch(`/api/resolve-icao?icao=${encodeURIComponent(icao)}`)
-    .then(res => {
-        if (!res.ok) {
-            return res.text().then(text => { throw new Error(text) });
-        }
-        return res.json();
-    });
-}
-
-/**
  * Returns the current FGFS connection state (disconnected | connecting | connected)
  * @returns {Promise<string>}
  */
@@ -178,4 +163,106 @@ export function setPaths(path, save) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ path, save })
     });
+}
+
+// Salva una rotta come GPX lato backend
+export function saveRouteGpx(payload) {
+    return fetch('/api/save-route', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+    }).then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
+}
+
+export function listRoutes({limit=50, offset=0, order='desc'}={}) {
+    const q = new URLSearchParams({limit, offset, order});
+    return fetch('/api/routes?'+q).then(r => r.json());
+}
+
+export function downloadRoute(filename) {
+    return fetch('/api/routes/'+encodeURIComponent(filename))
+    .then(r => r.blob()); // poi crea <a download=...> come già fai
+}
+
+export function resolveIcao(icao) {
+    return fetch('/api/resolve-icao/'+encodeURIComponent(icao))
+    .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
+}
+
+export function airportsSearch(q, limit=10) {
+  const qs = new URLSearchParams({ q, limit });
+  return fetch('/api/airports/search?' + qs.toString())
+    .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
+}
+
+// === POLLING GENTILE: Connection, Jobs, Coverage ===
+
+let _cs_inflight = false;
+let _cj_inflight = false;
+let _cov_inflight = false;
+
+function isPageVisible() {
+  return typeof document === 'undefined' ? true : !document.hidden;
+}
+
+/** Stato connessione FGFS */
+export async function pollConnectionState(onUpdate) {
+  if (_cs_inflight || !isPageVisible()) return;
+  _cs_inflight = true;
+  try {
+    const r = await fetch('/api/connection-state', { cache: 'no-store' });
+    if (!r.ok) return;
+    const data = await r.json();
+    if (onUpdate) onUpdate(data);
+  } finally {
+    _cs_inflight = false;
+  }
+}
+
+/** Job completati */
+export async function pollCompletedJobs(onUpdate) {
+  if (_cj_inflight || !isPageVisible()) return;
+  _cj_inflight = true;
+  try {
+    const r = await fetch('/api/completed-jobs', { cache: 'no-store' });
+    if (!r.ok) return;
+    const n = await r.json();
+    if (onUpdate) onUpdate(n);
+  } finally {
+    _cj_inflight = false;
+  }
+}
+
+/** Coverage.json (a richiesta) */
+export async function fetchCoverageOnce(onUpdate) {
+  if (_cov_inflight) return;
+  _cov_inflight = true;
+  try {
+    const r = await fetch('/coverage.json', { cache: 'no-store' });
+    if (!r.ok) return;
+    const json = await r.json();
+    if (onUpdate) onUpdate(json);
+  } finally {
+    _cov_inflight = false;
+  }
+}
+
+/** Avvia i poller (chiamare una sola volta) */
+let _pollersStarted = false;
+export function startPollers(handlers = {}) {
+  if (_pollersStarted) return;
+  _pollersStarted = true;
+
+  const {
+    onConnectionState = null,
+    onCompletedJobs  = null,
+  } = handlers;
+
+  // intervalli ragionevoli
+  setInterval(() => pollConnectionState(onConnectionState), 1500);
+  setInterval(() => pollCompletedJobs(onCompletedJobs),     2000);
+
+  // chiamata immediata allo start
+  pollConnectionState(onConnectionState);
+  pollCompletedJobs(onCompletedJobs);
 }
