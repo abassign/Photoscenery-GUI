@@ -57,6 +57,7 @@ window.clearManualRoute   = clearManualRoute;
 window.removeWaypointAt   = removeWaypointAt;
 window.highlightWaypoint  = highlightWaypoint;
 window.computeLegDistancesNM = computeLegDistancesNM;
+window.focusOnSearchTarget = focusOnSearchTarget;
 
 // ---------- DEBUG SWITCH ----------
 window.DEBUG_FGFS = true;        // flip to false to silence
@@ -958,6 +959,33 @@ function createPreviewCircleAt(lat, lon) {
 // --- Autocompletamento e Debouncing per il campo ICAO ---
 let debounceTimer;
 
+function focusOnSearchTarget({ icao, lat, lon }) {
+    const LAT = Number(lat), LON = Number(lon);
+    if (!isFinite(LAT) || !isFinite(LON)) return;
+
+    // Aggiorna input
+    if (elements.icaoInput) elements.icaoInput.value = icao || elements.icaoInput.value || "";
+    if (elements.latInput)  elements.latInput.value  = LAT.toFixed(6);
+    if (elements.lonInput)  elements.lonInput.value  = LON.toFixed(6);
+
+    // Centra mappa
+    if (elements.map) {
+        elements.map.setView([LAT, LON], elements.map.getZoom());
+    }
+
+    // Goccia di ricerca + click che crea il cerchio di preview
+    try {
+        const marker = showSearchMarker(LAT, LON);
+        marker.once('click', () => {
+            removeSearchMarker();
+            createPreviewCircleAt(LAT, LON);
+        });
+    } catch (e) {
+        console.warn('focusOnSearchTarget marker error:', e);
+    }
+}
+
+
 elements.icaoInput.addEventListener('input', () => {
     const q = elements.icaoInput.value.trim();
     hideIcaoSuggestions(); // Nascondi prima di tutto
@@ -972,36 +1000,15 @@ elements.icaoInput.addEventListener('input', () => {
 
             // Callback da eseguire quando l'utente seleziona una voce
             const onSelect = (airport) => {
-                //elements.icaoInput.value = airport.icao;
-                //elements.latInput.value = airport.lat.toFixed(6);
-                //elements.lonInput.value = airport.lon.toFixed(6);
-                //elements.map.setView([airport.lat, airport.lon], elements.map.getZoom());
-
                 clearTimeout(debounceTimer);
 
-                const lat = airport.lat;
-                const lon = airport.lon;
-
-                // 1. Aggiornamento Input e Centramento Mappa
-                elements.icaoInput.value = airport.icao;
-                elements.latInput.value = lat.toFixed(6);
-                elements.lonInput.value = lon.toFixed(6);
-                elements.map.setView([lat, lon], elements.map.getZoom());
-
-                // 2. LOGICA MARKER: Replica esattamente il flusso dell'handler Invio
-                // Aggiungiamo il marker a goccia (che si assume sia implementato in showSearchMarker)
-                const marker = showSearchMarker(lat, lon); // <-- Aggiunge il marker "a goccia"
-
-                // Al click sul marker: rimuovi il marker di ricerca e disegna il cerchio di preview
-                marker.once('click', () => {
-                    removeSearchMarker();
-                    createPreviewCircleAt(lat, lon);    // <-- Disegna il cerchio (che non è il marker "a goccia")
+                focusOnSearchTarget({
+                    icao: airport.icao,
+                    lat: airport.lat,
+                    lon: airport.lon
                 });
 
-                // 3. Chiudi la popup
                 hideIcaoSuggestions();
-
-
             };
 
             showIcaoSuggestions(items, elements.icaoInput, onSelect);
@@ -1037,10 +1044,6 @@ elements.icaoInput.addEventListener('keydown', async (ev) => {
       return;
     }
 
-    const a = items[0];
-    const lat = a.lat;
-    const lon = a.lon;
-
     // Aggiorna il campo con il codice ICAO (che è il risultato preferito)
     ev.target.value = a.icao || ev.target.value;
 
@@ -1054,17 +1057,12 @@ elements.icaoInput.addEventListener('keydown', async (ev) => {
       console.info(`Trovati ${items.length} candidati: si usa ${a.icao}. \nAltri: \n${suggested}`);
     }
 
-    // centra mappa + aggiorna pannello
-    elements.map.setView([lat, lon], elements.map.getZoom());
-    elements.latInput.value = lat.toFixed(6);
-    elements.lonInput.value = lon.toFixed(6);
-
-    // mostra SOLO il marker e usa lo stesso flusso del “+” al click
-    const marker = showSearchMarker(lat, lon);
-    marker.once('click', () => {
-        removeSearchMarker();
-        createPreviewCircleAt(lat, lon);
+    focusOnSearchTarget({
+        icao: a.icao || ev.target.value,
+        lat: a.lat,
+        lon: a.lon
     });
+
 
   } catch (e) {
     // Questo catch catturerà solo errori 500 o fallimenti di rete, non l'ambiguità.

@@ -16801,3 +16801,1020 @@
 ┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:26:11.
 │   _func = nothing
 └ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: The Background scanning process will start in 300 sec.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:29:24.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:34:29.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:39:35.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:44:45.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:49:57.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:55:08.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:00:19.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:05:31.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:10:44.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: The Background scanning process will start in 300 sec.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:15:24.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:20:30.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:25:39.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:30:51.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:36:01.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: The Background scanning process will start in 300 sec.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:39:29.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:44:39.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:49:49.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:55:00.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:00:11.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:05:20.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:10:30.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:15:42.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:20:52.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:26:03.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:31:14.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:36:24.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:41:34.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 22:46:45.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:11:29.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:16:38.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:21:45.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:26:49.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:31:56.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:37:04.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:42:10.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:47:16.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:52:23.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 14:57:28.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:02:34.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:07:39.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:12:44.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:17:49.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:22:54.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:28:00.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:33:06.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:38:12.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:43:18.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:48:24.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:53:30.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 15:58:36.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:03:42.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:08:47.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:13:53.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:18:59.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:24:05.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:29:10.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:34:16.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:39:20.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 16:44:25.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: The Background scanning process will start in 300 sec.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:43:16.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:48:28.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:53:40.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 20:58:51.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:04:02.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:09:14.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:14:26.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Starting new scan cycle...
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Scan complete. Found 3925 DDS, 0 PNG files.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Index update: 0 new, 0 updated.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: No changes to the index. Skipping save.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68
+┌ Info: ddsFindScanner._periodic_update: Update cycle finished at 21:19:38.
+│   _func = nothing
+└ @ Photoscenary.ddsFindScanner /home/abassign/fgfs-scenery/Photoscenery-GUI/src/ddsFindScanner.jl:68

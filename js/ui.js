@@ -1224,29 +1224,44 @@ function drawNavaids(navaids, mapInstance) {
       DME: ${dmeChan ? `CH ${dmeChan}` : '—'} ${dmeMhz != null ? `(${fmt.mhz(dmeMhz)})` : ''}<br>
       Elev: ${n.elev_ft ?? 'N/D'} ft
     `;
+
     marker.bindPopup(popupHtml);
 
     // 4) click → aggiungi waypoint se Create Route è ON
     marker.on('click', () => {
-        try {
-            const on = (window.isManualRouteMode && window.isManualRouteMode()) || false;
-            if (!on) return;
-            if (typeof window.addWaypointManual !== 'function') return;
+      try {
+        const on = (window.isManualRouteMode && window.isManualRouteMode()) || false;
+        if (!on) return;
+        if (typeof window.addWaypointManual !== 'function') return;
 
-            const ident = n.ident || n.code || '';
-            const nm    = n.name || '';
-            const kind  = String(n.type || n.kind || '').toUpperCase();  // es. "VOR", "NDB", ...
+        const ident = n.ident || n.code || '';
+        const nm    = n.name || '';
+        const kind  = String(n.type || n.kind || '').toUpperCase();
 
-            window.addWaypointManual({
-              name: ident || nm || kind || 'NAVAID',
-              lat: Number(n.lat),
-                                    lon: Number(n.lon),
-                                    type: kind || 'NAVAID',
-                                    source: 'navaid'
-            });
-        } catch (e) {
-            console.warn('addWaypointManual (navaid) skipped:', e);
+        window.addWaypointManual({
+          name: ident || nm || kind || 'NAVAID',
+          lat: Number(n.lat),
+                                 lon: Number(n.lon),
+                                 type: kind || 'Navaid',
+                                 source: 'navaid'
+        });
+      } catch (e) {
+        console.warn('addWaypointManual (navaid) skipped:', e);
+      }
+    });
+
+    // 4bis) doppio click → scrivi nel box ICAO e centra la mappa
+    marker.on('dblclick', () => {
+      try {
+        const ident = n.ident || n.code || '';
+        const latNum = Number(n.lat);
+        const lonNum = Number(n.lon);
+        if (window.focusOnSearchTarget) {
+          window.focusOnSearchTarget({ icao: ident, lat: latNum, lon: lonNum });
         }
+      } catch (e) {
+        console.warn('navaid dblclick → focusOnSearchTarget failed:', e);
+      }
     });
 
     // 5) aggiungi al layer
@@ -1416,6 +1431,20 @@ function drawAirports(airports, mapInstance, showMinor, showMajor, showHeliports
       const typeLabel = isHeli ? 'Heliport' : 'Airport';
       const name = icao || iata || a.name || 'APT';
       add({ name, lat, lon, type: typeLabel, source: 'airport' });
+    });
+
+    // Doppio click: copia nel box ICAO e centra la mappa
+    marker.on('dblclick', () => {
+      try {
+        const code = icao || iata || a.name || '';
+        const latNum = lat;
+        const lonNum = lon;
+        if (window.focusOnSearchTarget) {
+          window.focusOnSearchTarget({ icao: code, lat: latNum, lon: lonNum });
+        }
+      } catch (e) {
+        console.warn('airport dblclick → focusOnSearchTarget failed:', e);
+      }
     });
 
     // Aggiungi al layer

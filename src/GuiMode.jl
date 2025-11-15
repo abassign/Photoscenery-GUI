@@ -764,36 +764,62 @@ end
 
 function h_airports_search(req::HTTP.Request)
     params = HTTP.queryparams(req)
-    q = get(params, "q", "") |> String
+    q     = get(params, "q", "") |> String
     limit = parse(Int, get(params, "limit", "10"))
     isempty(q) && return HTTP.Response(400, "Missing q")
 
     try
-        # results atteso: Vector di NamedTuple/Dict con campi completi
-        results = GeoEngine.search_airports(q, limit)
+        # 1) Cerca SEMPRE sia negli aeroporti (inclusi eliporti) che nei navaid
+        results_ap = AirportsNavaids.search_airports(q;  limit = limit)
+        results_nv = AirportsNavaids.search_navaids(q;   limit = limit)
 
-        # Funzione helper per estrarre valori in modo robusto
+        # Helper per leggere i campi in modo robusto
         _extract(a, sym::Symbol, default) =
             hasproperty(a, sym) ? getfield(a, sym) :
-            (a isa AbstractDict ? get(a, sym, get(a, String(sym), default)) : default)
+                (a isa AbstractDict ? get(a, sym, get(a, String(sym), default)) : default)
 
-        # AGGIUNTA DEI CAMPI: 'municipality' e 'iata_code'
-        items = [Dict(
-        "icao"        => String(_extract(a, :icao, "")),
-        "name"        => String(_extract(a, :name, "")),
-        "lat"        => Float64(_extract(a, :lat,  NaN)),
-        "lon"        => Float64(_extract(a, :lon,  NaN)),
-        "elev_ft"    => _extract(a, :elev_ft, missing),
-        "municipality" => String(_extract(a, :municipality, "")),
-        "iata_code"    => String(_extract(a, :iata_code, ""))
-        ) for a in results]
+        # 2) Mappa gli aeroporti
+        items_ap = [Dict(
+            "kind"         => "airport",
+            "icao"         => String(_extract(a, :icao, "")),
+            "name"         => String(_extract(a, :name, "")),
+            "lat"          => Float64(_extract(a, :lat,  NaN)),
+            "lon"          => Float64(_extract(a, :lon,  NaN)),
+            "elev_ft"      => _extract(a, :elev_ft, missing),
+            "municipality" => String(_extract(a, :municipality, "")),
+            "iata_code"    => String(_extract(a, :iata_code, ""))
+            ) for a in results_ap]
 
-        return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(Dict("items"=>items)))
+        # 3) Mappa i navaid (ident -> icao, type nel campo iata_code per mostrarlo fra parentesi)
+        items_nv = [Dict(
+            "kind"         => "navaid",
+            "icao"         => String(_extract(nv, :ident, "")),
+            "name"         => String(_extract(nv, :name, "")),
+            "lat"          => Float64(_extract(nv, :lat,  NaN)),
+            "lon"          => Float64(_extract(nv, :lon,  NaN)),
+            "elev_ft"      => _extract(nv, :elev_ft, missing),
+            "municipality" => "",
+            "iata_code"    => String(_extract(nv, :type, ""))  # es. "VOR", "NDB"
+            ) for nv in results_nv]
+
+            # 4) Unisci; opzionale: taglia a 'limit' risultati totali
+            items = vcat(items_ap, items_nv)
+            if length(items) > limit
+                items = items[1:limit]
+            end
+
+        return HTTP.Response(
+            200,
+            ["Content-Type" => "application/json"],
+            JSON3.write(Dict("items" => items))
+            )
     catch e
         @error "airports/search failed" exception=(e, catch_backtrace())
         return HTTP.Response(500, "airports search not available")
     end
 end
+
+
 
 function h_connection_state(_req::HTTP.Request)
     # metti qui eventuali flag reali se li hai:
@@ -951,25 +977,6 @@ function h_geo_circle(req::HTTP.Request)
     return HTTP.Response(200, ["Content-Type"=>"application/json"], body)
 end
 
-# GET /api/airports/search?q=...&limit=10
-function h_airports_search(req::HTTP.Request)
-    qs    = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
-    q     = String(get(qs, "q", ""))
-    limit = try parse(Int, get(qs, "limit", "10")) catch; 10 end
-    limit = clamp(limit, 1, 1000)  # anti-abuso
-
-    items = AirportsNavaids.search_airports(q; limit=limit)
-
-    arr = [(
-        icao = x.icao,
-        name = x.name,
-        lat  = x.lat,
-        lon  = x.lon,
-        elev = x.elev_ft
-        ) for x in items]
-
-    return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write((items=arr,)))
-end
 
 # GET /api/airports/resolve?icao=LIME
 function h_airports_resolve(req::HTTP.Request)
