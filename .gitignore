@@ -6,8 +6,9 @@ airports.jls
 navaids.jls
 gallery.html
 Example.txt
-src/txt
-Orthophotos
-Orthophotos-saved
+src/txt/
+Orthophotos/
+Orthophotos-saved/
+
 
 
