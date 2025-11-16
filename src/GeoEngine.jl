@@ -443,9 +443,8 @@ end
 
 """
 prepare_paths_and_location(cfg::Dict, home_path::String)
-
 Prepares the essential file system paths and target coordinates required for a download job.
-This function determines:
+    This function determines:
     1. The save path for generated tiles (typically `Orthophotos-saved`).
     2. The root path for final output tiles (typically `Orthophotos`).
     3. The list of coordinate centers (`route_vec`) around which tiles will be generated.
@@ -454,7 +453,7 @@ This function determines:
     - `home_path::String`: Base directory, typically the path of the current module or application.
     # Notes
     - The logic gracefully handles missing folders by creating them if needed.
-    - **MODIFICA:** Prioritizes the Current Working Directory (`pwd()`) over the package's internal path.
+        - **MODIFICA:** Prioritizes the Current Working Directory (`pwd()`) over the package's internal path.
 """
 function prepare_paths_and_location(cfg::Dict{String,Any}, home_path::AbstractString)
     route_vec = Vector{Any}()
@@ -467,14 +466,14 @@ function prepare_paths_and_location(cfg::Dict{String,Any}, home_path::AbstractSt
         push!(route_vec, (cfg["lat"], cfg["lon"]))
 
         # 2. Priorità media: file di rotta
-    elseif get(cfg, "route", nothing) !== nothing
+        elseif get(cfg, "route", nothing) !== nothing
         StatusMonitor.log_message("GeoEngine: Localizzazione tramite ROUTE ($(cfg["route"]))...")
         (loaded, pos) = Route.loadRoute(cfg["route"], radius_nm)
         append!(route_vec, loaded)
         position_on_route = pos
 
         # 3. Priorità bassa: codice ICAO
-    elseif get(cfg, "icao", nothing) !== nothing
+        elseif get(cfg, "icao", nothing) !== nothing
         StatusMonitor.log_message("GeoEngine: Localizzazione tramite ICAO ($(cfg["icao"]))...")
         (lat, lon, err) = Route.selectIcao(cfg["icao"], radius_nm)
         err == 0 && lat !== nothing && push!(route_vec, (lat, lon))
@@ -489,35 +488,41 @@ function prepare_paths_and_location(cfg::Dict{String,Any}, home_path::AbstractSt
     # LOGICA PERCORSI: Priorità CWD (pwd()) > Config > Fallback Interno
     # =================================================================================
 
-    # 1. Definizione dei percorsi di default basati sulla directory di lancio (CWD)
-    project_root = pwd()
-    default_ortho_path = joinpath(project_root, "Orthophotos")
-    default_save_path_suffix = joinpath(project_root, "Orthophotos-saved")
+    # --- STEP 1: Determina root_path (Orthophotos) ---
 
-
-    # Logica per percorsi di salvataggio (root_path, dove stanno i .dds finali)
+    project_root = pwd() # CWD (es. /home/abassign/fgfs-scenery/Photoscenery-GUI)
     root_path_cfg = get(cfg, "path", nothing)
+
+    local root_path # Definiamo root_path qui
 
     # Se nessun percorso è stato fornito dalla configurazione, ne cerchiamo uno di default.
     if root_path_cfg === nothing
-        @info "Nessun percorso specificato, ricerca di una cartella 'Orthophotos' esistente..."
+        @info "Nessun percorso 'path' specificato, ricerca di una cartella 'Orthophotos' esistente..."
 
-        # Inizializziamo i candidati dando la priorità alla CWD, poi al percorso interno
+        # Definiamo il default di CWD (da usare come fallback se non troviamo nulla)
+        default_ortho_path_in_cwd = joinpath(project_root, "Orthophotos")
+
+        # Inizializziamo i candidati
+        container_dir = normpath(dirname(project_root))
         candidates = [
-            normpath(default_ortho_path),                     # PWD/Orthophotos (MASSIMA PRIORITÀ)
-            normpath(joinpath(dirname(home_path), "Orthophotos")), # Un tentativo a un livello sopra la dir del modulo
-            normpath(joinpath(home_path, "Orthophotos")),           # La directory del modulo stesso
-        ]
+            # 1. PATH ESTERNO ASOLUTO: Directory 'photoscenery' sorella (dove sono i tuoi dati esistenti)
+            normpath(joinpath(container_dir, "photoscenery", "Orthophotos")),
+            # 2. PATH LOCALE: Directory di lancio (fallback)
+            normpath(default_ortho_path_in_cwd),
+            # 3. PATH INTERNI (Meno probabili)
+            normpath(joinpath(dirname(home_path), "Orthophotos")),
+            normpath(joinpath(home_path, "Orthophotos")),
+            ]
+
         # Verifica se un candidato esiste
         idx = findfirst(isdir, candidates)
-        # Se viene trovata una cartella esistente (anche PWD/Orthophotos), usiamo quella.
-        # Altrimenti, usiamo la PWD come default da creare (candidates[1]).
-            root_path = if idx !== nothing
+
+        root_path = if idx !== nothing
             @info "Trovata cartella esistente: $(candidates[idx])"
-            candidates[idx]
+            candidates[idx] # Usa il percorso trovato
         else
-            @info "Nessuna cartella esistente, verrà usato il percorso di default nella directory di lancio: $(candidates[1])"
-            candidates[1] # Forza l'uso di PWD/Orthophotos
+            @info "Nessuna cartella esistente, verrà usato il percorso di default nella directory di lancio: $(candidates[2])"
+            candidates[2] # Fallback al percorso CWD (default_ortho_path_in_cwd)
         end
     else
         # Usa il percorso fornito dalla configurazione
@@ -527,12 +532,32 @@ function prepare_paths_and_location(cfg::Dict{String,Any}, home_path::AbstractSt
     mkpath(root_path)
     StatusMonitor.log_message("GeoEngine: Percorso Orthophoto impostato su ⇒ $root_path")
 
-    # Logica per save_path
+    # --- STEP 2: Determina save_path (Orthophotos-saved) ---
+
     save_path_str = get(cfg, "save", nothing)
     nosave = get(cfg, "nosave", false)
 
-    # Se non è specificato, usiamo il percorso di default della CWD
-    save_path = nosave ? nothing : (save_path_str isa AbstractString ? save_path_str : default_save_path_suffix)
+    local save_path # Definiamo save_path qui
+
+    if nosave
+        save_path = nothing
+        elseif save_path_str isa AbstractString
+        # L'utente ha fornito un percorso esplicito
+        save_path = save_path_str
+    else
+        # **LOGICA CORRETTA (Default)**
+        # Costruisci il percorso di salvataggio basandoti sulla directory genitore
+        # del root_path che abbiamo appena trovato.
+
+        # es. dirname("/.../photoscenery/Orthophotos") -> "/.../photoscenery"
+        ortho_parent_dir = dirname(root_path)
+
+        # es. joinpath("/.../photoscenery", "Orthophotos-saved")
+        default_coherent_save_path = joinpath(ortho_parent_dir, "Orthophotos-saved")
+
+        save_path = default_coherent_save_path
+    end
+
     if save_path !== nothing
         mkpath(save_path)
         StatusMonitor.log_message("GeoEngine: Percorso di salvataggio impostato su ⇒ $save_path")

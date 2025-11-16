@@ -44,6 +44,9 @@ using Base.Threads: Atomic, atomic_add!
 
 # State Management
 
+# Stores the absolute path of the package root (e.g., .../Photoscenary/ftKWW/)
+const PACKAGE_ROOT_PATH = Ref{String}("")
+
 const SERVER_START_TIME = now()
 const FGFS_CONNECTION = Ref{Union{Connector.FGFSPositionRoute, Nothing}}(nothing)
 const APP_CONFIG = Ref{Dict}()
@@ -522,35 +525,43 @@ end
 #   - 204 No Content for favicon.ico requests
 #   - 404 Not Found if file doesn't exist
 #   - 500 Internal Server Error if file reading fails
-
 function serve_static_file(req)
     # Serve static files (HTML, CSS, JS) from the filesystem
     req.target == "/favicon.ico" && return HTTP.Response(204)
 
-    # Get the current working directory (e.g., /home/.../Photoscenery-GUI).
-    # This ensures that static files are found relative to the project root where Julia was launched.
-    project_root = pwd()
+    # Use the reliably stored package root path for static assets
+    package_root = PACKAGE_ROOT_PATH[]
 
-    # Determine the file path relative to the project root.
-    # If the target is "/", serve "map.html"; otherwise, strip the leading slash.
+    # Fallback/Safety Check: Se per qualche motivo il percorso è vuoto, usa la CWD
+    if isempty(package_root)
+        package_root = pwd()
+    end
+
+    # Determine the file path relative to the package root.
     target_file = req.target == "/" ? "map.html" : lstrip(req.target, '/')
 
-    # Construct the absolute file path by joining the root and the target file.
-    filepath = joinpath(project_root, target_file)
+    # Construct the absolute file path by joining the package root and the target file.
+    filepath = joinpath(package_root, target_file)
 
     # Check if the file exists.
-    isfile(filepath) || return HTTP.Response(404, "File not found: $(req.target)")
+    isfile(filepath) ||
+        return HTTP.Response(404, "File not found: $(req.target)")
 
     try
         body = read(filepath)
         # Determine appropriate MIME type based on file extension
-        mime = endswith(filepath, ".html")  ? "text/html" :
-        endswith(filepath, ".js")    ? "application/javascript" :
-        endswith(filepath, ".css")   ? "text/css" : [cite: 68]
-        endswith(filepath, ".json")  ? "application/json" : "text/plain"
+        # ... (logica MIME type omessa per brevità, ma non modificata)
+        mime = endswith(filepath, ".html")  ?
+        "text/html" :
+            endswith(filepath, ".js")    ?
+        "application/javascript" :
+            endswith(filepath, ".css")   ?
+        "text/css" :
+            endswith(filepath, ".json")  ?
+        "application/json" : "text/plain"
 
         return HTTP.Response(200, ["Content-Type" => mime], body)
-        catch e
+    catch e
         return HTTP.Response(500, "Internal error")
     end
 end
@@ -1228,6 +1239,23 @@ function run(args::Vector{String}=ARGS)
     # 1. Parsa gli argomenti e inizializza la configurazione globale
     final_args = isempty(args) ? DEFAULT_GUI_ARGS : args
     APP_CONFIG[] = AppConfig.parse_args(final_args)
+
+    # NEW: Determine the absolute path of the installed package root.
+    # This should reliably point to the path inside the Julia depot,
+    # overriding issues with @__DIR__.
+    try
+        # parentmodule(GuiMode) returns the Photoscenary module
+        pkg_root = Base.pkgdir(parentmodule(GuiMode))
+        if pkg_root !== nothing
+            PACKAGE_ROOT_PATH[] = String(pkg_root)
+        else
+            @warn "Could not resolve package root using pkgdir. Falling back to @__DIR__."
+            PACKAGE_ROOT_PATH[] = normpath(joinpath(@__DIR__, ".."))
+        end
+        catch e
+        @error "Error resolving package root: $e"
+        PACKAGE_ROOT_PATH[] = normpath(joinpath(@__DIR__, ".."))
+    end
 
     # 2. Determina i percorsi una sola volta all'avvio
     home_path = @__DIR__

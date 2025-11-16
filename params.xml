@@ -47,12 +47,12 @@
         <airports>
             <url>https://davidmegginson.github.io/ourairports-data/airports.csv</url>
             <file_path>airports.csv</file_path>
-            <date>2025-11-11</date>
+            <date>2025-11-16</date>
         </airports>
         <navaids>
             <url>https://davidmegginson.github.io/ourairports-data/navaids.csv</url>
             <file_path>navaids.csv</file_path>
-            <date>2025-11-11</date>
+            <date>2025-11-16</date>
         </navaids>
     </external_files>
     <presets><id name="fast-phnl">-i phnl -r 20 -s 2</id></presets>
