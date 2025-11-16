@@ -1,14 +1,28 @@
+# Dati Generati e Indici
 dds_files.json
 coverage.json
 airports.csv
 navaids.csv
 airports.jls
 navaids.jls
+
+# Output di Esecuzione e Test
 gallery.html
 Example.txt
+scanner.log
 src/txt/
+
+# Directory Dati Utente (Grandi e Voluminosi)
 Orthophotos/
 Orthophotos-saved/
 
+# Files e Directory Generati da Julia
+/Manifest.toml # Mantieni Project.toml, escludi Manifest.toml
+/LocalPreferences.toml
+/deps/
+/artifacts/
 
-
+# File di ambiente/cache di sistema
+.julia_history
+.DS_Store
+Thumbs.db
