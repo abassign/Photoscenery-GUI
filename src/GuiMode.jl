@@ -1261,6 +1261,27 @@ function run(args::Vector{String}=ARGS)
     home_path = @__DIR__
     _, _, initial_root_path, initial_save_path = GeoEngine.prepare_paths_and_location(APP_CONFIG[], home_path)
 
+    # Questa sezione sfrutta il PACKAGE_ROOT_PATH appena risolto.
+    project_root = pwd() # La directory di lancio (mutabile)
+    target_path = joinpath(project_root, "params.xml")
+
+    # 1. Trova la radice del pacchetto installato (Percorso Immutabile)
+    # package_root è già in PACKAGE_ROOT_PATH[] se l'inizializzazione è andata bene
+    source_path = joinpath(PACKAGE_ROOT_PATH[], "params.xml")
+
+    # 2. Logica di Fallback Automatico: Copia se non esiste
+    if isfile(source_path) && !isfile(target_path)
+        @info "Configurazione: params.xml non trovato nella directory di lancio. Copia da radice del pacchetto ($source_path)..."
+        try
+            cp(source_path, target_path)
+            @info "Configurazione: params.xml copiato con successo in $target_path"
+            catch e
+            @error "Configurazione: Impossibile copiare params.xml da $source_path" exception=e
+        end
+        elseif !isfile(source_path)
+        @warn "Il file params.xml originale non è stato trovato in $source_path. Continuazione senza lista server."
+    end
+
     # 3. Salva i percorsi definitivi nella configurazione globale
     APP_CONFIG[][ "path" ] = initial_root_path
     APP_CONFIG[][ "save" ] = initial_save_path
