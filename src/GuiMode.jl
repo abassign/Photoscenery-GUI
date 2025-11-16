@@ -45,9 +45,7 @@ using Base.Threads: Atomic, atomic_add!
 # State Management
 
 const SERVER_START_TIME = now()
-
 const FGFS_CONNECTION = Ref{Union{Connector.FGFSPositionRoute, Nothing}}(nothing)
-
 const APP_CONFIG = Ref{Dict}()
 
 # Infinite job queue for processing download/conversion tasks
@@ -58,9 +56,11 @@ const COMPLETED_JOBS = Channel{Int}(Inf)
 const JOB_ID_COUNTER = Atomic{Int}(0)
 # Background worker task that processes the job queue
 const JOB_WORKER = Ref{Task}()
-
 # Reentrant lock for thread-safe FlightGear connection management
 const FGFS_LOCK = ReentrantLock()
+
+const DEFAULT_GUI_ARGS = ["--http", "--map=1"]
+
 
 # Function to get a new unique job ID in a thread-safe manner
 next_job_id() = atomic_add!(JOB_ID_COUNTER, 1)
@@ -515,29 +515,43 @@ end
 # It automatically determines the appropriate MIME type based on file extension.
 #
 # Parameters:
-#   - req: HTTP.Request object containing the target path
+#   - req: HTTP.Request object containing the target path
 #
 # Returns:
-#   - 200 OK with file content and appropriate Content-Type
-#   - 204 No Content for favicon.ico requests
-#   - 404 Not Found if file doesn't exist
-#   - 500 Internal Server Error if file reading fails
+#   - 200 OK with file content and appropriate Content-Type
+#   - 204 No Content for favicon.ico requests
+#   - 404 Not Found if file doesn't exist
+#   - 500 Internal Server Error if file reading fails
 
 function serve_static_file(req)
     # Serve static files (HTML, CSS, JS) from the filesystem
     req.target == "/favicon.ico" && return HTTP.Response(204)
-    filepath = req.target == "/" ? "map.html" : lstrip(req.target, '/')
+
+    # Get the current working directory (e.g., /home/.../Photoscenery-GUI).
+    # This ensures that static files are found relative to the project root where Julia was launched.
+    project_root = pwd()
+
+    # Determine the file path relative to the project root.
+    # If the target is "/", serve "map.html"; otherwise, strip the leading slash.
+    target_file = req.target == "/" ? "map.html" : lstrip(req.target, '/')
+
+    # Construct the absolute file path by joining the root and the target file.
+    filepath = joinpath(project_root, target_file)
+
+    # Check if the file exists.
     isfile(filepath) || return HTTP.Response(404, "File not found: $(req.target)")
+
     try
         body = read(filepath)
         # Determine appropriate MIME type based on file extension
         mime = endswith(filepath, ".html")  ? "text/html" :
-            endswith(filepath, ".js")    ? "application/javascript" :
-                endswith(filepath, ".css")   ? "text/css" :
-                    endswith(filepath, ".json")  ? "application/json" : "text/plain"
-                HTTP.Response(200, ["Content-Type" => mime], body)
-                catch e
-        HTTP.Response(500, "Internal error")
+        endswith(filepath, ".js")    ? "application/javascript" :
+        endswith(filepath, ".css")   ? "text/css" : [cite: 68]
+        endswith(filepath, ".json")  ? "application/json" : "text/plain"
+
+        return HTTP.Response(200, ["Content-Type" => mime], body)
+        catch e
+        return HTTP.Response(500, "Internal error")
     end
 end
 
@@ -1212,7 +1226,8 @@ end
 
 function run(args::Vector{String}=ARGS)
     # 1. Parsa gli argomenti e inizializza la configurazione globale
-    APP_CONFIG[] = AppConfig.parse_args(args)
+    final_args = isempty(args) ? DEFAULT_GUI_ARGS : args
+    APP_CONFIG[] = AppConfig.parse_args(final_args)
 
     # 2. Determina i percorsi una sola volta all'avvio
     home_path = @__DIR__

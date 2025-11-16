@@ -445,35 +445,16 @@ end
 prepare_paths_and_location(cfg::Dict, home_path::String)
 
 Prepares the essential file system paths and target coordinates required for a download job.
-
-    This function determines:
+This function determines:
     1. The save path for generated tiles (typically `Orthophotos-saved`).
     2. The root path for final output tiles (typically `Orthophotos`).
     3. The list of coordinate centers (`route_vec`) around which tiles will be generated.
-
-    If the configuration includes a predefined route, it is used directly. Otherwise, a single
-    target area is created based on the provided `lat`, `lon`, and `radius`.
-
     # Arguments
-    - `cfg::Dict`: Configuration dictionary containing keys like:
-    - `"lat"`, `"lon"`: Central coordinates of the area (required).
-    - `"radius"`: Radius of coverage (in degrees, required).
-    - `"save_path"` (optional): Custom override for the output path.
-    - `"path"` (optional): Path to an existing orthophoto root directory.
+    - `cfg::Dict`: Configuration dictionary.
     - `home_path::String`: Base directory, typically the path of the current module or application.
-
-    # Returns
-    - `route_vec::Vector{Tuple{Float64, Float64}}`: List of center points for target areas.
-    - `radius::Float64`: The radius used for area generation.
-    - `root_path::String`: Path where final `.dds` tiles will be stored.
-    - `save_path::String`: Path where intermediate and temporary data will be stored.
-
     # Notes
     - The logic gracefully handles missing folders by creating them if needed.
-    - If no explicit path is given, it defaults to searching for a folder named `Orthophotos`.
-
-    # Example
-    route, radius, root, save = prepare_paths_and_location(cfg, @__DIR__)
+    - **MODIFICA:** Prioritizes the Current Working Directory (`pwd()`) over the package's internal path.
 """
 function prepare_paths_and_location(cfg::Dict{String,Any}, home_path::AbstractString)
     route_vec = Vector{Any}()
@@ -504,36 +485,54 @@ function prepare_paths_and_location(cfg::Dict{String,Any}, home_path::AbstractSt
         push!(route_vec, (47.26, 11.34))
     end
 
-    # Logica per percorsi di salvataggio
-    root_path = get(cfg, "path", nothing)
-    # Se nessun percorso è stato fornito dalla configurazione, ne cerchiamo uno di default.
-    if root_path === nothing
-        @info "Nessun percorso specificato, ricerca di una cartella 'Orthophotos' esistente..."
-        candidates = [
-            normpath(joinpath(dirname(dirname(home_path)), "photoscenery", "Orthophotos")),
-            normpath(joinpath(dirname(home_path), "photoscenery", "Orthophotos")),
-            normpath(joinpath(home_path, "photoscenery", "Orthophotos")),
-            ]
-        idx = findfirst(isdir, candidates)
+    # =================================================================================
+    # LOGICA PERCORSI: Priorità CWD (pwd()) > Config > Fallback Interno
+    # =================================================================================
 
-        # Se viene trovata una cartella esistente, usiamo quella.
-        # Altrimenti, usiamo il terzo candidato come default da creare.
-        root_path = if idx !== nothing
+    # 1. Definizione dei percorsi di default basati sulla directory di lancio (CWD)
+    project_root = pwd()
+    default_ortho_path = joinpath(project_root, "Orthophotos")
+    default_save_path_suffix = joinpath(project_root, "Orthophotos-saved")
+
+
+    # Logica per percorsi di salvataggio (root_path, dove stanno i .dds finali)
+    root_path_cfg = get(cfg, "path", nothing)
+
+    # Se nessun percorso è stato fornito dalla configurazione, ne cerchiamo uno di default.
+    if root_path_cfg === nothing
+        @info "Nessun percorso specificato, ricerca di una cartella 'Orthophotos' esistente..."
+
+        # Inizializziamo i candidati dando la priorità alla CWD, poi al percorso interno
+        candidates = [
+            normpath(default_ortho_path),                     # PWD/Orthophotos (MASSIMA PRIORITÀ)
+            normpath(joinpath(dirname(home_path), "Orthophotos")), # Un tentativo a un livello sopra la dir del modulo
+            normpath(joinpath(home_path, "Orthophotos")),           # La directory del modulo stesso
+        ]
+        # Verifica se un candidato esiste
+        idx = findfirst(isdir, candidates)
+        # Se viene trovata una cartella esistente (anche PWD/Orthophotos), usiamo quella.
+        # Altrimenti, usiamo la PWD come default da creare (candidates[1]).
+            root_path = if idx !== nothing
             @info "Trovata cartella esistente: $(candidates[idx])"
             candidates[idx]
         else
-            @info "Nessuna cartella esistente, verrà usato il percorso di default: $(candidates[3])"
-            candidates[3]
+            @info "Nessuna cartella esistente, verrà usato il percorso di default nella directory di lancio: $(candidates[1])"
+            candidates[1] # Forza l'uso di PWD/Orthophotos
         end
+    else
+        # Usa il percorso fornito dalla configurazione
+        root_path = root_path_cfg
     end
+
     mkpath(root_path)
     StatusMonitor.log_message("GeoEngine: Percorso Orthophoto impostato su ⇒ $root_path")
 
-    # Logica per save_path (invariata)
+    # Logica per save_path
     save_path_str = get(cfg, "save", nothing)
     nosave = get(cfg, "nosave", false)
-    save_path = nosave ? nothing : (save_path_str isa AbstractString ? save_path_str : root_path * "-saved")
 
+    # Se non è specificato, usiamo il percorso di default della CWD
+    save_path = nosave ? nothing : (save_path_str isa AbstractString ? save_path_str : default_save_path_suffix)
     if save_path !== nothing
         mkpath(save_path)
         StatusMonitor.log_message("GeoEngine: Percorso di salvataggio impostato su ⇒ $save_path")

@@ -45,9 +45,7 @@ using Base.Threads: Atomic, atomic_add!
 # State Management
 
 const SERVER_START_TIME = now()
-
 const FGFS_CONNECTION = Ref{Union{Connector.FGFSPositionRoute, Nothing}}(nothing)
-
 const APP_CONFIG = Ref{Dict}()
 
 # Infinite job queue for processing download/conversion tasks
@@ -58,9 +56,11 @@ const COMPLETED_JOBS = Channel{Int}(Inf)
 const JOB_ID_COUNTER = Atomic{Int}(0)
 # Background worker task that processes the job queue
 const JOB_WORKER = Ref{Task}()
-
 # Reentrant lock for thread-safe FlightGear connection management
 const FGFS_LOCK = ReentrantLock()
+
+const DEFAULT_GUI_ARGS = ["--http", "--map=1"]
+
 
 # Function to get a new unique job ID in a thread-safe manner
 next_job_id() = atomic_add!(JOB_ID_COUNTER, 1)
@@ -515,29 +515,43 @@ end
 # It automatically determines the appropriate MIME type based on file extension.
 #
 # Parameters:
-#   - req: HTTP.Request object containing the target path
+#   - req: HTTP.Request object containing the target path
 #
 # Returns:
-#   - 200 OK with file content and appropriate Content-Type
-#   - 204 No Content for favicon.ico requests
-#   - 404 Not Found if file doesn't exist
-#   - 500 Internal Server Error if file reading fails
+#   - 200 OK with file content and appropriate Content-Type
+#   - 204 No Content for favicon.ico requests
+#   - 404 Not Found if file doesn't exist
+#   - 500 Internal Server Error if file reading fails
 
 function serve_static_file(req)
     # Serve static files (HTML, CSS, JS) from the filesystem
     req.target == "/favicon.ico" && return HTTP.Response(204)
-    filepath = req.target == "/" ? "map.html" : lstrip(req.target, '/')
+
+    # Get the current working directory (e.g., /home/.../Photoscenery-GUI).
+    # This ensures that static files are found relative to the project root where Julia was launched.
+    project_root = pwd()
+
+    # Determine the file path relative to the project root.
+    # If the target is "/", serve "map.html"; otherwise, strip the leading slash.
+    target_file = req.target == "/" ? "map.html" : lstrip(req.target, '/')
+
+    # Construct the absolute file path by joining the root and the target file.
+    filepath = joinpath(project_root, target_file)
+
+    # Check if the file exists.
     isfile(filepath) || return HTTP.Response(404, "File not found: $(req.target)")
+
     try
         body = read(filepath)
         # Determine appropriate MIME type based on file extension
         mime = endswith(filepath, ".html")  ? "text/html" :
-            endswith(filepath, ".js")    ? "application/javascript" :
-                endswith(filepath, ".css")   ? "text/css" :
-                    endswith(filepath, ".json")  ? "application/json" : "text/plain"
-                HTTP.Response(200, ["Content-Type" => mime], body)
-                catch e
-        HTTP.Response(500, "Internal error")
+        endswith(filepath, ".js")    ? "application/javascript" :
+        endswith(filepath, ".css")   ? "text/css" : [cite: 68]
+        endswith(filepath, ".json")  ? "application/json" : "text/plain"
+
+        return HTTP.Response(200, ["Content-Type" => mime], body)
+        catch e
+        return HTTP.Response(500, "Internal error")
     end
 end
 
@@ -764,36 +778,62 @@ end
 
 function h_airports_search(req::HTTP.Request)
     params = HTTP.queryparams(req)
-    q = get(params, "q", "") |> String
+    q     = get(params, "q", "") |> String
     limit = parse(Int, get(params, "limit", "10"))
     isempty(q) && return HTTP.Response(400, "Missing q")
 
     try
-        # results atteso: Vector di NamedTuple/Dict con campi completi
-        results = GeoEngine.search_airports(q, limit)
+        # 1) Cerca SEMPRE sia negli aeroporti (inclusi eliporti) che nei navaid
+        results_ap = AirportsNavaids.search_airports(q;  limit = limit)
+        results_nv = AirportsNavaids.search_navaids(q;   limit = limit)
 
-        # Funzione helper per estrarre valori in modo robusto
+        # Helper per leggere i campi in modo robusto
         _extract(a, sym::Symbol, default) =
             hasproperty(a, sym) ? getfield(a, sym) :
-            (a isa AbstractDict ? get(a, sym, get(a, String(sym), default)) : default)
+                (a isa AbstractDict ? get(a, sym, get(a, String(sym), default)) : default)
 
-        # AGGIUNTA DEI CAMPI: 'municipality' e 'iata_code'
-        items = [Dict(
-        "icao"        => String(_extract(a, :icao, "")),
-        "name"        => String(_extract(a, :name, "")),
-        "lat"        => Float64(_extract(a, :lat,  NaN)),
-        "lon"        => Float64(_extract(a, :lon,  NaN)),
-        "elev_ft"    => _extract(a, :elev_ft, missing),
-        "municipality" => String(_extract(a, :municipality, "")),
-        "iata_code"    => String(_extract(a, :iata_code, ""))
-        ) for a in results]
+        # 2) Mappa gli aeroporti
+        items_ap = [Dict(
+            "kind"         => "airport",
+            "icao"         => String(_extract(a, :icao, "")),
+            "name"         => String(_extract(a, :name, "")),
+            "lat"          => Float64(_extract(a, :lat,  NaN)),
+            "lon"          => Float64(_extract(a, :lon,  NaN)),
+            "elev_ft"      => _extract(a, :elev_ft, missing),
+            "municipality" => String(_extract(a, :municipality, "")),
+            "iata_code"    => String(_extract(a, :iata_code, ""))
+            ) for a in results_ap]
 
-        return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(Dict("items"=>items)))
+        # 3) Mappa i navaid (ident -> icao, type nel campo iata_code per mostrarlo fra parentesi)
+        items_nv = [Dict(
+            "kind"         => "navaid",
+            "icao"         => String(_extract(nv, :ident, "")),
+            "name"         => String(_extract(nv, :name, "")),
+            "lat"          => Float64(_extract(nv, :lat,  NaN)),
+            "lon"          => Float64(_extract(nv, :lon,  NaN)),
+            "elev_ft"      => _extract(nv, :elev_ft, missing),
+            "municipality" => "",
+            "iata_code"    => String(_extract(nv, :type, ""))  # es. "VOR", "NDB"
+            ) for nv in results_nv]
+
+            # 4) Unisci; opzionale: taglia a 'limit' risultati totali
+            items = vcat(items_ap, items_nv)
+            if length(items) > limit
+                items = items[1:limit]
+            end
+
+        return HTTP.Response(
+            200,
+            ["Content-Type" => "application/json"],
+            JSON3.write(Dict("items" => items))
+            )
     catch e
         @error "airports/search failed" exception=(e, catch_backtrace())
         return HTTP.Response(500, "airports search not available")
     end
 end
+
+
 
 function h_connection_state(_req::HTTP.Request)
     # metti qui eventuali flag reali se li hai:
@@ -951,25 +991,6 @@ function h_geo_circle(req::HTTP.Request)
     return HTTP.Response(200, ["Content-Type"=>"application/json"], body)
 end
 
-# GET /api/airports/search?q=...&limit=10
-function h_airports_search(req::HTTP.Request)
-    qs    = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
-    q     = String(get(qs, "q", ""))
-    limit = try parse(Int, get(qs, "limit", "10")) catch; 10 end
-    limit = clamp(limit, 1, 1000)  # anti-abuso
-
-    items = AirportsNavaids.search_airports(q; limit=limit)
-
-    arr = [(
-        icao = x.icao,
-        name = x.name,
-        lat  = x.lat,
-        lon  = x.lon,
-        elev = x.elev_ft
-        ) for x in items]
-
-    return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write((items=arr,)))
-end
 
 # GET /api/airports/resolve?icao=LIME
 function h_airports_resolve(req::HTTP.Request)
@@ -1205,7 +1226,8 @@ end
 
 function run(args::Vector{String}=ARGS)
     # 1. Parsa gli argomenti e inizializza la configurazione globale
-    APP_CONFIG[] = AppConfig.parse_args(args)
+    final_args = isempty(args) ? DEFAULT_GUI_ARGS : args
+    APP_CONFIG[] = AppConfig.parse_args(final_args)
 
     # 2. Determina i percorsi una sola volta all'avvio
     home_path = @__DIR__
