@@ -169,7 +169,7 @@ Una tupla `(is_consistent, mismatch_percentage)` dove:
 - `is_consistent`: `true` se la percentuale di discrepanze è al di sotto della soglia.
 - `mismatch_percentage`: La percentuale di file non consistenti trovata nel campione.
 """
-function _validate_index_consistency(file_data::Dict{String, Any})::Tuple{Bool, Float64}
+function _validate_index_consistency(file_data::AbstractDict)::Tuple{Bool, Float64}
     num_files_in_index = length(file_data)
     if num_files_in_index == 0
         return (true, 0.0) # Un indice vuoto è sempre consistente.
