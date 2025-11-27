@@ -257,38 +257,38 @@ module Geodesics
     """
     find_closest_point_on_segment(p, a, b) -> (lat, lon)
 
-    Trova il punto sul segmento geodetico `a`--`b` più vicino al punto `p`.
-    `p`, `a`, e `b` sono punti con campi `lat` e `lon` in gradi.
-    Ritorna le coordinate (lat, lon) del punto più vicino.
+    Finds the point on the geodesic segment `a`--`b` closest to point `p`.
+    `p`, `a`, and `b` are points with `lat` and `lon` fields in degrees.
+    Returns the coordinates (lat, lon) of the closest point.
     """
     function find_closest_point_on_segment(p, a, b)
-        # Converte i gradi in radianti per i calcoli
+        # Convert degrees to radians for calculations
         p_rad = (lat=deg2rad(p.lat), lon=deg2rad(p.lon))
         a_rad = (lat=deg2rad(a.lat), lon=deg2rad(a.lon))
         b_rad = (lat=deg2rad(b.lat), lon=deg2rad(b.lon))
 
-        # Vettori Cartesiani (assumendo una sfera unitaria)
+        # Cartesian Vectors (assuming a unit sphere)
         v_a = (x=cos(a_rad.lat)*cos(a_rad.lon), y=cos(a_rad.lat)*sin(a_rad.lon), z=sin(a_rad.lat))
         v_b = (x=cos(b_rad.lat)*cos(b_rad.lon), y=cos(b_rad.lat)*sin(b_rad.lon), z=sin(b_rad.lat))
         v_p = (x=cos(p_rad.lat)*cos(p_rad.lon), y=cos(p_rad.lat)*sin(p_rad.lon), z=sin(p_rad.lat))
 
-        # Vettore del segmento di rotta
+        # Route segment vector
         v_ab = (x=v_b.x-v_a.x, y=v_b.y-v_a.y, z=v_b.z-v_a.z)
 
-        # Proiezione del vettore dal punto 'a' al punto 'p' sul segmento 'ab'
+        # Projection of vector from point 'a' to point 'p' on segment 'ab'
         v_ap = (x=v_p.x-v_a.x, y=v_p.y-v_a.y, z=v_p.z-v_a.z)
         dot_product = v_ap.x*v_ab.x + v_ap.y*v_ab.y + v_ap.z*v_ab.z
         len_sq_ab = v_ab.x^2 + v_ab.y^2 + v_ab.z^2
 
-        # t è il fattore di proiezione. Se 0 <= t <= 1, la proiezione cade nel segmento.
+        # t is the projection factor. If 0 <= t <= 1, the projection falls on the segment.
         t = max(0.0, min(1.0, dot_product / len_sq_ab))
 
-        # Calcola le coordinate del punto proiettato
+        # Calculate projected point coordinates
         closest_x = v_a.x + t * v_ab.x
         closest_y = v_a.y + t * v_ab.y
         closest_z = v_a.z + t * v_ab.z
 
-        # Riconverti le coordinate cartesiane in geodetiche (lat, lon)
+        # Convert Cartesian coordinates back to geodetic (lat, lon)
         final_lon_rad = atan(closest_y, closest_x)
         hyp = sqrt(closest_x^2 + closest_y^2)
         final_lat_rad = atan(closest_z, hyp)

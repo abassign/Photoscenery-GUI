@@ -16,7 +16,7 @@ This version adds an interactive interface, parallel chunk downloading, an assem
 
 - **DDS Management**:  
   Imports existing DDS files without re-downloading.  
-  High-performance `png2ddsDXT1` / `dds2pngDXT1` conversions (no ImageMagick dependency).  
+  High-performance `png2ddsDXT1` / `dds2pngDXT1` conversions.  
 
 - **FlightGear Integration**:  
   Download around the aircraft in flight via FGFS telnet; output path ready as a Scenery source.  

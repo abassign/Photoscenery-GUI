@@ -26,13 +26,14 @@ using Random: shuffle
 # --- Exports ---
 # Functions made available when this module is used by other code
 export startFind, find_file_by_id, moveImage, set_data_file_path!, syncScan, printStats, place_tile!, generate_coverage_json, has_suitable_tile, get_tile_score
+export get_total_indexed_size_bytes, get_all_indexed_records, update_path_in_index
 
-# Variabile Globale per l'intervallo di scansione
-const SCAN_INTERVAL_S = Ref(60) # Default a 60 secondi
-# Numero di file da controllare casualmente all'avvio per validare l'indice.
+# Global Variable for scan interval
+const SCAN_INTERVAL_S = Ref(60) # Default to 60 seconds
+# Number of files to randomly check at startup to validate the index.
 const QUICK_CHECK_SAMPLE_SIZE = 100
-# Se la percentuale di file inconsistenti (mancanti o modificati) supera questa soglia,
-# l'intero indice verrà rigenerato.
+# If the percentage of inconsistent files (missing or modified) exceeds this threshold,
+# the entire index will be regenerated.
 const QUICK_CHECK_FAILURE_THRESHOLD_PERCENT = 1.0
 
 const SCORE_CACHE = Dict{Tuple{String,Int64}, Tuple{Float64,Int}}()
@@ -41,7 +42,7 @@ const SCORE_LOCK  = ReentrantLock()
 const SKIP_NOACCESS = e -> begin
     dir = hasproperty(e, :path) ? getproperty(e, :path) :
           hasproperty(e, :file) ? getproperty(e, :file) :
-          "(percorso sconosciuto)"
+          "(unknown path)"
     @warn "ddsFindScanner.Skipping inaccessible directory: $dir — $(e.msg)"
 end
 
@@ -92,6 +93,7 @@ end
 
 # Thread lock for safe concurrent access to shared data
 const _data_lock = ReentrantLock()
+const _coverage_lock = ReentrantLock()
 # In-memory dictionary holding information about found files (path -> details)
 const _existing_data = Dict{String, Any}()
 # Boolean flag to control the background update loop
@@ -147,7 +149,7 @@ function find_all_versions_by_id(id::Int)
     lock(_data_lock) do
         for (path, record) in _existing_data
             if get(record, "id", -1) == id
-                push!(matches, record) # Aggiunge l'intero record (Dict)
+                push!(matches, record) # Adds the entire record (Dict)
             end
         end
     end
@@ -156,59 +158,112 @@ end
 
 
 """
+    get_total_indexed_size_bytes() -> Int64
+Returns the total size in bytes of all indexed DDS/PNG files.
+"""
+function get_total_indexed_size_bytes()::Int64
+    total_size_bytes = 0
+    lock(_data_lock) do
+        for (_, record) in _existing_data
+            total_size_bytes += get(record, "size", 0)
+        end
+    end
+    return total_size_bytes
+end
+
+"""
+    get_all_indexed_records() -> Vector{Dict}
+Returns a vector of all file records (including path and metadata).
+"""
+function get_all_indexed_records()::Vector{Dict}
+    records = []
+    lock(_data_lock) do
+        for (path, record) in _existing_data
+            # Create a full record including the path key
+            full_record = copy(record)
+            full_record["path"] = path # Include the path in the record copy
+            push!(records, full_record)
+        end
+    end
+    return records
+end
+
+"""
+    update_path_in_index(old_path::String, new_path::String)
+
+Updates the file index to reflect a change in file location.
+Requires holding the lock outside or modifying the implementation (using lock inside for safety).
+"""
+function update_path_in_index(old_path::String, new_path::String)
+    lock(_data_lock) do
+        if haskey(_existing_data, old_path)
+            record = delete!(_existing_data, old_path)
+            _existing_data[new_path] = record
+            @dinfo "ddsFindScanner: Index updated from $old_path to $new_path."
+
+            # Save the updated index immediately after a successful move
+            save_data(DEFAULT_METADATA, _existing_data)
+        else
+            @dwarn "ddsFindScanner: Cannot update path for $old_path, not found in index."
+        end
+    end
+end
+
+
+"""
     _validate_index_consistency(file_data::Dict{String, Any}) -> Tuple{Bool, Float64}
 
-Esegue un controllo di coerenza rapido su un campione di voci dell'indice.
-Verifica se i file esistono ancora e se la loro data di modifica non è cambiata.
+Performs a quick consistency check on a sample of index entries.
+Verifies if files still exist and if their modification date has not changed.
 
-# Argomenti
-- `file_data`: Il dizionario di file caricato da `dds_files.json`.
+# Arguments
+- `file_data`: The file dictionary loaded from `dds_files.json`.
 
-# Ritorna
-Una tupla `(is_consistent, mismatch_percentage)` dove:
-- `is_consistent`: `true` se la percentuale di discrepanze è al di sotto della soglia.
-- `mismatch_percentage`: La percentuale di file non consistenti trovata nel campione.
+# Returns
+A tuple `(is_consistent, mismatch_percentage)` where:
+- `is_consistent`: `true` if the discrepancy percentage is below the threshold.
+- `mismatch_percentage`: The percentage of inconsistent files found in the sample.
 """
 function _validate_index_consistency(file_data::AbstractDict)::Tuple{Bool, Float64}
     num_files_in_index = length(file_data)
     if num_files_in_index == 0
-        return (true, 0.0) # Un indice vuoto è sempre consistente.
+        return (true, 0.0) # An empty index is always consistent.
     end
 
-    # Determina la dimensione effettiva del campione da controllare
+    # Determine the actual sample size to check
     sample_size = min(QUICK_CHECK_SAMPLE_SIZE, num_files_in_index)
 
-    # Estrai un campione casuale di percorsi dall'indice
+    # Extract a random sample of paths from the index
     all_paths = collect(keys(file_data))
-    # `shuffle!` modifica l'array sul posto, quindi usiamo una copia.
+    # `shuffle!` modifies the array in place, so we use a copy.
     sample_paths = first(shuffle(copy(all_paths)), sample_size)
 
     inconsistent_count = 0
-    @info "ddsFindScanner: Esecuzione Quick Check su $sample_size file (su $num_files_in_index totali)..."
+    @info "ddsFindScanner: Running Quick Check on $sample_size files (out of $num_files_in_index total)..."
 
     for path in sample_paths
         record = file_data[path]
 
-        # 1. Controlliamo se il file esiste ancora
+        # 1. Check if the file still exists
         if !isfile(path)
             inconsistent_count += 1
-            continue # Inutile controllare altro se il file non c'è
+            continue # Useless to check further if the file is missing
         end
 
-        # 2. Controlliamo se la data di modifica corrisponde
+        # 2. Check if the modification date matches
         try
             saved_mtime_str = get(record, "last_modified", "")
-            # La funzione stat() può fallire se il file viene cancellato nel frattempo
+            # The stat() function can fail if the file is deleted in the meantime
             current_mtime_dt = Dates.unix2datetime(stat(path).mtime)
             saved_mtime_dt = Dates.DateTime(saved_mtime_str, "yyyy-mm-dd HH:MM:SS")
 
-            # Confrontiamo con una tolleranza di 1 secondo per evitare problemi di precisione
+            # Compare with a 1 second tolerance to avoid precision issues
             if abs(saved_mtime_dt - current_mtime_dt) > Millisecond(1000)
                 inconsistent_count += 1
             end
         catch e
-            # Se `stat` fallisce o il parsing della data non va a buon fine, consideralo inconsistente.
-            @warn "ddsFindScanner: Errore durante il controllo del file '$path' nel Quick Check." exception=(e, catch_backtrace())
+            # If `stat` fails or date parsing fails, consider it inconsistent.
+            @warn "ddsFindScanner: Error checking file '$path' in Quick Check." exception=(e, catch_backtrace())
             inconsistent_count += 1
         end
     end
@@ -217,9 +272,9 @@ function _validate_index_consistency(file_data::AbstractDict)::Tuple{Bool, Float
     is_consistent = mismatch_percentage <= QUICK_CHECK_FAILURE_THRESHOLD_PERCENT
 
     if !is_consistent
-        @warn "ddsFindScanner: Quick Check fallito. Rilevato un disallineamento del $(@sprintf("%.1f", mismatch_percentage))%."
+        @warn "ddsFindScanner: Quick Check failed. Detected a mismatch of $(@sprintf("%.1f", mismatch_percentage))%."
     else
-        @info "ddsFindScanner: Quick Check superato. L'indice è consistente."
+        @info "ddsFindScanner: Quick Check passed. The index is consistent."
     end
 
     return (is_consistent, mismatch_percentage)
@@ -270,18 +325,18 @@ function get_file_info(path::String, isDDS::Bool = false, isPNG::Bool = false)
             height = dimension[3]
             sizeId = Commons.getSizeFromWidth(width)
 
-            # Calcoliamo lo score solo per i file validi e con dimensioni.
-            # Usiamo i valori di default per min_samples per non rallentare troppo la scansione.
+            # Calculate score only for valid files with dimensions.
+            # Use default values for min_samples to not slow down scanning too much.
             score_result = detail_score_file(path; min_samples=150, max_samples=1000)
             score = score_result.score
 
             if sizeId === nothing
-                # Restituiamo una tupla con il numero corretto di elementi
+                # Return a tuple with the correct number of elements
                 return (false, path, 0, nothing, "", -1, 0, 0, -1.0)
             end
 
             last_modified = Dates.format(Dates.unix2datetime(stat_info.mtime), "yyyy-mm-dd HH:MM:SS")
-            # Aggiungiamo lo score alla tupla restituita
+            # Add score to the returned tuple
             return (true, path, size, id, last_modified, sizeId, width, height, score)
         else
             return (false, path, 0, nothing, "", -1, 0, 0, -1.0)
@@ -398,21 +453,21 @@ the in-memory index, saving it to disk, and printing statistics.
 Continues until `_should_continue` is set to false.
 """
 function _periodic_update(scan_paths::Vector{String}, program_version::String)
-    # Crea un logger che scrive in append su un file 'scanner.log'
+    # Create a logger that appends to a 'scanner.log' file
     logger = SimpleLogger(open("scanner.log", "a"))
 
-    # Primo messaggio per sapere che il task è partito
+    # First message to know the task has started
     with_logger(logger) do
         @dinfo "ddsFindScanner._periodic_update: The Background scanning process will start in $(SCAN_INTERVAL_S[]) sec."
     end
 
     while _should_continue[]
         try
-            # Tutta la logica del ciclo viene eseguita con il logger impostato sul file
+            # All loop logic is executed with the logger set to the file
             with_logger(logger) do
                 @dinfo "ddsFindScanner._periodic_update: Starting new scan cycle..."
 
-                # La funzione scan_directories ora è più silenziosa
+                # The scan_directories function is now quieter
                 files_from_scan, dds_count, png_count = scan_directories(scan_paths)
                 @dinfo "ddsFindScanner._periodic_update: Scan complete. Found $dds_count DDS, $png_count PNG files."
 
@@ -420,12 +475,12 @@ function _periodic_update(scan_paths::Vector{String}, program_version::String)
                 updated_count = 0
 
                 lock(_data_lock) do
-                    # update_data ora ritorna i conteggi invece di stampare
+                    # update_data now returns counts instead of printing
                     added_count, updated_count = update_data(_existing_data, files_from_scan)
 
                     @dinfo "ddsFindScanner._periodic_update: Index update: $added_count new, $updated_count updated."
 
-                    # Salva l'indice solo se ci sono stati cambiamenti
+                    # Save index only if there were changes
                     if added_count > 0 || updated_count > 0
                         @dinfo "ddsFindScanner._periodic_update: Saving index to $(_data_file[])..."
                         current_metadata = Dict(
@@ -438,12 +493,12 @@ function _periodic_update(scan_paths::Vector{String}, program_version::String)
                     else
                         @dinfo "ddsFindScanner._periodic_update: No changes to the index. Skipping save."
                     end
-                end # fine del lock
+                end # end of lock
 
                 @dinfo "ddsFindScanner._periodic_update: Update cycle finished at $(Dates.format(Dates.now(), "HH:MM:SS"))."
-            end # fine del with_logger
+            end # end of with_logger
             catch e
-                # Anche gli errori vengono scritti sul file di log
+                # Errors are also written to the log file
                 with_logger(logger) do
                     @error "ddsFindScanner._periodic_update: Critical error during periodic update." exception=(e, catch_backtrace())
             end
@@ -489,8 +544,8 @@ function scan_directories(dirs_to_scan::Vector{String})
                         if (is_dds || is_png) && filename_pattern_match
                             info = get_file_info(full_path, is_dds, is_png)
                             if info[1]
-                                # Ora prendiamo 8 elementi (fino allo score)
-                                push!(file_data, info[2:9]) # MODIFICATO: da 2:8 a 2:9
+                                # Now we take 8 elements (up to score)
+                                push!(file_data, info[2:9]) # MODIFIED: from 2:8 to 2:9
                                 is_dds ? (dds_count += 1) : (png_count += 1)
                             end
                         end
@@ -508,16 +563,16 @@ end
 """
 generate_coverage_json()
 
-Genera il file `coverage.json` per la visualizzazione web. Applica una logica di
-priorità per mostrare solo la versione più rilevante di ogni tile:
-1. I tile nella cartella /Orthophotos/ hanno sempre la precedenza su quelli in /Orthophotos-saved/.
-2. A parità di locazione, viene scelta la versione con la risoluzione (`sizeId`) più alta.
-Il file generato include l'ID, il BBOX, il sizeId e la data di modifica per ogni tile.
+Generates the `coverage.json` file for web visualization. Applies a logic of
+priority to show only the most relevant version of each tile:
+1. Tiles in /Orthophotos/ folder always take precedence over those in /Orthophotos-saved/.
+2. Given the same location, the version with the highest resolution (`sizeId`) is chosen.
+The generated file includes ID, BBOX, sizeId and modification date for each tile.
 """
 function generate_coverage_json()
-    @info "ddsFindScanner: Avvio generazione di coverage.json con logica di priorità..."
+    @info "ddsFindScanner: Starting coverage.json generation with priority logic..."
 
-    # Funzione helper interna per calcolare il BBOX (invariata)
+    # Internal helper function to calculate BBOX (unchanged)
     function get_tile_bbox_from_id(tile_id::Int)
         _, _, lon_base, lat_base, x, y, _, _ = Commons.coordFromIndex(tile_id)
         lat_ref = lat_base + (y * 0.125) + 0.0625
@@ -527,14 +582,14 @@ function generate_coverage_json()
         return (latLL=latLL, lonLL=lonLL, latUR=latUR, lonUR=lonUR)
     end
 
-    # Dizionario per tenere traccia del miglior candidato per ogni tile_id
+    # Dictionary to track the best candidate for each tile_id
     tile_candidates = Dict{Int, Dict{String, Any}}()
 
     lock(_data_lock) do
         for (path, record) in _existing_data
             tile_id = get(record, "id", nothing)
             size_id = get(record, "sizeId", nothing)
-            # Leggiamo la data, con un valore di default per sicurezza
+            # Read date, with a default value for safety
             last_mod = get(record, "last_modified", "1970-01-01 00:00:00")
 
             detail_score = get(record, "detail_score", -1.0)
@@ -542,7 +597,7 @@ function generate_coverage_json()
 
             is_in_ortho = occursin("/Orthophotos/", path) && !occursin("/Orthophotos-saved/", path)
 
-            # Creiamo il record del candidato corrente, includendo la data
+            # Create current candidate record, including date
             current_candidate = Dict(
                 "sizeId" => size_id,
                 "isInOrtho" => is_in_ortho,
@@ -551,16 +606,16 @@ function generate_coverage_json()
                 )
 
             if !haskey(tile_candidates, tile_id)
-                # Se è il primo che troviamo, lo aggiungiamo come candidato
+                # If it's the first one found, add it as candidate
                 tile_candidates[tile_id] = current_candidate
             else
-                # Se abbiamo già un candidato, applichiamo le regole di priorità
+                # If we already have a candidate, apply priority rules
                 existing_candidate = tile_candidates[tile_id]
 
-                # REGOLA 1: Il nuovo è in Orthophotos, il vecchio no -> il nuovo vince.
+                # RULE 1: The new one is in Orthophotos, the old one is not -> the new one wins.
                 if current_candidate["isInOrtho"] && !existing_candidate["isInOrtho"]
                     tile_candidates[tile_id] = current_candidate
-                    # REGOLA 2: Entrambi sono nella stessa "zona" -> vince la risoluzione più alta.
+                    # RULE 2: Both are in the same "zone" -> highest resolution wins.
                     elseif current_candidate["isInOrtho"] == existing_candidate["isInOrtho"]
                     if current_candidate["sizeId"] > existing_candidate["sizeId"]
                         tile_candidates[tile_id] = current_candidate
@@ -570,7 +625,7 @@ function generate_coverage_json()
         end
     end
 
-    # Costruiamo l'output finale basandoci sui candidati scelti
+    # Build final output based on chosen candidates
     output_data = []
     for (tile_id, info) in tile_candidates
         push!(output_data, Dict(
@@ -582,14 +637,16 @@ function generate_coverage_json()
             ))
     end
 
-    @info "ddsFindScanner: Scrivo $(length(output_data)) tile unici in coverage.json..."
+    @info "ddsFindScanner: Writing $(length(output_data)) unique tiles to coverage.json..."
     try
-        open("coverage.json", "w") do f
-            JSON.print(f, output_data)
+        lock(_coverage_lock) do
+            open("coverage.json", "w") do f
+                JSON.print(f, output_data)
+            end
         end
-        @info "ddsFindScanner: Report 'coverage.json' aggiornato con successo! ✅"
-        catch e
-        @error "ddsFindScanner: Impossibile scrivere il file coverage.json" exception=(e, catch_backtrace())
+        @info "ddsFindScanner: Report 'coverage.json' successfully updated! ✅ (Path: $(abspath("coverage.json")))"
+    catch e
+        @error "ddsFindScanner: Unable to write coverage.json file" exception=(e, catch_backtrace())
     end
 end
 
@@ -601,12 +658,12 @@ Loads the persistent index. Returns a tuple: (metadata, file_data).
 Returns (nothing, empty_dict) if the file doesn't exist or is invalid.
     """
 function load_data()
-    file_path = _data_file[] # Usa il percorso globale
+    file_path = _data_file[] # Use global path
     if isfile(file_path)
         try
             @dinfo "ddsFindScanner.load_data: Loading existing data from $(file_path)..."
             json_data = JSON.parsefile(file_path)
-            # Controlla che la struttura sia quella attesa
+            # Check that structure is as expected
             if haskey(json_data, "metadata") && haskey(json_data, "files")
                 @dinfo "ddsFindScanner.load_data: Data loaded successfully."
                 return (json_data["metadata"], json_data["files"])
@@ -636,15 +693,15 @@ function save_data(metadata::Dict, file_data::Dict{String, Any})
         "files" => file_data
     )
     try
-        # Salva l'indice principale
+        # Save main index
         open(file_path, "w") do io
             JSON.print(io, full_data, 4)
         end
 
-        # --- AGGIORNAMENTO AUTOMATICO ---
-        # Dopo aver salvato, lancia la generazione di coverage.json
-        # in un task asincrono per non bloccare l'operazione corrente.
-        @info "ddsFindScanner.save_data: Indice principale salvato. Avvio rigenerazione di coverage.json..."
+        # --- AUTOMATIC UPDATE ---
+        # After saving, launch coverage.json generation
+        # in an asynchronous task to not block current operation.
+        @info "ddsFindScanner.save_data: Main index saved. Starting coverage.json regeneration..."
         @async generate_coverage_json()
 
     catch e
@@ -678,7 +735,7 @@ function update_data(existing_data::Dict{String, Any}, new_scan_results::Vector)
     updated_count = 0
     added_count = 0
 
-    # Aggiungiamo 'score' alla lista di variabili estratte dalla tupla
+    # Add 'score' to the list of variables extracted from the tuple
     for (path, size, id, last_modified_str, sizeId, width, height, score) in new_scan_results
         new_record = Dict(
             "id" => id,
@@ -691,7 +748,7 @@ function update_data(existing_data::Dict{String, Any}, new_scan_results::Vector)
         )
 
         if haskey(existing_data, path)
-            # La logica di aggiornamento basata su mtime non cambia
+            # Update logic based on mtime does not change
             existing_last_modified_str = existing_data[path]["last_modified"]
             try
                 parsed_existing = Dates.DateTime(existing_last_modified_str, "yyyy-mm-dd HH:MM:SS")
@@ -715,11 +772,11 @@ end
 """
 place_tile!(source_path, tile, rootPath, rootPath_saved)
 
-Funzione centralizzata e intelligente per posizionare un file tile.
-1.  Controlla se a destinazione (`rootPath`) esiste già un file.
-2.  Se esiste, lo sposta nella corretta directory di backup (`rootPath_saved`).
-3.  Sposta il file sorgente (`source_path`) nella destinazione finale.
-4.  Aggiorna l'indice dei file in tutte le fasi.
+Centralized and intelligent function to place a tile file.
+1.  Checks if a file already exists at destination (`rootPath`).
+2.  If it exists, moves it to the correct backup directory (`rootPath_saved`).
+3.  Moves source file (`source_path`) to final destination.
+4.  Updates file index in all phases.
 """
 function place_tile!(
     source_path::String,
@@ -736,55 +793,55 @@ function place_tile!(
     try
         dir10, dir1 = Commons.tile_dirs(tile.latLL, tile.lonLL)
         file_extension = splitext(source_path)[2]
-        filename = "$(tile.id)$(file_extension)" # Nome finale corretto
+        filename = "$(tile.id)$(file_extension)" # Correct final name
         final_dest_dir = joinpath(rootPath, dir10, dir1)
         final_dest_path = joinpath(final_dest_dir, filename)
 
-        # Se un file esiste già a destinazione...
+        # If a file already exists at destination...
         if isfile(final_dest_path)
             overwrite_mode = get(cfg, "over", 1)
 
-            # --- Blocco logica di sovrascrittura ---
+            # --- Overwrite logic block ---
             if overwrite_mode == 0
                 @info "ddsFindScanner.place_tile: Tile $(tile.id) exists. Archiving new tile as per --over 0 rule."
-                # Archiviamo il nuovo file invece di cancellarlo
+                # Archive the new file instead of deleting it
                 backup_dir = joinpath(rootPath_saved, string(tile.width), dir10, dir1)
-                backup_path = joinpath(backup_dir, filename) # Usa il nome finale corretto
+                backup_path = joinpath(backup_dir, filename) # Use the correct final name
                 mkpath(backup_dir)
                 mv(source_path, backup_path, force=true)
-                # (Opzionale: aggiornare l'indice per il file archiviato)
+                # (Optional: update index for archived file)
                 return true
             end
 
-            # Se siamo in over=1 o over=2, dobbiamo confrontare le dimensioni
+            # If we are in over=1 or over=2, we must compare dimensions
             is_success, actual_width, _ = Commons.getDDSSize(final_dest_path)
             if !is_success; is_success, actual_width, _ = Commons.getPNGSize(final_dest_path); end
 
-            # Check point di debug: stampa i valori prima del confronto
+            # Debug checkpoint: print values before comparison
             println("--- DEBUG place_tile! ---")
             println("Tile ID: $(tile.id)")
-            println("Larghezza NUOVO tile (tile.width): $(tile.width)")
-            println("Larghezza VECCHIO tile (actual_width): $(actual_width)")
+            println("NEW tile width (tile.width): $(tile.width)")
+            println("OLD tile width (actual_width): $(actual_width)")
             println("Overwrite Mode: $overwrite_mode")
             println("-------------------------")
 
             if !is_success
-                @warn "Impossibile leggere il file esistente a '$(final_dest_path)'. Verrà rimosso."
-                try; rm(final_dest_path, force=true); catch e; @error "Impossibile rimuovere il file corrotto" exception=(e, catch_backtrace()); end
+                @warn "Unable to read existing file at '$(final_dest_path)'. It will be removed."
+                try; rm(final_dest_path, force=true); catch e; @error "Unable to remove corrupt file" exception=(e, catch_backtrace()); end
             else
                 if overwrite_mode == 1 && tile.width <= actual_width
-                    @info "Tile esistente ($actual_width px) è migliore o uguale. Archivio il nuovo tile ($tile.width px)."
+                    @info "Existing tile ($actual_width px) is better or equal. Archiving new tile ($tile.width px)."
 
                     backup_dir = joinpath(rootPath_saved, string(tile.width), dir10, dir1)
                     backup_path = joinpath(backup_dir, filename)
                     mkpath(backup_dir)
                     mv(source_path, backup_path, force=true)
-                    # (Opzionale: aggiornare l'indice)
+                    # (Optional: update index)
                     return true
                 end
 
-                # Se siamo qui, dobbiamo sovrascrivere. Spostiamo il vecchio file nel backup.
-                @info "Backup del file esistente da '$final_dest_path'..."
+                # If we are here, we must overwrite. Move old file to backup.
+                @info "Backing up existing file from '$final_dest_path'..."
                 backup_dir = joinpath(rootPath_saved, string(actual_width), dir10, dir1)
                 backup_path = joinpath(backup_dir, filename)
                 mkpath(backup_dir)
@@ -799,12 +856,12 @@ function place_tile!(
             end
         end
 
-        # A questo punto, la destinazione finale è libera. Spostiamo il nuovo file.
-        @info "Posizionamento e rinomina del file da '$source_path' a '$final_dest_path'."
+        # At this point, final destination is free. Move new file.
+        @info "Placing and renaming file from '$source_path' to '$final_dest_path'."
         mkpath(final_dest_dir)
         mv(source_path, final_dest_path, force=true)
 
-        # Aggiorna l'indice con il nuovo file
+        # Update index with new file
         score_result = detail_score_file(final_dest_path; min_samples=150, max_samples=1000)
         score = score_result.score
         lock(_data_lock) do
@@ -822,15 +879,15 @@ function place_tile!(
         end
         return true
     catch e
-        @error "Errore durante il posizionamento del tile" exception=(e, catch_backtrace())
+        @error "Error placing tile" exception=(e, catch_backtrace())
         return false
     end
 end
 
 function moveImage(rootPath::String, rootPath_saved::String, id::Int, target_sizeId::Int, cfg::Dict)
-    @info "ddsFindScanner.moveImage: Ricerca tile da cache per ID $id, sizeId $target_sizeId"
+    @info "ddsFindScanner.moveImage: Searching tile from cache for ID $id, sizeId $target_sizeId"
 
-    # [La logica per trovare il "best_candidate" rimane la stessa]
+    # [Logic to find "best_candidate" remains the same]
     candidates = Tuple{String, Dict}[]
     lock(_data_lock) do
         for (path, record) in _existing_data
@@ -841,15 +898,15 @@ function moveImage(rootPath::String, rootPath_saved::String, id::Int, target_siz
     end
 
     if isempty(candidates)
-        @info "ddsFindScanner.moveImage: Nessun candidato trovato."
+        @info "ddsFindScanner.moveImage: No candidate found."
         return "not_found"
     end
 
     sort!(candidates, by = x -> get(x[2], "last_modified", ""), rev=true)
     candidate_path, candidate_record = candidates[1]
 
-    # Crea un oggetto TileMetadata temporaneo con le info necessarie
-    # per la funzione place_tile!
+    # Create a temporary TileMetadata object with necessary info
+    # for place_tile! function
     lon, lat, _, _, _, _, _, _ = Commons.coordFromIndex(id)
     width = get(candidate_record, "width", 0)
     cols_params = Commons.getSizeAndCols(target_sizeId)
@@ -859,7 +916,7 @@ function moveImage(rootPath::String, rootPath_saved::String, id::Int, target_siz
         id, target_sizeId, lon, lat, 0.0, 0.0, 0, 0, 0.0, 0.0, 0.0, width, cols
         )
 
-    # Chiama la nuova funzione centralizzata per fare il lavoro pesante
+    # Call new centralized function to do the heavy lifting
     success = place_tile!(candidate_path, temp_tile_meta, rootPath, rootPath_saved, cfg)
 
     return success ? "moved" : "error"
@@ -874,7 +931,7 @@ index or trigger a full rebuild based on metadata comparison.
 """
 function startFind(scan_paths::Vector{String}, program_version::String)
 
-    # Legge l'intervallo di scansione da params.xml
+    # Reads scan interval from params.xml
     try
         if isfile("params.xml")
             xdoc = parse_file("params.xml")
@@ -887,8 +944,8 @@ function startFind(scan_paths::Vector{String}, program_version::String)
             end
         end
     catch e
-        @warn "Impossibile leggere 'scan_interval_seconds' da params.xml. Verrà usato il default di 300s." exception=(e, catch_backtrace())
-        SCAN_INTERVAL_S[] = 300 # Ripristina il default in caso di errore
+        @warn "Unable to read 'scan_interval_seconds' from params.xml. Default of 300s will be used." exception=(e, catch_backtrace())
+        SCAN_INTERVAL_S[] = 300 # Restore default in case of error
     end
 
     @dinfo ("ddsFindScanner.startFind: Initializing ddsFindScanner...")
@@ -909,15 +966,15 @@ function startFind(scan_paths::Vector{String}, program_version::String)
             rebuild_needed = true
             rebuild_reason = "Scan paths have changed."
         else
-            # --- BLOCCO DEL QUICK CHECK ---
-            # I metadati sono validi, ora eseguiamo un controllo di coerenza veloce.
+            # --- QUICK CHECK BLOCK ---
+            # Metadata is valid, now running a quick consistency check.
             is_consistent, mismatch_percent = _validate_index_consistency(file_data)
             if !is_consistent
                 rebuild_needed = true
                 rebuild_reason = "Index is stale (mismatch of $(@sprintf("%.1f", mismatch_percent))% detected)."
             end
-            # Se 'is_consistent' è true, 'rebuild_needed' rimane false e si procederà
-            # con il caricamento rapido.
+            # If 'is_consistent' is true, 'rebuild_needed' remains false and we proceed
+            # with quick loading.
         end
     end
 
@@ -959,8 +1016,8 @@ end
 startFind()
 
 Convenience wrapper:
-* scandisce la Home e /mnt
-* usa la costante `PROGRAM_VERSION`
+* scans Home and /mnt
+* uses `PROGRAM_VERSION` constant
 """
 function startFind()
     lock(_data_lock) do
@@ -969,8 +1026,8 @@ function startFind()
     scan_start_time = time_ns()
 
     try
-        # Esegue la scansione vera e propria
-        syncScan()  # scansione sincrona
+        # Performs the actual scan
+        syncScan()  # synchronous scan
 
         scan_end_time = time_ns()
         scan_duration_ms = (scan_end_time - scan_start_time)/1000000
@@ -979,7 +1036,7 @@ function startFind()
             _last_scan_duration[] = scan_duration_ms
         end
 
-        @info "ddsFindScanner.startFind(): Scansione completata in $scan_duration_ms ms"
+        @info "ddsFindScanner.startFind(): Scan completed in $scan_duration_ms ms"
     finally
         lock(_data_lock) do
             _is_scanning[] = false
@@ -991,31 +1048,31 @@ end
 """
 has_suitable_tile(id, target_sizeId, rootPath, savePath, cfg) -> Bool
 
-Esegue un controllo "read-only" per determinare se un tassello adeguato
-esiste già in `rootPath` o `savePath`, basandosi sulla logica di `--over`.
-Non sposta alcun file.
+Performs a "read-only" check to determine if a suitable tile
+already exists in `rootPath` or `savePath`, based on `--over` logic.
+Does not move any file.
 """
 function has_suitable_tile(id::Int, target_sizeId::Int, rootPath::String, savePath::String, cfg::Dict)
-    overwrite_mode = get(cfg, "over", 1) # Default a 1 (sovrascrivi se migliore)
+    overwrite_mode = get(cfg, "over", 1) # Default to 1 (overwrite if better)
 
-    # Trova tutte le versioni esistenti del tile, ovunque si trovino
+    # Find all existing versions of the tile, wherever they are
     all_versions = find_all_versions_by_id(id)
     if isempty(all_versions)
-        return false # Non esiste, quindi non è "suitable"
+        return false # Does not exist, so it is not "suitable"
     end
 
-    # Trova la versione con la risoluzione più alta tra quelle esistenti
+    # Find version with highest resolution among existing ones
     best_existing = sort(all_versions, by = v -> get(v, "sizeId", -1), rev=true)[1]
     best_existing_sizeId = get(best_existing, "sizeId", -1)
 
     if overwrite_mode == 0
-        # Mai sovrascrivere: se esiste (a qualsiasi risoluzione), è "suitable".
+        # Never overwrite: if it exists (at any resolution), it is "suitable".
         return true
         elseif overwrite_mode == 1
-        # Sovrascrivi solo se il nuovo è migliore: è "suitable" se l'esistente è >= del nuovo.
+        # Overwrite only if new is better: "suitable" if existing is >= new.
         return best_existing_sizeId >= target_sizeId
         elseif overwrite_mode == 2
-        # Sovrascrivi sempre: nessun file esistente è "suitable" per bloccare un nuovo download.
+        # Always overwrite: no existing file is "suitable" to block a new download.
         return false
     end
 
@@ -1132,7 +1189,7 @@ function syncScan()
         for dir in directories
             @info "ddsFindScanner.syncScan: Scanning directory: $dir"
             for (root, _, files) in walkdir(dir; onerror = SKIP_NOACCESS)
-                # Filtra solo le cartelle di interesse per le performance
+                # Filter only interesting folders for performance
                 if !("Orthophotos" in splitpath(root))
                     continue
                 end
@@ -1140,27 +1197,27 @@ function syncScan()
                 for file in files
                     fullpath = joinpath(root, file)
 
-                    # Saltiamo i file che non corrispondono al nostro pattern
+                    # Skip files that do not match our pattern
                     if isnothing(match(r"^\d+\.(dds|png)$"i, file))
                         continue
                     end
 
-                    # Determiniamo il tipo di file e chiamiamo la funzione helper
-                    # che legge anche le dimensioni in pixel.
+                    # Determine file type and call helper function
+                    # which also reads pixel dimensions.
                     is_dds = endswith(lowercase(file), ".dds")
                     is_png = endswith(lowercase(file), ".png")
 
                     if is_dds || is_png
                         is_valid, _, size, id, last_modified, sizeId, width, height, score = get_file_info(fullpath, is_dds, is_png)
 
-                        # Aggiungiamo il record all'indice solo se è un'immagine valida
+                        # Add record to index only if it is a valid image
                         if is_valid && id !== nothing
                             new_data[fullpath] = Dict(
                                 "id"            => id,
                                 "name"          => basename(fullpath),
-                                "size"          => size,          # Dimensione in bytes
+                                "size"          => size,          # Size in bytes
                                 "last_modified" => last_modified,
-                                "sizeId"        => sizeId,        # Classe dimensionale 0..6
+                                "sizeId"        => sizeId,        # Dimensional class 0..6
                                 "width"         => width,
                                 "height"        => height,
                                 "detail_score"  => score
@@ -1171,7 +1228,7 @@ function syncScan()
             end
         end
 
-        # Aggiorna lo stato globale e salva su disco
+        # Update global state and save to disk
         empty!(_existing_data)
         merge!(_existing_data, new_data)
         save_index()
@@ -1184,8 +1241,8 @@ end
 """
 get_tile_score(id::Int, size_id::Int) -> Float64
 
-Cerca nell'indice un tile specifico per ID e sizeId e restituisce il suo
-`detail_score`. Ritorna -1.0 se il tile non viene trovato o non ha uno score.
+Searches index for specific tile by ID and sizeId and returns its
+`detail_score`. Returns -1.0 if tile is not found or has no score.
 """
 function get_tile_score(id::Int, size_id::Int)::Float64
     lock(_data_lock) do
@@ -1195,7 +1252,7 @@ function get_tile_score(id::Int, size_id::Int)::Float64
             end
         end
     end
-    return -1.0 # Non trovato
+    return -1.0 # Not found
 end
 
 
@@ -1218,13 +1275,13 @@ function printStats()
 
         scan_duration_ms = _last_scan_duration[]
 
-        @info "Statistiche scansione DDS/PNG:"
+        @info "DDS/PNG scan statistics:"
         @info "=============================="
-        @info "Totale files DDS trovati: $dds_count"
-        @info "Totale files PNG trovati: $png_count"
-        @info "Tempo ultima scansione: $scan_duration_ms ms"
+        @info "Total DDS files found: $dds_count"
+        @info "Total PNG files found: $png_count"
+        @info "Last scan time: $scan_duration_ms ms"
 
-        @info "Distribuzione per cartelle (ordinata):"
+        @info "Folder distribution (sorted):"
         for dir in sort(collect(keys(dir_counts)))
             count = dir_counts[dir]
             @info "• $dir: $count files"

@@ -64,28 +64,28 @@ end
 
 function fetch_and_clean_xml(sock::TCPSocket, command::String, debugLevel::Int)
     try
-        # Invia il comando a FGFS
+        # Send command to FGFS
         write(sock, command)
-        sleep(0.3)  # Attendere la risposta
+        sleep(0.3)  # Wait for response
 
-        # Leggi tutti i byte disponibili dal buffer della socket
+        # Read all available bytes from socket buffer
         raw_data = readavailable(sock)
         xml_data_string = String(raw_data)
 
-        # Trova la posizione della chiusura del tag XML
+        # Find position of XML closing tag
         end_tag = "</PropertyList>"
         end_pos = findfirst(end_tag, xml_data_string)
 
         if end_pos === nothing
-            debugLevel > 0 && @warn "Connector: Dati incompleti da FGFS (tag di chiusura non trovato)."
+            debugLevel > 0 && @warn "Connector: Incomplete data from FGFS (closing tag not found)."
             return nothing
         end
 
-        # Crea una sottostringa valida XML
+        # Create a valid XML substring
         clean_xml = xml_data_string[1:end_pos.stop]
         return clean_xml
     catch e
-        debugLevel > 0 && @warn "Connector: Errore durante la lettura o il parsing dei dati." exception=(e, Base.catch_backtrace())
+        debugLevel > 0 && @warn "Connector: Error reading or parsing data." exception=(e, Base.catch_backtrace())
         return nothing
     end
 end
@@ -105,11 +105,11 @@ function getFGFSPositionSetTask(host::String, port::Int, _a, _b, debugLevel::Int
         # --- Connection Loop ---
         if positionRoute.telnet.sock === nothing || !isopen(positionRoute.telnet.sock)
             try
-                debugLevel > 0 && @info "Connector: Connessione a $host:$port..."
+                debugLevel > 0 && @info "Connector: Connecting to $host:$port..."
                 positionRoute.telnet.sock = connect(positionRoute.telnet.ipAddress, positionRoute.telnet.ipPort)
-                debugLevel > 0 && @info "Connector: Connesso! ✅"
+                debugLevel > 0 && @info "Connector: Connected! ✅"
                 catch e
-                debugLevel > 0 && @warn "Connector: Connessione fallita. Ritento in 5s."
+                debugLevel > 0 && @warn "Connector: Connection failed. Retrying in 5s."
                 positionRoute.telnet.sock = nothing
                 positionRoute.actual = nothing
                 sleep(5); continue
@@ -119,7 +119,7 @@ function getFGFSPositionSetTask(host::String, port::Int, _a, _b, debugLevel::Int
         # --- Data Acquisition Loop ---
         while isopen(positionRoute.telnet.sock)
             try
-                # Usa la nuova funzione per ottenere la stringa XML pulita
+                # Use new function to get clean XML string
                 isRecived = 0
                 lat = lon = alt = gnd = heading_deg = speed_mph = 0.0
                 # Parse the cleaned XML string
@@ -166,13 +166,13 @@ function getFGFSPositionSetTask(host::String, port::Int, _a, _b, debugLevel::Int
                 # Create a new FGFSPosition object
                 # Update the global state
             catch e
-                @warn "Connector.getFGFSPositionSetTask: Critic parsing error .. retray to reconnect" exception=(e, Base.catch_backtrace())
+                @warn "Connector.getFGFSPositionSetTask: Critical parsing error .. retrying to reconnect" exception=(e, Base.catch_backtrace())
                 if positionRoute.telnet.sock !== nothing; close(positionRoute.telnet.sock); end
             end
             sleep(positionRoute.stepTime)
         end
 
-        debugLevel > 0 && @info "Connector: Connessione persa. In attesa di riconnessione..."
+        debugLevel > 0 && @info "Connector: Connection lost. Waiting for reconnection..."
         positionRoute.actual = nothing
         sleep(2)
     end

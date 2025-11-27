@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +33,7 @@
             gap: 20px;
         }
 
-        /* Pannello sinistro */
+        /* Left Panel */
         .left-panel {
             width: 35%;
             display: flex;
@@ -121,7 +122,7 @@
             color: #64b5f6;
         }
 
-        /* Sezione file evidenziati */
+        /* Highlighted Files Section */
         .highlighted-section {
             padding: 15px 20px;
             background: rgba(30, 45, 90, 0.7);
@@ -195,7 +196,7 @@
             transform: scale(1.1);
         }
 
-        /* Lista file principale */
+        /* Main File List */
         .files-section {
             flex-grow: 1;
             overflow: hidden;
@@ -270,7 +271,7 @@
             margin-top: 3px;
         }
 
-        /* Pannello destro */
+        /* Right Panel */
         .right-panel {
             width: 65%;
             display: flex;
@@ -366,7 +367,8 @@
                 flex-direction: column;
             }
 
-            .left-panel, .right-panel {
+            .left-panel,
+            .right-panel {
                 width: 100%;
             }
 
@@ -395,9 +397,10 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <!-- Pannello sinistro -->
+        <!-- Left Panel -->
         <div class="left-panel">
             <div class="panel-header">
                 <div class="panel-title">
@@ -407,71 +410,71 @@
 
                 <div class="controls">
                     <button id="directory-picker" class="btn">
-                        <i class="fas fa-folder"></i> Seleziona Directory
+                        <i class="fas fa-folder"></i> Select Directory
                     </button>
 
                     <select id="scan-interval" class="interval-select">
-                        <option value="1000">1 secondo</option>
-                        <option value="2000">2 secondi</option>
-                        <option value="4000">4 secondi</option>
-                        <option value="8000" selected>8 secondi</option>
-                        <option value="16000">16 secondi</option>
+                        <option value="1000">1 second</option>
+                        <option value="2000">2 seconds</option>
+                        <option value="4000">4 seconds</option>
+                        <option value="8000" selected>8 seconds</option>
+                        <option value="16000">16 seconds</option>
                     </select>
                 </div>
 
                 <div class="status">
                     <i class="fas fa-info-circle"></i>
-                    <span id="status">Seleziona una directory per iniziare il monitoraggio</span>
+                    <span id="status">Select a directory to start monitoring</span>
                 </div>
             </div>
 
-            <!-- Sezione file evidenziati -->
+            <!-- Highlighted Files Section -->
             <div class="highlighted-section">
                 <div class="section-title">
                     <i class="fas fa-star"></i>
-                    <h3>File in Evidenza</h3>
+                    <h3>Highlighted Files</h3>
                 </div>
 
                 <div id="highlighted-files" class="highlighted-files">
                     <div class="no-highlighted">
                         <i class="fas fa-star"></i>
-                        <p>Nessun file in evidenza</p>
+                        <p>No highlighted files</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Lista file principale -->
+            <!-- Main File List -->
             <div class="files-section">
                 <div class="files-header">
                     <div class="section-title">
                         <i class="fas fa-file-alt"></i>
-                        <h3>Tutti i File</h3>
+                        <h3>All Files</h3>
                     </div>
                 </div>
 
                 <div id="file-list" class="file-list">
                     <div class="no-files">
                         <i class="fas fa-file"></i>
-                        <p>Nessun file disponibile</p>
+                        <p>No files available</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Pannello destro -->
+        <!-- Right Panel -->
         <div class="right-panel">
             <div class="file-content-header">
                 <div class="content-title">
                     <i class="fas fa-file-code"></i>
-                    <h3>Contenuto File</h3>
+                    <h3>File Content</h3>
                 </div>
             </div>
 
             <div id="file-content" class="file-content">
                 <div class="no-file">
                     <i class="fas fa-file-alt"></i>
-                    <h3>Nessun file selezionato</h3>
-                    <p>Seleziona un file dalla lista per visualizzarne il contenuto</p>
+                    <h3>No file selected</h3>
+                    <p>Select a file from the list to view its content</p>
                 </div>
             </div>
         </div>
@@ -479,11 +482,11 @@
 
     <div id="notification" class="notification">
         <i class="fas fa-check-circle"></i>
-        <span>Nome file copiato negli appunti!</span>
+        <span>Filename copied to clipboard!</span>
     </div>
 
     <script>
-        // Elementi DOM
+        // DOM Elements
         const directoryPickerBtn = document.getElementById('directory-picker');
         const scanIntervalSelect = document.getElementById('scan-interval');
         const statusDiv = document.getElementById('status');
@@ -492,7 +495,7 @@
         const fileContentDiv = document.getElementById('file-content');
         const notification = document.getElementById('notification');
 
-        // Variabili globali
+        // Global Variables
         let directoryHandle;
         let txtDirectoryHandle;
         let scanInterval;
@@ -500,7 +503,7 @@
         const highlightedFilesSet = new Set();
         let lastScanned = Date.now();
 
-        // Carica file evidenziati da localStorage
+        // Load highlighted files from localStorage
         function loadHighlightedFiles() {
             const saved = localStorage.getItem('highlightedFiles');
             if (saved) {
@@ -509,13 +512,13 @@
             }
         }
 
-        // Salva file evidenziati in localStorage
+        // Save highlighted files to localStorage
         function saveHighlightedFiles() {
             const files = Array.from(highlightedFilesSet);
             localStorage.setItem('highlightedFiles', JSON.stringify(files));
         }
 
-        // Mostra notifica
+        // Show notification
         function showNotification(message) {
             notification.querySelector('span').textContent = message;
             notification.classList.add('show');
@@ -529,15 +532,15 @@
         directoryPickerBtn.addEventListener('click', async () => {
             try {
                 directoryHandle = await window.showDirectoryPicker();
-                statusDiv.textContent = `Monitoraggio: ${directoryHandle.name}`;
+                statusDiv.textContent = `Monitoring: ${directoryHandle.name}`;
 
-                // Ottieni/Crea directory txt
+                // Get/Create txt directory
                 txtDirectoryHandle = await directoryHandle.getDirectoryHandle('txt', { create: true });
 
-                // Inizia il monitoraggio
+                // Start monitoring
                 startMonitoring();
             } catch (error) {
-                statusDiv.textContent = 'Operazione annullata o errore: ' + error.message;
+                statusDiv.textContent = 'Operation cancelled or error: ' + error.message;
             }
         });
 
@@ -547,7 +550,7 @@
             }
         });
 
-        // Delegazione eventi per la lista file
+        // Event delegation for file list
         fileList.addEventListener('click', async (event) => {
             const target = event.target;
             const fileItem = target.closest('.file-item');
@@ -556,14 +559,14 @@
 
             const fileName = fileItem.dataset.fileName;
 
-            // Gestione click sul file
+            // File click handling
             if (target.closest('.file-info') || !target.closest('.file-actions')) {
-                // Rimuovi classe active da tutti i file
+                // Remove active class from all files
                 document.querySelectorAll('.file-item').forEach(item => {
                     item.classList.remove('active');
                 });
 
-                // Aggiungi classe active al file selezionato
+                // Add active class to selected file
                 fileItem.classList.add('active');
 
                 try {
@@ -571,17 +574,17 @@
                     const file = await fileHandle.getFile();
                     const content = await file.text();
 
-                    // Formatta come codice C++
+                    // Format as C++ code
                     fileContentDiv.innerHTML = `<pre><code class="language-cpp">${escapeHtml(content)}</code></pre>`;
 
-                    // Applica l'evidenziazione della sintassi
+                    // Apply syntax highlighting
                     hljs.highlightElement(fileContentDiv.querySelector('code'));
                 } catch (error) {
-                    fileContentDiv.textContent = `Errore durante la lettura: ${error.message}`;
+                    fileContentDiv.textContent = `Error reading file: ${error.message}`;
                 }
             }
 
-            // Gestione stella (evidenziazione)
+            // Star handling (highlighting)
             if (target.closest('.star-btn')) {
                 if (highlightedFilesSet.has(fileName)) {
                     highlightedFilesSet.delete(fileName);
@@ -593,20 +596,20 @@
                 updateFileList();
             }
 
-            // Gestione pulsante copia
+            // Copy button handling
             if (target.closest('.copy-btn')) {
                 navigator.clipboard.writeText(fileName)
                     .then(() => {
-                        showNotification(`Copiato: ${fileName}`);
+                        showNotification(`Copied: ${fileName}`);
                     })
                     .catch(err => {
-                        showNotification('Errore nella copia');
-                        console.error('Errore copia:', err);
+                        showNotification('Copy error');
+                        console.error('Copy error:', err);
                     });
             }
         });
 
-        // Delegazione eventi per file evidenziati
+        // Event delegation for highlighted files
         highlightedFiles.addEventListener('click', async (event) => {
             const target = event.target;
             const fileItem = target.closest('.highlighted-file');
@@ -615,20 +618,20 @@
 
             const fileName = fileItem.dataset.fileName;
 
-            // Gestione click sul file
+            // File click handling
             if (!target.closest('.file-actions')) {
                 try {
                     const fileHandle = await txtDirectoryHandle.getFileHandle(fileName);
                     const file = await fileHandle.getFile();
                     const content = await file.text();
 
-                    // Formatta come codice C++
+                    // Format as C++ code
                     fileContentDiv.innerHTML = `<pre><code class="language-cpp">${escapeHtml(content)}</code></pre>`;
 
-                    // Applica l'evidenziazione della sintassi
+                    // Apply syntax highlighting
                     hljs.highlightElement(fileContentDiv.querySelector('code'));
 
-                    // Aggiorna selezione
+                    // Update selection
                     document.querySelectorAll('.file-item').forEach(item => {
                         item.classList.remove('active');
                         if (item.dataset.fileName === fileName) {
@@ -636,23 +639,23 @@
                         }
                     });
                 } catch (error) {
-                    fileContentDiv.textContent = `Errore durante la lettura: ${error.message}`;
+                    fileContentDiv.textContent = `Error reading file: ${error.message}`;
                 }
             }
 
-            // Gestione pulsante copia
+            // Copy button handling
             if (target.closest('.copy-btn')) {
                 navigator.clipboard.writeText(fileName)
                     .then(() => {
-                        showNotification(`Copiato: ${fileName}`);
+                        showNotification(`Copied: ${fileName}`);
                     })
                     .catch(err => {
-                        showNotification('Errore nella copia');
-                        console.error('Errore copia:', err);
+                        showNotification('Copy error');
+                        console.error('Copy error:', err);
                     });
             }
 
-            // Gestione rimozione evidenziazione
+            // Remove highlighting handling
             if (target.closest('.remove-btn')) {
                 highlightedFilesSet.delete(fileName);
                 saveHighlightedFiles();
@@ -660,7 +663,7 @@
             }
         });
 
-        // Funzione per escape HTML
+        // HTML escape function
         function escapeHtml(unsafe) {
             return unsafe
                 .replace(/&/g, "&amp;")
@@ -670,7 +673,7 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // Funzioni principali
+        // Main functions
         function startMonitoring() {
             if (scanInterval) clearInterval(scanInterval);
 
@@ -680,11 +683,11 @@
                     await scanDirectory();
                     await updateFileList();
                 } catch (error) {
-                    statusDiv.textContent = `Errore durante la scansione: ${error.message}`;
+                    statusDiv.textContent = `Scan error: ${error.message}`;
                 }
             }, intervalValue);
 
-            statusDiv.textContent = `Monitoraggio attivo: ${directoryHandle.name} (scansione ogni ${intervalValue/1000} secondi)`;
+            statusDiv.textContent = `Monitoring active: ${directoryHandle.name} (scan every ${intervalValue / 1000} seconds)`;
         }
 
         async function scanDirectory() {
@@ -693,7 +696,7 @@
                     const file = await entry.getFile();
                     const lastModified = file.lastModified;
 
-                    // Controlla modifiche
+                    // Check for changes
                     if (!monitoredFiles.has(entry.name) ||
                         monitoredFiles.get(entry.name) < lastModified) {
 
@@ -709,20 +712,20 @@
             const newFileName = `${entry.name}.txt`;
 
             try {
-                // Crea/sovrascrivi file
+                // Create/overwrite file
                 const newFileHandle = await txtDirectoryHandle.getFileHandle(newFileName, { create: true });
                 const writable = await newFileHandle.createWritable();
                 await writable.write(await file.text());
                 await writable.close();
             } catch (error) {
-                console.error(`Errore copia file: ${error.message}`);
+                console.error(`File copy error: ${error.message}`);
             }
         }
 
         async function updateFileList() {
             const files = [];
 
-            // Raccolta file
+            // Collect files
             for await (const entry of txtDirectoryHandle.values()) {
                 if (entry.kind === 'file' && entry.name.endsWith('.jl.txt')) {
                     const file = await entry.getFile();
@@ -734,32 +737,32 @@
                 }
             }
 
-            // Ordina per data (decrescente)
+            // Sort by date (descending)
             files.sort((a, b) => b.lastModified - a.lastModified);
 
-            // Aggiorna UI
+            // Update UI
             updateHighlightedFiles(files);
             updateAllFilesList(files);
         }
 
         function updateHighlightedFiles(allFiles) {
-            // Filtra solo i file evidenziati
+            // Filter only highlighted files
             const highlighted = allFiles.filter(file => highlightedFilesSet.has(file.name));
 
             if (highlighted.length === 0) {
                 highlightedFiles.innerHTML = `
                     <div class="no-highlighted">
                         <i class="fas fa-star"></i>
-                        <p>Nessun file in evidenza</p>
+                        <p>No highlighted files</p>
                     </div>
                 `;
                 return;
             }
 
-            // Ordina per data (decrescente)
+            // Sort by date (descending)
             highlighted.sort((a, b) => b.lastModified - a.lastModified);
 
-            // Aggiorna UI
+            // Update UI
             highlightedFiles.innerHTML = '';
             highlighted.forEach(file => {
                 const date = new Date(file.lastModified);
@@ -772,10 +775,10 @@
                 fileEl.innerHTML = `
                     <div class="file-name">${file.originalName}</div>
                     <div class="file-actions">
-                        <button class="action-btn copy-btn" title="Copia nome file">
+                        <button class="action-btn copy-btn" title="Copy filename">
                             <i class="fas fa-copy"></i>
                         </button>
-                        <button class="action-btn remove-btn" title="Rimuovi da evidenziati">
+                        <button class="action-btn remove-btn" title="Remove from highlighted">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -790,13 +793,13 @@
                 fileList.innerHTML = `
                     <div class="no-files">
                         <i class="fas fa-file"></i>
-                        <p>Nessun file disponibile</p>
+                        <p>No files available</p>
                     </div>
                 `;
                 return;
             }
 
-            // Aggiorna UI
+            // Update UI
             fileList.innerHTML = '';
             allFiles.forEach(file => {
                 const date = new Date(file.lastModified);
@@ -840,4 +843,5 @@
         });
     </script>
 </body>
+
 </html>

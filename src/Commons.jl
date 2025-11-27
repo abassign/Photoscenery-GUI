@@ -86,7 +86,7 @@ function adaptive_size_id(k_max::Int, h::Real, d::Real, fov_deg::Real=60)::Int
     TILE_LAT_DEG = 1 / 8        # tile height in degrees
     EARTH_RADIUS_M = 6371000.0  # mean Earth radius in meters
     SCREEN_PX = 1920            # assumed display width in pixels
-    KFOV = 1.0                  # Potenzia l'effetto quota sulla distanza
+    KFOV = 1.0                  # Enhances the altitude effect on distance
 
     # --- 1. Convert altitude (feet) and distance (NM) to meters ---
     alt_m   = h * FT_TO_M
@@ -127,15 +127,15 @@ end
 
 
 """
-Rappresenta un punto di interesse generico (waypoint).
-Può derivare da una rotta statica, da un collegamento dinamico a FGFS,
-o da un singolo punto di coordinate/ICAO.
+Represents a generic point of interest (waypoint).
+Can be derived from a static route, a dynamic link to FGFS,
+or a single coordinate/ICAO point.
 """
 struct Waypoint
     lat::Float64
     lon::Float64
-    alt_agl_ft::Union{Float64, Nothing}  # Quota AGL in piedi, facoltativa
-    angle_deg::Union{Float64, Nothing}   # Angolo della rotta in gradi, facoltativo
+    alt_agl_ft::Union{Float64, Nothing}  # AGL altitude in feet, optional
+    angle_deg::Union{Float64, Nothing}   # Route angle in degrees, optional
 end
 
 
@@ -164,17 +164,17 @@ struct MapCoordinates
 
     function MapCoordinates(lat::Float64,lon::Float64,radius::Float64)
         (latLL,lonLL,latUR,lonUR) = Commons.latDegByCentralPoint(lat,lon,radius)
-        # Assumo che 'positionRoute' non sia fornito in questo costruttore, quindi 'nothing'
+        # Assume 'positionRoute' is not provided in this constructor, so 'nothing'
         return new(lat,lon,radius,latLL,lonLL,latUR,lonUR,true, nothing)
     end
 
     function MapCoordinates(latLL::Float64,lonLL::Float64,latUR::Float64,lonUR::Float64)
         lon = lonLL + (lonUR - lonLL) / 2.0
         lat = latLL + (latUR - latLL) / 2.0
-        # Calcolo del raggio semplificato, la tua versione originale con LLA è corretta
-        # se Geodesy.jl o simile è disponibile.
-        radius = sqrt((lonUR - lonLL)^2 + (latUR - latLL)^2) # Semplificazione, usare la tua logica originale
-        # Assumo che 'positionRoute' non sia fornito in questo costruttore, quindi 'nothing'
+        # Simplified radius calculation, your original version with LLA is correct
+        # if Geodesy.jl or similar is available.
+        radius = sqrt((lonUR - lonLL)^2 + (latUR - latLL)^2) # Simplification, use your original logic
+        # Assume 'positionRoute' is not provided in this constructor, so 'nothing'
         return new(lat,lon,radius,latLL,lonLL,latUR,lonUR,false, nothing)
     end
 end
@@ -326,7 +326,7 @@ function index(lat::Float64, lon::Float64)
     lon_base = lon_shifted - 180
     lat_base = lat_shifted - 90
 
-    # Passi di sotto-griglia
+    # Sub-grid steps
     y_idx = floor(Int, (lat - lat_base) / 0.125)
     x_idx = floor(Int, (lon - lon_base) / tileWidth(lat))
 
@@ -350,19 +350,19 @@ end
 """
 tile_dirs(lat::Real, lon::Real) -> (first_lvl, second_lvl)
 
-Restituisce:
-first_lvl  - stringa 10×10°  (es. "e020n60")
-second_lvl - stringa 1×1°   (es. "e026n68")
+Returns:
+first_lvl  - 10×10° string  (e.g. "e020n60")
+second_lvl - 1×1° string    (e.g. "e026n68")
 """
 function tile_dirs(lat::Real, lon::Real)
-    # --- blocco 10° ---------------------------------------------------------
+    # --- 10° block ---------------------------------------------------------
     lon10 = floor(Int, lon ÷ 10) * 10        # 26.5 → 20
     lat10 = floor(Int, lat ÷ 10) * 10        # 68.6 → 60
     first = @sprintf("%c%03d%c%02d",
                      lon ≥ 0 ? 'e' : 'w', abs(lon10),
                      lat ≥ 0 ? 'n' : 's',  abs(lat10))
 
-    # --- blocco 1° ----------------------------------------------------------
+    # --- 1° block ----------------------------------------------------------
     lon1 = floor(Int, lon)                   # 26
     lat1 = floor(Int, lat)                   # 68
     second = @sprintf("%c%03d%c%02d",
@@ -375,8 +375,8 @@ end
 """
 tile_dest_dir(tile_id::Int, width::Int, root::AbstractString)
 
-Restituisce la directory finale in cui salvare un file PNG/DDS
-(es: root/8192/e020n60/e026n68).
+Returns the final directory where to save a PNG/DDS file
+(e.g.: root/8192/e020n60/e026n68).
 """
 function tile_dest_dir(tile_id::Int, width::Int, root::AbstractString)
     _, _, _, _, _, _, dir10, dir1 = coordFromIndex(tile_id)  # grid_str_a, grid_str_b
@@ -599,13 +599,13 @@ end
 
 """
 chunk_pixel_size(tile::TileMetadata) :: NamedTuple{(:width,:height),Tuple{Int,Int}}
-Restituisce le dimensioni in pixel del *chunk* coerenti con l'aspect ratio del tile:
-- Larghezza = floor(width / cols)
-- Altezza   = round(larghezza * |Δlat/Δlon|)
+Returns the pixel dimensions of the *chunk* consistent with the tile aspect ratio:
+- Width  = floor(width / cols)
+- Height = round(width * |Δlat/Δlon|)
 """
 @inline function chunk_pixel_size(tile::TileMetadata)::NamedTuple{(:width,:height),Tuple{Int,Int}}
     @assert tile.cols > 0
-    w::Int = fld(tile.width, tile.cols)   # floor(width/cols), evita doppi arrotondamenti
+    w::Int = fld(tile.width, tile.cols)   # floor(width/cols), avoids double rounding
     Δlon::Float64 = tile.lonUR - tile.lonLL
     Δlat::Float64 = tile.latUR - tile.latLL
     aspect::Float64 = (abs(Δlon) < 1e-12) ? 1.0 : abs(Δlat/Δlon)
@@ -615,7 +615,7 @@ end
 
 """
 chunk_pixel_size(width::Integer, cols::Integer, Δlat::Real, Δlon::Real)
-Variant per casi in cui width/cols non coincidono con quelli nel TileMetadata (es. pre-coverage).
+Variant for cases where width/cols do not match those in TileMetadata (e.g. pre-coverage).
 """
 @inline function chunk_pixel_size(width::Integer, cols::Integer, Δlat::Real, Δlon::Real)::NamedTuple{(:width,:height),Tuple{Int,Int}}
     @assert cols > 0
@@ -626,11 +626,11 @@ Variant per casi in cui width/cols non coincidono con quelli nel TileMetadata (e
 end
 
 
-# Regex per file: tileId_sizeId_total_y_x_overMODE.png
-# Reso opzionale il gruppo `_over` con (?:...)? e cattura la cifra con ([0-2])
+# Regex for file: tileId_sizeId_total_y_x_overMODE.png
+# Made the `_over` group optional with (?:...)? and captures the digit with ([0-2])
 const CHUNK_RE = r"^(\d+)_(\d+)_([1-9]\d*)_([1-9]\d*)_([1-9]\d*)(?:_over([0-2]))?\.png$"
 
-# Struttura per un gruppo di chunk pronto per l'assemblaggio
+# Structure for a group of chunks ready for assembly
 struct TileGroup
     tile_id::Int
     size_id::Int

@@ -177,13 +177,13 @@ Return *PNG bytes* (no file) for the given DDS tile.
 """
 function convert(path_dds::String, width::Int = 0)
     img = decode(path_dds)
-    w_nat = size(img, 2)            # larghezza originale
+    w_nat = size(img, 2)            # original width
     h_nat = size(img, 1)
-    if width > 0 && width < w_nat   # riduci solo se richiesto
+    if width > 0 && width < w_nat   # reduce only if requested
         h = round(Int, h_nat * width / w_nat)
         img = imresize(img, (h, width))
     else
-        width = w_nat               # usa nativa
+        width = w_nat               # use native
     end
     io = IOBuffer()
     FileIO.save(Stream{format"PNG"}(io), img)

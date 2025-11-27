@@ -2,14 +2,15 @@
 module AppConfig
 
 export initialize_and_parse_args, parse_args
+export get_current_orthophotos_path, get_current_saves_path, update_paths!, set_active_orthophotos_path, set_active_saves_path
 
 using ArgParse, LightXML
 
-
+const GLOBAL_CONFIG = Dict{String, Any}()
 const PARAMS_PATH = Ref(joinpath(@__DIR__, "..", "params.xml"))
 
 
-# Funzione privata per gestire params.xml
+# Private function to handle params.xml
 function _initialize_params(versionProgram::String)
     paramsXml = nothing
     if isfile("params.xml")
@@ -23,7 +24,7 @@ function _initialize_params(versionProgram::String)
                 end
             end
         catch e
-            println("Attenzione: params.xml corrotto. Verrà ricreato. Errore: $e")
+            println("Warning: params.xml corrupt. It will be recreated. Error: $e")
             paramsXml = nothing
         end
     end
@@ -38,12 +39,12 @@ end
 """
 _load_or_init_presets() -> (Dict{String,String}, XMLDocument)
 
-Garantisce che `params.xml` esista e contenga un nodo `<presets>`.
-Ritorna un dizionario id ⇒ stringa-opzioni e il documento XML aperto
-(per eventuali salvataggi successivi).
+Ensures that `params.xml` exists and contains a `<presets>` node.
+Returns a dictionary id => options-string and the open XML document
+(for potential future saves).
 """
 function _load_or_init_presets()
-    # crea file minimale se serve
+    # create minimal file if needed
     if !isfile(PARAMS_PATH[])
         doc  = XMLDocument()
         root = LightXML.create_root(doc, "params")
@@ -57,12 +58,12 @@ function _load_or_init_presets()
         isempty(lst) ? LightXML.new_child(root, "presets") : lst[1]
     end
 
-    # --- build Dict id ⇒ stringa-token
+    # --- build Dict id => token-string
     presets = Dict{String,String}()
     for idnode in LightXML.child_elements(pres)
         LightXML.name(idnode) == "id" || continue
 
-        # estrai l’attributo name SENZA usare filter/haskey
+        # extract the name attribute WITHOUT using filter/haskey
         key = nothing
         for a in LightXML.attributes(idnode)
             if LightXML.name(a) == "name"
@@ -79,11 +80,11 @@ end
 """
 _save_presets!(presets, doc)
 
-Aggiorna (sovrascrivendo) il nodo `<presets>` e riscrive `params.xml`.
+Updates (overwriting) the `<presets>` node and rewrites `params.xml`.
 """
 function _save_presets!(presets::Dict{String,String}, doc::LightXML.XMLDocument)
     root = LightXML.root(doc)
-    # wipe vecchio nodo <presets>
+    # wipe old <presets> node
     for old in LightXML.get_elements_by_tagname(root, "presets")
         LightXML.unlink(old)
     end
@@ -101,65 +102,187 @@ end
 """
 parse_args(vec::Vector{String}=ARGS) -> Dict
 
-Wrapper che intercetta `--gt/--rm`, espande o aggiorna i preset e poi chiama
-ArgParse.  Ritorna il Dict di configurazione, o un Dict con `:action => :rm`
-in caso di rimozione (e il programma può terminare subito).
+Wrapper that intercepts `--gt/--rm`, expands or updates presets, and then calls
+ArgParse. Returns the configuration Dict, or a Dict with `:action => :rm`
+in case of removal (and the program can terminate immediately).
 """
 function parse_args(vec::Vector{String}=ARGS)
-    # 1. Carica/crea params.xml  + dizionario preset
+    # 1. Load/create params.xml + presets dictionary
     presets, doc = _load_or_init_presets()
 
-    # ----- gestisci --rm -----------------------------------------------
+    # ----- handle --rm -----------------------------------------------
     if (idx = findfirst(==("--rm"), vec)) !== nothing
         id = get(vec, idx+1, nothing)
-        id === nothing && error("--rm richiede un id")
+        id === nothing && error("--rm requires an id")
 
         if haskey(presets, id)
             delete!(presets, id)
             _save_presets!(presets, doc)
-            println("Preset '$id' rimosso.")
+            println("Preset '$id' removed.")
         else
-            println("Nessun preset chiamato '$id'.")
+            println("No preset named '$id'.")
         end
-        return Dict(:action => :rm, :id => id)   # il caller potrà uscire
+        return Dict(:action => :rm, :id => id)   # the caller can exit
     end
 
-    # ----- gestisci --gt -----------------------------------------------
-    pending_create = nothing         # (id,stringa) da salvare dopo il parse
+    # ----- handle --gt -----------------------------------------------
+    pending_create = nothing         # (id,string) to save after parse
     if (idx = findfirst(==("--gt"), vec)) !== nothing
         id = get(vec, idx+1, nothing)
-        id === nothing && error("--gt richiede un id")
+        id === nothing && error("--gt requires an id")
 
-        extra = vec[(idx+2):end]     # token che seguono l'id
+        extra = vec[(idx+2):end]     # tokens following the id
         # strip --gt id
         vec  = vec[1:idx-1]
 
         if haskey(presets, id)
             vec = vcat(split(presets[id]), extra)   # preset + override
-            println("Usato preset '$id'")
+            println("Used preset '$id'")
         else
             pending_create = (id, join(extra, " "))
             vec = extra
-            println("Nuovo preset '$id' in arrivo…")
+            println("New preset '$id' coming...")
         end
     end
 
-    # ----- delega ad ArgParse via la tua funzione privata --------------
-    cfg = _parse_commandline(vec)    # costruisce lo settings e fa il parse
+    # ----- delegate to ArgParse via private function -----------------
+    cfg = _parse_commandline(vec)    # builds settings and parses
 
-    # ----- salva eventuale nuovo preset --------------------------------
+    # ----- save potential new preset ---------------------------------
     if pending_create !== nothing
         (id, body) = pending_create
         presets[id] = body
         _save_presets!(presets, doc)
-        println("Preset '$id' salvato in params.xml (\"$body\")")
+        println("Preset '$id' saved in params.xml (\"$body\")")
     end
 
     return cfg
 end
 
 
-# Funzione privata per il parsing degli argomenti
+"""
+    _read_path_from_xml(tag::String) -> Union{String, Nothing}
+
+Reads the value of a specific tag (e.g., "path" or "save") from the settings section of params.xml.
+"""
+function _read_path_from_xml(tag::String)::Union{String, Nothing}
+    # Uses the file path relative to the runtime environment, not the package root.
+    target_path = "params.xml"
+    !isfile(target_path) && return nothing
+    try
+        xdoc = LightXML.parse_file(target_path)
+        xroot = LightXML.root(xdoc)
+        settings = LightXML.find_element(xroot, "settings")
+
+        if settings !== nothing
+            tag_node = LightXML.find_element(settings, tag)
+            if tag_node !== nothing
+                return strip(LightXML.content(tag_node))
+            end
+        end
+    catch e
+        @warn "AppConfig: Error reading $tag from params.xml." exception=(e, catch_backtrace())
+    end
+    return nothing
+end
+
+"""
+    _write_path_to_xml!(tag::String, value::String)
+
+Writes or updates a specific tag (e.g., "path" or "save") in the settings section of params.xml.
+"""
+function _write_path_to_xml!(tag::String, value::String)
+    target_path = "params.xml"
+
+    # 1. Load or initialize the document
+    if isfile(target_path)
+        xdoc = LightXML.parse_file(target_path)
+        xroot = LightXML.root(xdoc)
+    else
+        xdoc = LightXML.XMLDocument()
+        xroot = LightXML.create_root(xdoc, "params")
+    end
+
+    # 2. Find or create <settings> node
+    settings = LightXML.find_element(xroot, "settings")
+    if settings === nothing
+        settings = LightXML.new_child(xroot, "settings")
+    end
+
+    # 3. Find or create <path/save> node
+    tag_node = LightXML.find_element(settings, tag)
+    if tag_node === nothing
+        tag_node = LightXML.new_child(settings, tag)
+    end
+
+    # 4. Set new content
+    LightXML.set_content(tag_node, value)
+
+    # 5. Save file
+    try
+        LightXML.save_file(xdoc, target_path)
+        @info "AppConfig: Wrote '$tag' to params.xml: $value"
+    catch e
+        @error "AppConfig: Failed to write to params.xml." exception=(e, catch_backtrace())
+    end
+end
+
+"""
+    get_current_orthophotos_path() -> String
+Retrieves the *currently active* Orthophotos path from the runtime configuration.
+"""
+function get_current_orthophotos_path()::String
+    # Reads the active path from the global configuration dictionary (APP_CONFIG[])
+    return get(GLOBAL_CONFIG, "path", "")
+end
+
+"""
+    get_current_saves_path() -> String
+Retrieves the *currently active* Orthophotos-saved path from the runtime configuration.
+"""
+function get_current_saves_path()::String
+    # Reads the active path from the global configuration dictionary (APP_CONFIG[])
+    return get(GLOBAL_CONFIG, "save", "")
+end
+
+
+"""
+    update_paths!(new_path::String, new_save::String)
+
+Updates the 'path' and 'save' tags in params.xml and updates the runtime configuration with the new paths.
+This is the function called from the GUI on button press.
+"""
+function update_paths!(new_path::String, new_save::String)
+    # Write to the persistent file
+    _write_path_to_xml!("path", new_path)
+    _write_path_to_xml!("save", new_save)
+
+    # NOTE: The active config is updated ONLY AFTER the move in GuiMode.jl,
+    # but we update the runtime dictionary here temporarily to reflect the new desired state.
+    # We rely on GuiMode.jl to correctly call set_active_* only after FileMover confirms success.
+end
+
+
+"""
+    set_active_orthophotos_path(path::String)
+Updates the runtime config after a successful migration.
+"""
+function set_active_orthophotos_path(path::String)
+    GLOBAL_CONFIG["path"] = path
+    # NOTE: GeoEngine.jl's prepare_paths_and_location needs to be updated
+    # to read these from the config dict if they exist.
+end
+
+"""
+    set_active_saves_path(path::String)
+Updates the runtime config after a successful migration.
+"""
+function set_active_saves_path(path::String)
+    GLOBAL_CONFIG["save"] = path
+end
+
+
+# Private function for argument parsing
 function _parse_commandline(args)
     s = ArgParseSettings(description="Photoscenary.jl - Tile downloader for flight simulators.")
     @add_arg_table! s begin
@@ -294,30 +417,30 @@ function _parse_commandline(args)
         "--http"
         help = "Starts a local web server. Used as a flag, it uses port 8000; otherwise, it uses the specified port (es. --webserver 8081)."
         arg_type = Int
-        nargs = '?'         # Accetta zero o più valori (restituirà un array)
+        nargs = '?'         # Accepts zero or more values (will return an array)
         constant = 8000
-        default = nothing   # Se non presente, il valore è nothing
+        default = nothing   # If not present, value is nothing
         "--low-detail-threshold"
         help = "Detail score threshold below which a tile is marked as low-info (default 1.0)"
         arg_type = Float64
         default = 0.8
-        dest_name = "low_detail_threshold" # Nome pulito per il dizionario cfg
+        dest_name = "low_detail_threshold" # Clean name for cfg dictionary
     end
 
-    # parse_args gestisce automaticamente gli argomenti passati
+    # parse_args automatically handles passed arguments
     return ArgParse.parse_args(args, s)
 end
 
 
-# Unica funzione pubblica del modulo
+# Only public function of the module
 function initialize_and_parse_args(args, versionProgram, versionProgramDate)
     println("\nPhotoscenary.jl ver: $versionProgram date: $versionProgramDate - System prerequisite test")
 
-    # Chiama le due funzioni private
+    # Call the two private functions
     _initialize_params(versionProgram)
     parsedArgs = _parse_commandline(args)
 
-    println("\n--- Parametri di Esecuzione ---")
+    println("\n--- Execution Parameters ---")
     for (key, val) in parsedArgs
         if val !== nothing
              println("  $key => $val")
@@ -328,4 +451,4 @@ function initialize_and_parse_args(args, versionProgram, versionProgramDate)
     return parsedArgs
 end
 
-end # fine del modulo AppConfig
+end # end of module AppConfig

@@ -360,8 +360,8 @@ _xml_esc(s) = replace(string(s), "&"=>"&amp;", "<"=>"&lt;", ">"=>"&gt;", "\""=>"
 function _to_wp(x; default_name="WP")
     lat = hasproperty(x, :lat) ? getproperty(x, :lat) : (x isa AbstractDict ? x["lat"] : nothing)
     lon = hasproperty(x, :lon) ? getproperty(x, :lon) : (x isa AbstractDict ? x["lon"] : nothing)
-    lat === nothing && error("Waypoint privo di 'lat'")
-    lon === nothing && error("Waypoint privo di 'lon'")
+    lat === nothing && error("Waypoint missing 'lat'")
+    lon === nothing && error("Waypoint missing 'lon'")
     nm = hasproperty(x, :name) ? getproperty(x, :name) :
         (x isa AbstractDict && haskey(x,"name") ? x["name"] : default_name)
     alt_m = nothing
@@ -401,22 +401,22 @@ function _print_rte(io, name::String, wps::Vector{WP})
 end
 
 
-export search_by_name  # assicurati che sia negli export in alto
+export search_by_name  # ensure it is in the exports above
 
 """
 search_by_name(q::AbstractString, limit::Integer=10)
 
-Ricerca aeroporti per:
-- keywords (priorità massima)
-- IATA / ICAO (match esatto o prefix)
+Search airports by:
+- keywords (highest priority)
+- IATA / ICAO (exact match or prefix)
 - name
 - municipality
 
-Matching case- e accent-insensitive (Unicode.normalize(..., stripmark=true)).
-Ritorna un vettore di NamedTuple: (icao, name, lat, lon, elev_ft) ordinati per score decrescente.
+Matching case- and accent-insensitive (Unicode.normalize(..., stripmark=true)).
+Returns a vector of NamedTuple: (icao, name, lat, lon, elev_ft) sorted by descending score.
 """
 function search_by_name(q::AbstractString, limit::Integer=10)
-    # Assicura che il DB sia pronto (stessa logica di selectIcao)
+    # Ensure DB is ready (same logic as selectIcao)
     if isfile("airports.csv") && (!isfile("airports.jls") || stat("airports.csv").mtime > stat("airports.jls").mtime)
         StatusMonitor.log_message("Converting airport database...")
         serialize("airports.jls", DataFrame(CSV.File("airports.csv")))
@@ -424,12 +424,12 @@ function search_by_name(q::AbstractString, limit::Integer=10)
     end
 
     db = deserialize("airports.jls")
-    # Alcune basi dati hanno nomi colonne leggermente diversi: allinea qui
+    # Some databases have slightly different column names: align here
     # ident        -> ICAO
-    # gps_code     -> (spesso stesso dell'ICAO)
+    # gps_code     -> (often same as ICAO)
     # iata_code    -> IATA
-    # municipality -> municipalità
-    # keywords     -> stringa con parole chiave separate da virgole/semicolon/spazi
+    # municipality -> municipality
+    # keywords     -> string with keywords separated by commas/semicolons/spaces
     hascol(sym) = hasproperty(db, sym) || (sym in names(db))
     getcol(sym, default=nothing) = hascol(sym) ? db[!, sym] : (hascol(Symbol(sym)) ? db[!, Symbol(sym)] : fill(default, nrow(db)))
 
@@ -442,26 +442,26 @@ function search_by_name(q::AbstractString, limit::Integer=10)
     lon_col   = :longitude_deg
     elev_col  = :elevation_ft
 
-    # Normalizzazione
+    # Normalization
     norm(s) = Unicode.normalize(uppercase(String(s)), stripmark=true)
     qn = norm(strip(q))
 
-    # Tokenizer keywords: split su virgola/semicolon/pipe oppure multipli spazi
+    # Keyword tokenizer: split on comma/semicolon/pipe or multiple spaces
     function split_keywords(x)
         if x === missing || x === nothing
             return String[]
         end
         s = String(x)
         isempty(s) && return String[]
-        # sostituisci delimitatori con virgola e splitta
+        # replace delimiters with comma and split
         s2 = replace(s, [';', '|'] => ',', '\t' => ' ')
         toks = split(s2, ',')
-        # ulteriormente spezza su whitespace per parole singole utili (opzionale)
+        # further split on whitespace for useful single words (optional)
         toks2 = String[]
         for t in toks
             t1 = strip(t)
             isempty(t1) && continue
-            # tieni anche il token intero e i sottotoken (es. "Milan Bergamo" -> ["Milan Bergamo","Milan","Bergamo"])
+            # keep also the whole token and subtokens (e.g. "Milan Bergamo" -> ["Milan Bergamo","Milan","Bergamo"])
             push!(toks2, t1)
             append!(toks2, filter(!isempty, split(t1)))
         end
@@ -478,11 +478,11 @@ function search_by_name(q::AbstractString, limit::Integer=10)
     # 10 : ICAO/IATA contains
     function compute_score(qn::String; icao::String, iata::String, name::String, muni::String, keyws::Vector{String})
         s = 0
-        # match esatti su codici
+        # exact matches on codes
         if !isempty(iata) && qn == iata; s = max(s, 100); end
         if !isempty(icao) && qn == icao; s = max(s, 100); end
 
-        # keywords (normalizzate)
+        # keywords (normalized)
         nkw = map(norm, keyws)
         if any(k -> qn == k, nkw);                 s = max(s, 90);  end
         if any(k -> startswith(k, qn), nkw);       s = max(s, 80);  end
@@ -493,10 +493,10 @@ function search_by_name(q::AbstractString, limit::Integer=10)
         if startswith(nm, qn) || startswith(mu, qn); s = max(s, 70); end
         if occursin(qn, nm) || occursin(qn, mu);     s = max(s, 60); end
 
-        # keywords contains (dopo name/muni)
+        # keywords contains (after name/muni)
         if any(k -> occursin(qn, k), nkw);          s = max(s, 50); end
 
-        # codici contains (caso residuale)
+        # codes contains (residual case)
         if (!isempty(iata) && occursin(qn, iata)) || (!isempty(icao) && occursin(qn, icao))
             s = max(s, 10)
         end
@@ -524,10 +524,10 @@ function search_by_name(q::AbstractString, limit::Integer=10)
         end
     end
 
-    # ordina per score, poi per nome come tie-breaker
+    # sort by score, then by name as tie-breaker
     sorted = sort(results, by = r -> (-r._score, r.name))
 
-    # proietta e limita
+    # project and limit
     out = NamedTuple{(:icao,:name,:lat,:lon,:elev_ft)}[]
     for r in Iterators.take(sorted, limit)
         push!(out, (icao=r.icao, name=r.name, lat=r.lat, lon=r.lon, elev_ft=r.elev_ft))
@@ -539,8 +539,8 @@ end
 """
 save_route_gpx(waypoints; dep_icao, arr_icao, lookup_icao, outdir, include_ele, route_name)
 
-Genera e salva un file GPX 1.1 con <rte>/<rtept> e opzionalmente <wpt> per partenza e arrivo.
-Restituisce (filename, gpx_string).
+Generates and saves a GPX 1.1 file with <rte>/<rtept> and optionally <wpt> for departure and arrival.
+Returns (filename, gpx_string).
 """
 function save_route_gpx(waypoints;
                         dep_icao::Union{Nothing,String}=nothing,
@@ -550,7 +550,7 @@ function save_route_gpx(waypoints;
                         include_ele::Bool=false,
                         route_name::Union{Nothing,String}=nothing,
                         )
-    length(waypoints) ≥ 2 || error("Servono almeno 2 waypoint per una rotta GPX")
+    length(waypoints) ≥ 2 || error("At least 2 waypoints are needed for a GPX route")
 
     wps = Vector{WP}(undef, length(waypoints))
     for (i, raw) in pairs(waypoints)

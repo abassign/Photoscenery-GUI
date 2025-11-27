@@ -11,59 +11,59 @@
 // DOM elements and map references
 
 const elements = {
-    map: L.map('map').setView([45, 12], 5),
-    icaoInput: document.getElementById('icao'),
-    latInput: document.getElementById('lat'),
-    lonInput: document.getElementById('lon'),
-    sizeInput: document.getElementById('size'),
-    sdwnSelect: document.getElementById('sdwn-select'),
-    overSelect: document.getElementById('over-mode'),
-    radiusInput: document.getElementById('radius'),
-    latlonContainer: document.getElementById('latlon-container'),
-    icaoContainer: document.getElementById('icao-container'),
-    btnGetCoords: document.getElementById('btn-get-coords'),
-    btnConnect: document.getElementById('btn-connect'),
-    fgfsPortInput: document.getElementById('fgfs-port'),
-    flightPathControls: document.getElementById('flight-path-controls'),
-    btnTogglePath: document.getElementById('btn-toggle-path'),
-    btnSavePath: document.getElementById('btn-save-path'),
-    btnSaveRoute: document.getElementById('btn-save-route'),
-    btnClearPath: document.getElementById('btn-clear-path'),
-    btnSelectFromMap: document.getElementById('btn-select-from-map'),
-    controlsPanel: document.getElementById('controls'),
-    resSvgContainer: document.getElementById('res-svg-container'),
-    mapContainer: document.getElementById('map'),
-    mapVisibilityFilters: document.getElementById('map-visibility-filters'),
-    tilePreviewImage: document.getElementById('tilePreview'),
-    downloadBtn: document.getElementById('downloadBtn'),
-    opacitySlider: document.getElementById('opacity-slider'),
-    btnDownloadAroundAircraft: document.getElementById('btn-download-around-aircraft'),
-    btnFillHoles: document.getElementById('btn-fill-holes'),
-    mapServerSelect: document.getElementById('map-server-select'),
-    outputPathInput: document.getElementById('output-path-input'),
-    backupPathInput: document.getElementById('backup-path-input'),
-    btnEditPaths: document.getElementById('btn-edit-paths'),
-    directorySettingsHeader: document.getElementById('directory-settings-content').previousElementSibling,
-    directorySettingsContent: document.getElementById('directory-settings-content'),
-    routeDropZone: document.getElementById('route-drop-zone'),
-    routeWaypointList: document.getElementById('route-waypoint-list'),
-    routeSettingsHeader: document.getElementById('route-section-content').previousElementSibling,
-    routeSettingsContent: document.getElementById('route-section-content'),
-    dateFilterSlider: document.getElementById('date-filter-slider'),
-    dateFilterLabel: document.getElementById('date-filter-label')
+  map: L.map('map').setView([45, 12], 5),
+  icaoInput: document.getElementById('icao'),
+  latInput: document.getElementById('lat'),
+  lonInput: document.getElementById('lon'),
+  sizeInput: document.getElementById('size'),
+  sdwnSelect: document.getElementById('sdwn-select'),
+  overSelect: document.getElementById('over-mode'),
+  radiusInput: document.getElementById('radius'),
+  latlonContainer: document.getElementById('latlon-container'),
+  icaoContainer: document.getElementById('icao-container'),
+  btnGetCoords: document.getElementById('btn-get-coords'),
+  btnConnect: document.getElementById('btn-connect'),
+  fgfsPortInput: document.getElementById('fgfs-port'),
+  flightPathControls: document.getElementById('flight-path-controls'),
+  btnTogglePath: document.getElementById('btn-toggle-path'),
+  btnSavePath: document.getElementById('btn-save-path'),
+  btnSaveRoute: document.getElementById('btn-save-route'),
+  btnClearPath: document.getElementById('btn-clear-path'),
+  btnSelectFromMap: document.getElementById('btn-select-from-map'),
+  controlsPanel: document.getElementById('controls'),
+  resSvgContainer: document.getElementById('res-svg-container'),
+  mapContainer: document.getElementById('map'),
+  mapVisibilityFilters: document.getElementById('map-visibility-filters'),
+  tilePreviewImage: document.getElementById('tilePreview'),
+  downloadBtn: document.getElementById('downloadBtn'),
+  opacitySlider: document.getElementById('opacity-slider'),
+  btnDownloadAroundAircraft: document.getElementById('btn-download-around-aircraft'),
+  btnFillHoles: document.getElementById('btn-fill-holes'),
+  mapServerSelect: document.getElementById('map-server-select'),
+  outputPathBox: document.getElementById('output-path-box'),
+  backupPathBox: document.getElementById('backup-path-box'),
+  btnSavePaths: document.getElementById('btn-save-paths'),
+  directorySettingsHeader: document.getElementById('directory-settings-content').previousElementSibling,
+  directorySettingsContent: document.getElementById('directory-settings-content'),
+  routeDropZone: document.getElementById('route-drop-zone'),
+  routeWaypointList: document.getElementById('route-waypoint-list'),
+  routeSettingsHeader: document.getElementById('route-section-content').previousElementSibling,
+  routeSettingsContent: document.getElementById('route-section-content'),
+  dateFilterSlider: document.getElementById('date-filter-slider'),
+  dateFilterLabel: document.getElementById('date-filter-label')
 };
 
 const CROSSHAIR_SVG_ICON_HTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32">' +
-'<g stroke="#000000" stroke-width="5" stroke-linecap="round">' +
-'<line x1="2" y1="16" x2="30" y2="16" /><line x1="16" y1="2" x2="16" y2="30" />' +
-'</g>' +
-'<g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round">' +
-'<line x1="2" y1="16" x2="30" y2="16" /><line x1="16" y1="2" x2="16" y2="30" />' +
-'</g>' +
-'</svg>';
+  '<g stroke="#000000" stroke-width="5" stroke-linecap="round">' +
+  '<line x1="2" y1="16" x2="30" y2="16" /><line x1="16" y1="2" x2="16" y2="30" />' +
+  '</g>' +
+  '<g stroke="#FFFFFF" stroke-width="3" stroke-linecap="round">' +
+  '<line x1="2" y1="16" x2="30" y2="16" /><line x1="16" y1="2" x2="16" y2="30" />' +
+  '</g>' +
+  '</svg>';
 
 const AIRPLANE_SVG_ICON_HTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">' +
-'<path fill="#333333" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>';
+  '<path fill="#333333" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>';
 
 // Map layers and markers
 let coverageLayer = L.layerGroup().addTo(elements.map);
@@ -77,21 +77,21 @@ const AIRPORT_MARKER_CLASS = 'airport-marker';
 const MARKER_SAMPLING_INTERVAL = 10;
 
 const defaultMarkerStyle = {
-    radius: 4,
-    fillColor: "#ff7800", // Arancione
-    color: "#000",
-    weight: 1,
-    opacity: 1,
-    fillOpacity: 0.8
+  radius: 4,
+  fillColor: "#ff7800", // Orange
+  color: "#000",
+  weight: 1,
+  opacity: 1,
+  fillOpacity: 0.8
 };
 
 const activatedMarkerStyle = {
-    radius: 8, // Più grande
-    fillColor: "#007bff", // Blu
-    color: "#fff",
-    weight: 2,
-    opacity: 1,
-    fillOpacity: 1
+  radius: 8, // Larger
+  fillColor: "#007bff", // Blue
+  color: "#fff",
+  weight: 2,
+  opacity: 1,
+  fillOpacity: 1
 };
 
 const ICAO_SUGGESTION_ID = 'icao-suggestions-popup';
@@ -99,7 +99,7 @@ let currentSuggestionList = null;
 
 const PATH_FOR_HELIPORT_H_CENTERED = 'M19 5v14H5V5h14zm-4 6H9V9h6v2zM9 15h6v-2H9v2z';
 
-// ui.js — NUOVA VISIBILITY_CONFIG
+// ui.js — NEW VISIBILITY_CONFIG
 const VISIBILITY_CONFIG = [
   {
     id: 'tiles',
@@ -144,9 +144,9 @@ const VISIBILITY_CONFIG = [
     `
   },
   {
-  id: 'navaids',
-  label: 'Navaids',
-  svg: `
+    id: 'navaids',
+    label: 'Navaids',
+    svg: `
     <circle cx="12" cy="12" r="1.6"/>
     <circle cx="12" cy="12" r="5" fill="none"/>
     <circle cx="12" cy="12" r="8" fill="none"/>
@@ -166,44 +166,44 @@ const VISIBILITY_CONFIG = [
 
 
 /**
- * Rende i pulsanti di visibilità in base allo stato.
- * @param {Object} visibilityState - Stato dei filtri.
- * @param {Function} clickCallback - Funzione da chiamare al click.
+ * Renders visibility buttons based on state.
+ * @param {Object} visibilityState - Filter state.
+ * @param {Function} clickCallback - Function to call on click.
  */
 function renderVisibilityFilters(visibilityState, clickCallback) {
-    const container = elements.mapVisibilityFilters;
-    if (!container) return;
+  const container = elements.mapVisibilityFilters;
+  if (!container) return;
 
-    container.innerHTML = '';
+  container.innerHTML = '';
 
-    VISIBILITY_CONFIG.forEach(item => {
-        const isActive = visibilityState[item.id];
-        const button = document.createElement('button');
-        button.id = `filter-${item.id}`;
-        button.classList.add('filter-button', isActive ? 'active' : 'inactive');
-        button.title = `${item.label} (Click to toggle)`;
-        button.dataset.filter = item.id;
+  VISIBILITY_CONFIG.forEach(item => {
+    const isActive = visibilityState[item.id];
+    const button = document.createElement('button');
+    button.id = `filter-${item.id}`;
+    button.classList.add('filter-button', isActive ? 'active' : 'inactive');
+    button.title = `${item.label} (Click to toggle)`;
+    button.dataset.filter = item.id;
 
-        // Crea l'SVG per l'icona
-        button.innerHTML = item.svg
-        ? `<svg class="filter-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+    // Create SVG for icon
+    button.innerHTML = item.svg
+      ? `<svg class="filter-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                 role="img" aria-label="${item.label}">
                 <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 ${item.svg}
                 </g>
             </svg>`
-        : `<svg class="filter-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+      : `<svg class="filter-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
                 role="img" aria-label="${item.label}">
                 <path d="${item.icon}" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round"/>
             </svg>`;
 
-        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        button.setAttribute('aria-label', `${item.label} layer`);
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    button.setAttribute('aria-label', `${item.label} layer`);
 
-        button.addEventListener('click', () => clickCallback(item.id));
-        container.appendChild(button);
-    });
+    button.addEventListener('click', () => clickCallback(item.id));
+    container.appendChild(button);
+  });
 }
 
 
@@ -221,73 +221,73 @@ function renderVisibilityFilters(visibilityState, clickCallback) {
  * @param {number} lowDetailThreshold - The detail score threshold for marking tiles
  */
 function updateMapCoverage(coverageData, allowedResolutions, currentOpacity, dateFilterIndex, sessionStartTime, lowDetailThreshold) {
-    coverageLayer.clearLayers();
-    const now = new Date();
+  coverageLayer.clearLayers();
+  const now = new Date();
 
-    coverageData.forEach(tile => {
-        // --- LOGICA DI FILTRO TEMPORALE ---
-        if (dateFilterIndex !== 6) {
-            if (!tile.last_modified || typeof tile.last_modified !== 'string') {
-                return;
-            }
-            const tileDate = new Date(tile.last_modified.replace(' ', 'T'));
-            let showTile = false;
+  coverageData.forEach(tile => {
+    // --- TIME FILTER LOGIC ---
+    if (dateFilterIndex !== 6) {
+      if (!tile.last_modified || typeof tile.last_modified !== 'string') {
+        return;
+      }
+      const tileDate = new Date(tile.last_modified.replace(' ', 'T'));
+      let showTile = false;
 
-            switch (dateFilterIndex) {
-                case 0:
-                    if (sessionStartTime) showTile = tileDate >= sessionStartTime;
-                    break;
-                case 1:
-                    showTile = (now - tileDate) < (24 * 3600 * 1000);
-                    break;
-                case 2:
-                    const today = new Date();
-                    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-                    const startOfYesterday = new Date(startOfToday);
-                    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-                    showTile = tileDate >= startOfYesterday && tileDate < startOfToday;
-                    break;
-                case 3:
-                    showTile = (now - tileDate) < (7 * 24 * 3600 * 1000);
-                    break;
-                case 4:
-                    showTile = (now - tileDate) < (30 * 24 * 3600 * 1000);
-                    break;
-                case 5:
-                    showTile = (now - tileDate) < (365 * 24 * 3600 * 1000);
-                    break;
-            }
-            if (!showTile) {
-                return;
-            }
-        }
+      switch (dateFilterIndex) {
+        case 0:
+          if (sessionStartTime) showTile = tileDate >= sessionStartTime;
+          break;
+        case 1:
+          showTile = (now - tileDate) < (24 * 3600 * 1000);
+          break;
+        case 2:
+          const today = new Date();
+          const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          const startOfYesterday = new Date(startOfToday);
+          startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+          showTile = tileDate >= startOfYesterday && tileDate < startOfToday;
+          break;
+        case 3:
+          showTile = (now - tileDate) < (7 * 24 * 3600 * 1000);
+          break;
+        case 4:
+          showTile = (now - tileDate) < (30 * 24 * 3600 * 1000);
+          break;
+        case 5:
+          showTile = (now - tileDate) < (365 * 24 * 3600 * 1000);
+          break;
+      }
+      if (!showTile) {
+        return;
+      }
+    }
 
-        if (!allowedResolutions.has(tile.sizeId)) return;
+    if (!allowedResolutions.has(tile.sizeId)) return;
 
-        // Disegno del tile sulla mappa
-        const popupHtml = `ID: ${tile.id}<br>Resolution: ${tile.sizeId}<br><b>Score: ${tile.detail_score.toFixed(3)}</b><br><button class="preview-button" data-tile-id="${tile.id}" data-size-id="${tile.sizeId}">View Preview</button>`;
-        const bounds = [[tile.bbox.latLL, tile.bbox.lonLL], [tile.bbox.latUR, tile.bbox.lonUR]];
-        L.rectangle(bounds, {...getStyleForSizeId(tile.sizeId), fillOpacity: currentOpacity, opacity: 1}).addTo(coverageLayer).bindPopup(popupHtml);
+    // Draw tile on map
+    const popupHtml = `ID: ${tile.id}<br>Resolution: ${tile.sizeId}<br><b>Score: ${tile.detail_score.toFixed(3)}</b><br><button class="preview-button" data-tile-id="${tile.id}" data-size-id="${tile.sizeId}">View Preview</button>`;
+    const bounds = [[tile.bbox.latLL, tile.bbox.lonLL], [tile.bbox.latUR, tile.bbox.lonUR]];
+    L.rectangle(bounds, { ...getStyleForSizeId(tile.sizeId), fillOpacity: currentOpacity, opacity: 1 }).addTo(coverageLayer).bindPopup(popupHtml);
 
-        // Ora la variabile "lowDetailThreshold" esisterà e questo controllo funzionerà
-        if (tile.detail_score !== -1.0 && tile.detail_score < lowDetailThreshold) {
-            const centerLat = (tile.bbox.latLL + tile.bbox.latUR) / 2;
-            const centerLon = (tile.bbox.lonLL + tile.bbox.lonUR) / 2;
-            const point1 = L.latLng(centerLat, tile.bbox.lonLL);
-            const point2 = L.latLng(centerLat, tile.bbox.lonUR);
-            const widthInMeters = point1.distanceTo(point2);
-            const dotRadius = widthInMeters * 0.05;
+    // Now the variable "lowDetailThreshold" will exist and this check will work
+    if (tile.detail_score !== -1.0 && tile.detail_score < lowDetailThreshold) {
+      const centerLat = (tile.bbox.latLL + tile.bbox.latUR) / 2;
+      const centerLon = (tile.bbox.lonLL + tile.bbox.lonUR) / 2;
+      const point1 = L.latLng(centerLat, tile.bbox.lonLL);
+      const point2 = L.latLng(centerLat, tile.bbox.lonUR);
+      const widthInMeters = point1.distanceTo(point2);
+      const dotRadius = widthInMeters * 0.05;
 
-            L.circle([centerLat, centerLon], {
-                radius: dotRadius,
-                color: 'black',
-                fillColor: 'black',
-                fillOpacity: 0.7,
-                weight: 1,
-                interactive: false
-            }).addTo(coverageLayer);
-        }
-    });
+      L.circle([centerLat, centerLon], {
+        radius: dotRadius,
+        color: 'black',
+        fillColor: 'black',
+        fillOpacity: 0.7,
+        weight: 1,
+        interactive: false
+      }).addTo(coverageLayer);
+    }
+  });
 }
 
 /**
@@ -295,53 +295,53 @@ function updateMapCoverage(coverageData, allowedResolutions, currentOpacity, dat
  * @param {Object} data - Aircraft status data
  */
 function updateAircraftPosition(data) {
-    updateFgfsIndicator(data.active);
+  updateFgfsIndicator(data.active);
 
-    // debug data from aircraft
-    /**
-    console.log('updateAircraftPosition -> data', data);
-    console.log('isConnected:', window.main?.state?.isConnected,
-                'heading:', window.main?.state?.currentHeading,
-                'allowed:', window.main?.state?.daaAllowed);
-    **/
+  // debug data from aircraft
+  /**
+  console.log('updateAircraftPosition -> data', data);
+  console.log('isConnected:', window.main?.state?.isConnected,
+              'heading:', window.main?.state?.currentHeading,
+              'allowed:', window.main?.state?.daaAllowed);
+  **/
 
-    if (!data.active) {
-        if (aircraftMarker) elements.map.removeLayer(aircraftMarker);
-        aircraftMarker = null;
-        return;
-    }
+  if (!data.active) {
+    if (aircraftMarker) elements.map.removeLayer(aircraftMarker);
+    aircraftMarker = null;
+    return;
+  }
 
-    const latLng = [data.lat, data.lon];
-    const tooltipContent = `
+  const latLng = [data.lat, data.lon];
+  const tooltipContent = `
     <b>Heading:</b> ${Math.round(data.heading)}°<br>
     <b>Altitude:</b> ${Math.round(data.altitude)} ft<br>
     <b>Speed:</b> ${Math.round(data.speed)} kts
     `;
 
-    if (!aircraftMarker) {
-        const aircraftSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
+  if (!aircraftMarker) {
+    const aircraftSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
         <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"
         fill="#d9534f" stroke="black" stroke-width="1"/>
         </svg>`;
 
-        const icon = L.divIcon({
-            html: aircraftSVG,
-            className: 'aircraft-icon',
-            iconSize: [28, 28],
-            iconAnchor: [14, 14]
-        });
+    const icon = L.divIcon({
+      html: aircraftSVG,
+      className: 'aircraft-icon',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
 
-        aircraftMarker = L.marker(latLng, {
-            icon: icon,
-            rotationAngle: data.heading
-        })
-        .addTo(elements.map)
-        .bindTooltip(tooltipContent);
-    } else {
-        aircraftMarker.setLatLng(latLng);
-        aircraftMarker.setRotationAngle(data.heading);
-        aircraftMarker.setTooltipContent(tooltipContent);
-    }
+    aircraftMarker = L.marker(latLng, {
+      icon: icon,
+      rotationAngle: data.heading
+    })
+      .addTo(elements.map)
+      .bindTooltip(tooltipContent);
+  } else {
+    aircraftMarker.setLatLng(latLng);
+    aircraftMarker.setRotationAngle(data.heading);
+    aircraftMarker.setTooltipContent(tooltipContent);
+  }
 }
 
 
@@ -354,34 +354,34 @@ function updateAircraftPosition(data) {
  * @param {Object} activeCircles - The registry of active circles to update
  */
 function drawCircle(jobId, lat, lon, radiusNm, activeCircles) {
-    if (activeCircles[jobId]) return;
+  if (activeCircles[jobId]) return;
 
-    const circle = L.circle([lat, lon], {
-        radius: radiusNm * 1852, // Convert NM to meters
-        color: '#00cc00',
-        fillColor: '#00cc00',
-        fillOpacity: 0.15,
-        weight: 1.5
-    }).addTo(elements.map);
+  const circle = L.circle([lat, lon], {
+    radius: radiusNm * 1852, // Convert NM to meters
+    color: '#00cc00',
+    fillColor: '#00cc00',
+    fillOpacity: 0.15,
+    weight: 1.5
+  }).addTo(elements.map);
 
-    activeCircles[jobId] = circle;
+  activeCircles[jobId] = circle;
 }
 
 /**
  * Populates the downscaling dropdown based on current size selection
  */
 function populateSdwnDropdown() {
-    const maxSize = parseInt(elements.sizeInput.value, 10);
-    const currentSdwnValue = elements.sdwnSelect.value;
+  const maxSize = parseInt(elements.sizeInput.value, 10);
+  const currentSdwnValue = elements.sdwnSelect.value;
 
-    elements.sdwnSelect.innerHTML = '';
-    elements.sdwnSelect.add(new Option("Disabled", "-1"));
+  elements.sdwnSelect.innerHTML = '';
+  elements.sdwnSelect.add(new Option("Disabled", "-1"));
 
-    for (let i = 0; i <= maxSize; i++) {
-        elements.sdwnSelect.add(new Option(`From ${maxSize} to ${i}`, i));
-    }
+  for (let i = 0; i <= maxSize; i++) {
+    elements.sdwnSelect.add(new Option(`From ${maxSize} to ${i}`, i));
+  }
 
-    elements.sdwnSelect.value = (currentSdwnValue >= 0 && currentSdwnValue <= maxSize) ? currentSdwnValue : "-1";
+  elements.sdwnSelect.value = (currentSdwnValue >= 0 && currentSdwnValue <= maxSize) ? currentSdwnValue : "-1";
 }
 
 /**
@@ -389,25 +389,25 @@ function populateSdwnDropdown() {
  * @param {boolean} isConnected - Current connection status
  */
 function updateFgfsIndicator(status) {
-    const btn = elements.btnConnect;
-    // Rimuove tutte le classi di stato precedenti per una gestione pulita
-    btn.classList.remove('active', 'connecting', 'disconnected');
+  const btn = elements.btnConnect;
+  // Removes all previous state classes for clean management
+  btn.classList.remove('active', 'connecting', 'disconnected');
 
-    // --- NUOVA LOGICA DI CONTROLLO ---
-    // Gestisce sia il booleano 'true' che la stringa 'connected' come stato attivo.
-    if (status === 'connected' || status === true) {
-        btn.classList.add('active');
-        btn.textContent = 'FGFS On';
-    } else {
-        // NASCONDI i pulsanti del percorso di volo
-        if (status === 'connecting') {
-            btn.classList.add('connecting');
-            btn.textContent = 'Wait...';
-        } else { // disconnected o false
-            btn.classList.add('disconnected');
-            btn.textContent = 'FGFS Off';
-        }
+  // --- NEW CONTROL LOGIC ---
+  // Handles both boolean 'true' and string 'connected' as active state.
+  if (status === 'connected' || status === true) {
+    btn.classList.add('active');
+    btn.textContent = 'FGFS On';
+  } else {
+    // HIDE flight path buttons
+    if (status === 'connecting') {
+      btn.classList.add('connecting');
+      btn.textContent = 'Wait...';
+    } else { // disconnected o false
+      btn.classList.add('disconnected');
+      btn.textContent = 'FGFS Off';
     }
+  }
 }
 
 /**
@@ -416,15 +416,15 @@ function updateFgfsIndicator(status) {
  * @param {Function} clickCallback - Handler for button clicks
  */
 function renderSvgButtons(resState, clickCallback) {
-    elements.resSvgContainer.innerHTML = '';
+  elements.resSvgContainer.innerHTML = '';
 
-    resState.forEach((isActive, index) => {
-        const div = document.createElement('div');
-        div.classList.add('res-svg-button');
-        div.innerHTML = createSvgCircle(index, isActive);
-        div.addEventListener('click', () => clickCallback(index));
-        elements.resSvgContainer.appendChild(div);
-    });
+  resState.forEach((isActive, index) => {
+    const div = document.createElement('div');
+    div.classList.add('res-svg-button');
+    div.innerHTML = createSvgCircle(index, isActive);
+    div.addEventListener('click', () => clickCallback(index));
+    elements.resSvgContainer.appendChild(div);
+  });
 }
 
 /**
@@ -432,21 +432,21 @@ function renderSvgButtons(resState, clickCallback) {
  * @param {Array<Object>} servers - An array of server objects, each with id and name.
  */
 function populateMapServerSelector(servers) {
-    const select = elements.mapServerSelect;
-    select.innerHTML = ''; // Pulisce opzioni esistenti
+  const select = elements.mapServerSelect;
+  select.innerHTML = ''; // Clears existing options
 
-    servers.forEach(server => {
-        const option = document.createElement('option');
-        option.value = server.id;
-        option.textContent = `${server.id}: ${server.name}`;
-        select.appendChild(option);
-    });
+  servers.forEach(server => {
+    const option = document.createElement('option');
+    option.value = server.id;
+    option.textContent = `${server.id}: ${server.name}`;
+    select.appendChild(option);
+  });
 }
 
 /**
- * Disegna la lista dei waypoint nel vassoio della rotta.
- * @param {Array<Object>} waypoints - L'array dei waypoint.
- * @param {string} fileName - Il nome del file caricato.
+ * Draws the waypoint list in the route tray.
+ * @param {Array<Object>} waypoints - The array of waypoints.
+ * @param {string} fileName - The name of the loaded file.
  */
 export function renderWaypointList(waypoints, fileName) {
   const listContainer = elements.routeWaypointList;
@@ -457,36 +457,36 @@ export function renderWaypointList(waypoints, fileName) {
     return;
   }
 
-  // Prendi la funzione di calcolo distanze esposta da route.js
+  // Get distance calculation function exposed by route.js
   const computeLegDistancesNM =
-  (window.computeLegDistancesNM) ||
-  (window.route && window.route.computeLegDistancesNM);
+    (window.computeLegDistancesNM) ||
+    (window.route && window.route.computeLegDistancesNM);
 
   const legs = computeLegDistancesNM
-  ? computeLegDistancesNM(waypoints)
-  : waypoints.map((_, i) => (i === 0 ? 0 : NaN));
+    ? computeLegDistancesNM(waypoints)
+    : waypoints.map((_, i) => (i === 0 ? 0 : NaN));
 
   let html = '';
   if (fileName) html += `<strong>${fileName}</strong>`;
   html += `<ul class="route-wp-list">`;
 
   waypoints.forEach((wp, idx) => {
-    // Tipo: usa quello che arriva da addWaypointManual, altrimenti prova a dedurre
+    // Type: use what comes from addWaypointManual, otherwise try to deduce
     const rawType =
-    wp.type ||
-    wp.kind ||
-    (wp.source === 'airport' ? 'Airport' :
-    wp.source === 'navaid'  ? 'Navaid'  :
-    '');
+      wp.type ||
+      wp.kind ||
+      (wp.source === 'airport' ? 'Airport' :
+        wp.source === 'navaid' ? 'Navaid' :
+          '');
 
     const typeLabel = rawType ? String(rawType) : '';
 
-    // Distanza tratto da waypoint precedente (in NM)
+    // Leg distance from previous waypoint (in NM)
     const legNm = (typeof legs[idx] === 'number' && isFinite(legs[idx]))
-    ? legs[idx].toFixed(1)
-    : (idx === 0 ? '0.0' : '—');
+      ? legs[idx].toFixed(1)
+      : (idx === 0 ? '0.0' : '—');
 
-    // Riga meta: tipo + leg se disponibili
+    // Meta row: type + leg if available
     let metaHtml = '';
     const pieces = [];
     if (typeLabel) pieces.push(typeLabel);
@@ -511,7 +511,7 @@ export function renderWaypointList(waypoints, fileName) {
   const ul = listContainer.querySelector('ul.route-wp-list');
   if (!ul) return;
 
-  // Clic sul cestino → rimuovi waypoint
+  // Click on trash → remove waypoint
   ul.addEventListener('click', (ev) => {
     const btn = ev.target.closest('button.wp-del');
     if (!btn) return;
@@ -521,7 +521,7 @@ export function renderWaypointList(waypoints, fileName) {
     }
   });
 
-  // Hover riga → evidenzia punto (anello rosso) + bg riga
+  // Row hover → highlight point (red ring) + row bg
   ul.addEventListener('mouseover', (ev) => {
     const li = ev.target.closest('li[data-index]');
     if (!li) return;
@@ -540,7 +540,7 @@ export function renderWaypointList(waypoints, fileName) {
 
   try {
     listContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } catch {}
+  } catch { }
 }
 
 
@@ -549,43 +549,43 @@ export function renderWaypointList(waypoints, fileName) {
  * @param {boolean} isSelectionMode - Whether selection mode should be active
  */
 function toggleMapSelectionMode(isSelectionMode) {
-    const btn = elements.btnSelectFromMap;
+  const btn = elements.btnSelectFromMap;
 
-    if (isSelectionMode) {
-        // --- STATE: Map Selection is ACTIVE ---
-        btn.classList.add('active');
-        // Use the SVG icon instead of the text symbol
-        btn.innerHTML = CROSSHAIR_SVG_ICON_HTML;
-        btn.title = 'Return to ICAO/Manual Input';
+  if (isSelectionMode) {
+    // --- STATE: Map Selection is ACTIVE ---
+    btn.classList.add('active');
+    // Use the SVG icon instead of the text symbol
+    btn.innerHTML = CROSSHAIR_SVG_ICON_HTML;
+    btn.title = 'Return to ICAO/Manual Input';
 
-        elements.mapContainer.classList.add('map-selection-active');
+    elements.mapContainer.classList.add('map-selection-active');
 
-        elements.latlonContainer.style.display = 'block';
-        elements.icaoInput.disabled = true;
-        elements.latInput.disabled = true;
-        elements.lonInput.disabled = true;
-    } else {
-        // --- STATE: ICAO/Manual is ACTIVE ---
-        btn.classList.remove('active');
-        // Use the new airplane SVG constant
-        btn.innerHTML = AIRPLANE_SVG_ICON_HTML;
-        btn.title = 'Select Coordinates from Map';
+    elements.latlonContainer.style.display = 'block';
+    elements.icaoInput.disabled = true;
+    elements.latInput.disabled = true;
+    elements.lonInput.disabled = true;
+  } else {
+    // --- STATE: ICAO/Manual is ACTIVE ---
+    btn.classList.remove('active');
+    // Use the new airplane SVG constant
+    btn.innerHTML = AIRPLANE_SVG_ICON_HTML;
+    btn.title = 'Select Coordinates from Map';
 
-        elements.mapContainer.classList.remove('map-selection-active');
+    elements.mapContainer.classList.remove('map-selection-active');
 
-        elements.latlonContainer.style.display = 'none';
-        elements.icaoInput.disabled = false;
-        elements.latInput.disabled = false;
-        elements.lonInput.disabled = false;
-    }
+    elements.latlonContainer.style.display = 'none';
+    elements.icaoInput.disabled = false;
+    elements.latInput.disabled = false;
+    elements.lonInput.disabled = false;
+  }
 }
 
 /**
  * Shows ICAO input mode and hides coordinate inputs
  */
 function showIcaoMode() {
-    elements.latlonContainer.style.display = 'none';
-    elements.btnGetCoords.style.display = 'none';
+  elements.latlonContainer.style.display = 'none';
+  elements.btnGetCoords.style.display = 'none';
 }
 
 /**
@@ -595,20 +595,20 @@ function showIcaoMode() {
  * @param {string} imageUrl - Preview image URL
  */
 function showTileInPanel(tileId, sizeId, previewUrl, nativeUrl) {
-    elements.tilePreviewImage.src = previewUrl;
-    elements.tilePreviewImage.style.display = 'block';
+  elements.tilePreviewImage.src = previewUrl;
+  elements.tilePreviewImage.style.display = 'block';
 
-    elements.downloadBtn.textContent = `Download full PNG (Res: ${sizeId})`;
-    elements.downloadBtn.style.display = 'block';
+  elements.downloadBtn.textContent = `Download full PNG (Res: ${sizeId})`;
+  elements.downloadBtn.style.display = 'block';
 
-    elements.downloadBtn.onclick = () => {
-        const a = document.createElement('a');
-        a.href = nativeUrl; // full resolution
-        a.download = `${tileId}_full.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    };
+  elements.downloadBtn.onclick = () => {
+    const a = document.createElement('a');
+    a.href = nativeUrl; // full resolution
+    a.download = `${tileId}_full.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 }
 
 /**
@@ -619,29 +619,29 @@ function showTileInPanel(tileId, sizeId, previewUrl, nativeUrl) {
  * @returns {L.Circle} The Leaflet circle object
  */
 function previewArea(lat, lon, radiusNm) {
-    const previewCircle = L.circle([lat, lon], {
-        radius: radiusNm * 1852,
-        color: '#ff7800',
-        fillColor: '#ff7800',
-        fillOpacity: 0.2,
-        weight: 2,
-        dashArray: '5, 5'
-    }).addTo(elements.map);
+  const previewCircle = L.circle([lat, lon], {
+    radius: radiusNm * 1852,
+    color: '#ff7800',
+    fillColor: '#ff7800',
+    fillOpacity: 0.2,
+    weight: 2,
+    dashArray: '5, 5'
+  }).addTo(elements.map);
 
-    // Enable Geoman editing
-    previewCircle.pm.enable({
-        allowSelfIntersection: false,
-        draggable: true
-    });
+  // Enable Geoman editing
+  previewCircle.pm.enable({
+    allowSelfIntersection: false,
+    draggable: true
+  });
 
-    // Defer the style update to the next event loop cycle.
-    // This ensures that Geoman has finished creating the handle markers
-    // in the DOM before we try to style them.
-    setTimeout(() => {
-        updateHandleStyles(previewCircle);
-    }, 0);
+  // Defer the style update to the next event loop cycle.
+  // This ensures that Geoman has finished creating the handle markers
+  // in the DOM before we try to style them.
+  setTimeout(() => {
+    updateHandleStyles(previewCircle);
+  }, 0);
 
-    return previewCircle;
+  return previewCircle;
 }
 
 /**
@@ -650,11 +650,11 @@ function previewArea(lat, lon, radiusNm) {
  * @returns {L.DivIcon} A Leaflet DivIcon instance.
  */
 function createCustomHandleIcon(size) {
-    return L.divIcon({
-        className: 'custom-pm-handle',
-        iconSize: [size, size],
-        iconAnchor: [size / 2, size / 2]
-    });
+  return L.divIcon({
+    className: 'custom-pm-handle',
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
+  });
 }
 
 /**
@@ -663,30 +663,30 @@ function createCustomHandleIcon(size) {
  * @param {L.Circle} circle - The Leaflet circle layer.
  */
 function updateHandleStyles(circle) {
-    // ...your existing code to determine handleSize...
-    if (!circle || !circle.pm || !circle.pm.enabled()) {
-        return;
-    }
-    const radiusNm = parseFloat(elements.radiusInput.value) || 0;
-    let handleSize;
-    handleSize = radiusNm * 0.3 + 18;
-    /*
-    if (radiusNm > 60) {
-        handleSize = 28;
-    } else if (radiusNm > 25) {
-        handleSize = 22;
-    } else {
-        handleSize = 18;
-    }
-    */
-    const newIcon = createCustomHandleIcon(handleSize);
+  // ...your existing code to determine handleSize...
+  if (!circle || !circle.pm || !circle.pm.enabled()) {
+    return;
+  }
+  const radiusNm = parseFloat(elements.radiusInput.value) || 0;
+  let handleSize;
+  handleSize = radiusNm * 0.3 + 18;
+  /*
+  if (radiusNm > 60) {
+      handleSize = 28;
+  } else if (radiusNm > 25) {
+      handleSize = 22;
+  } else {
+      handleSize = 18;
+  }
+  */
+  const newIcon = createCustomHandleIcon(handleSize);
 
-    const markers = circle.pm._markers;
-    if (markers) {
-        markers.forEach(marker => {
-            marker.setIcon(newIcon);
-        });
-    }
+  const markers = circle.pm._markers;
+  if (markers) {
+    markers.forEach(marker => {
+      marker.setIcon(newIcon);
+    });
+  }
 }
 
 
@@ -696,19 +696,19 @@ function updateHandleStyles(circle) {
 
 // Internal helper functions
 function getStyleForSizeId(sizeId) {
-    const colors = ['#0000FF', '#2A00D5', '#5500AA', '#800080', '#AA0055', '#D5002A', '#FF0000'];
-    return {
-        color: colors[sizeId] || '#333',
-        weight: 1,
-        fillColor: colors[sizeId] || '#333'
-    };
+  const colors = ['#0000FF', '#2A00D5', '#5500AA', '#800080', '#AA0055', '#D5002A', '#FF0000'];
+  return {
+    color: colors[sizeId] || '#333',
+    weight: 1,
+    fillColor: colors[sizeId] || '#333'
+  };
 }
 
 function createSvgCircle(index, selected) {
-    const fillColor = selected ? '#0088cc' : 'white';
-    const strokeColor = '#0088cc';
-    const textColor = selected ? 'white' : '#0088cc';
-    return `
+  const fillColor = selected ? '#0088cc' : 'white';
+  const strokeColor = '#0088cc';
+  const textColor = selected ? 'white' : '#0088cc';
+  return `
     <svg viewBox="0 0 32 32">
     <circle cx="16" cy="16" r="14" fill="${fillColor}" stroke="${strokeColor}" stroke-width="2"/>
     <text x="16" y="21" text-anchor="middle" fill="${textColor}" font-size="16">${index}</text>
@@ -716,22 +716,22 @@ function createSvgCircle(index, selected) {
 }
 
 /**
- * Genera l'SVG per il simbolo ICAO.
- * I simboli sono disegnati su una viewBox 32x32 per centrarli facilmente.
- * @param {string} type - Tipo di Navaid (es. 'VOR', 'NDB', 'DME', 'VORTAC').
- * @returns {string} Codice SVG come stringa.
+ * Generates SVG for ICAO symbol.
+ * Symbols are drawn on a 32x32 viewBox for easy centering.
+ * @param {string} type - Navaid Type (e.g. 'VOR', 'NDB', 'DME', 'VORTAC').
+ * @returns {string} SVG code as string.
  */
 /**
- * Genera l'SVG per un simbolo ICAO di navaid.
- * Disegno su viewBox 32x32 per centrare facilmente.
+ * Generates SVG for an ICAO navaid symbol.
+ * Drawing on 32x32 viewBox for easy centering.
  * @param {string} type - 'VOR', 'DME', 'NDB', 'VOR/DME', 'VORTAC', 'TACAN'
  * @param {object} [opts]
- * @param {number} [opts.size=32] - dimensione in px (width/height)
- * @param {string} [opts.stroke='currentColor'] - colore linee
- * @param {number} [opts.strokeWidth=1.8] - spessore linee (in unità della viewBox)
- * @param {boolean} [opts.centerDot=true] - disegna il punto centrale
- * @param {boolean} [opts.nonScalingStroke=false] - mantiene lo stroke costante con lo scaling
- * @returns {string} SVG come stringa
+ * @param {number} [opts.size=32] - size in px (width/height)
+ * @param {string} [opts.stroke='currentColor'] - line color
+ * @param {number} [opts.strokeWidth=1.8] - line thickness (in viewBox units)
+ * @param {boolean} [opts.centerDot=true] - draw center dot
+ * @param {boolean} [opts.nonScalingStroke=false] - keeps stroke constant with scaling
+ * @returns {string} SVG as string
  */
 function createIcaoNavaidSvg(type, opts = {}) {
   const {
@@ -746,9 +746,9 @@ function createIcaoNavaidSvg(type, opts = {}) {
   const viewBox = '0 0 32 32';
   const vef = nonScalingStroke ? 'vector-effect="non-scaling-stroke"' : '';
 
-  // Esagono “standard” 32x32 centrato
+  // "Standard" 32x32 centered hexagon
   const HEX = 'M16 4 L27 10 L27 22 L16 28 L5 22 L5 10 Z';
-  // Quadrato DME
+  // DME Square
   const SQR = 'M8 8 L24 8 L24 24 L8 24 Z';
 
   let content = '';
@@ -757,47 +757,47 @@ function createIcaoNavaidSvg(type, opts = {}) {
   if (type_uc.includes('VOR')) {
     content += `<path d="${HEX}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" ${vef}/>`;
     if (type_uc.includes('DME')) {
-      // VOR/DME = esagono + riquadro
+      // VOR/DME = hexagon + box
       content += `<path d="${SQR}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" ${vef}/>`;
     }
     if (type_uc.includes('TACAN') || type_uc.includes('VORTAC')) {
-      // VORTAC = esagono + tre “tacche” nere
-      // posizionate su alto-sx, alto-dx e basso-centro
+      // VORTAC = hexagon + three black "notches"
+      // positioned on top-left, top-right and bottom-center
       content += [
-        // alto-sx
+        // top-left
         `<path d="M11 8 L14 10 L12 13 L9 11 Z" fill="black"/>`,
-        // alto-dx
+        // top-right
         `<path d="M21 8 L23 11 L20 13 L18 10 Z" fill="black"/>`,
-        // basso-centro
+        // bottom-center
         `<path d="M14.5 22 L17.5 22 L17.5 26 L14.5 26 Z" fill="black"/>`
       ].join('');
     }
 
-  // --- TACAN “Y” con lobi neri ---
+    // --- TACAN "Y" with black lobes ---
   } else if (type_uc.includes('TACAN')) {
-    // contorno tipo esagono “troncato” (look ICAO)
+    // "truncated" hexagon type outline (ICAO look)
     const OUTER = 'M16 4 L26 10 L26 20 L19 28 L13 28 L6 20 L6 10 Z';
-    // tre lobi neri
+    // three black lobes
     content += [
       `<path d="M16 16 L25.5 10 L25.5 20 Z" fill="black"/>`,
       `<path d="M16 16 L6.5 10 L6.5 20 Z" fill="black"/>`,
       `<path d="M9 22 L16 16 L23 22 L16 29 Z" fill="black"/>`,
-      // “foro” centrale bianco per aspetto ICAO
+      // central white "hole" for ICAO aspect
       `<circle cx="16" cy="16" r="6" fill="white"/>`,
       `<path d="${OUTER}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" ${vef}/>`
     ].join('');
 
-  // --- DME: quadrato ---
+    // --- DME: square ---
   } else if (type_uc.includes('DME')) {
     content += `<path d="${SQR}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" ${vef}/>`;
 
-  // --- NDB: anello puntinato ---
+    // --- NDB: dotted ring ---
   } else if (type_uc.includes('NDB')) {
-    // anello puntinato: dash quasi zero + gap costante + cappucci tondi
-    // (scala bene; regola gap se vuoi più/meno punti)
+    // dotted ring: dash almost zero + constant gap + round caps
+    // (scales well; adjust gap if you want more/less dots)
     const ringStroke = stroke; // stesso colore
     const ringWidth = strokeWidth;
-    const gap = 3.2; // distanza fra i “punti”
+    const gap = 3.2; // distance between "dots"
     content += `<circle cx="16" cy="16" r="10.5" fill="none" stroke="${ringStroke}" stroke-width="${ringWidth}" stroke-dasharray="0.1 ${gap}" stroke-linecap="round" ${vef}/>`;
   }
 
@@ -808,11 +808,11 @@ function createIcaoNavaidSvg(type, opts = {}) {
 }
 
 function initializeMap() {
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(elements.map);
-    elements.map.createPane('flightPathPane');
-    elements.map.getPane('flightPathPane').style.zIndex = 450;
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(elements.map);
+  elements.map.createPane('flightPathPane');
+  elements.map.getPane('flightPathPane').style.zIndex = 450;
 }
 
 // Layer Group per tenere traccia dei marker Navaid
@@ -821,21 +821,21 @@ function initializeMap() {
 const NAVAID_ICON_SIZE = 32;
 
 function getNavaidIcon(type) {
-    // Chiama la nuova funzione SVG con opzioni appropriate
-    const svgHtml = createIcaoNavaidSvg(type, {
-        size: NAVAID_ICON_SIZE,
-        stroke: 'black',
-        strokeWidth: 2, // Aumentiamo leggermente per visibilità sulla mappa
-        nonScalingStroke: true
-    });
+  // Chiama la nuova funzione SVG con opzioni appropriate
+  const svgHtml = createIcaoNavaidSvg(type, {
+    size: NAVAID_ICON_SIZE,
+    stroke: 'black',
+    strokeWidth: 2, // Aumentiamo leggermente per visibilità sulla mappa
+    nonScalingStroke: true
+  });
 
-    return L.divIcon({
-        html: svgHtml,
-        className: 'navaid-icon-container', // Useremo questa classe solo per il contenitore
-        iconSize: [NAVAID_ICON_SIZE, NAVAID_ICON_SIZE],
-        iconAnchor: [NAVAID_ICON_SIZE / 2, NAVAID_ICON_SIZE / 2], // **Centra l'icona**
-        popupAnchor: [0, -10]
-    });
+  return L.divIcon({
+    html: svgHtml,
+    className: 'navaid-icon-container', // Useremo questa classe solo per il contenitore
+    iconSize: [NAVAID_ICON_SIZE, NAVAID_ICON_SIZE],
+    iconAnchor: [NAVAID_ICON_SIZE / 2, NAVAID_ICON_SIZE / 2], // **Centra l'icona**
+    popupAnchor: [0, -10]
+  });
 }
 
 /**
@@ -843,71 +843,71 @@ function getNavaidIcon(type) {
  * @returns {Object} Contains all parameters needed to start a job
  */
 function getJobParameters() {
-    const jobParams = {
-        radius: parseFloat(elements.radiusInput.value) || 3,
-        size:   parseInt(elements.sizeInput.value, 10) || 4,
-        over:   parseInt(elements.overSelect.value, 10) || 1,
-        sdwn:   parseInt(elements.sdwnSelect.value, 10)  // può restituire -1
-    };
+  const jobParams = {
+    radius: parseFloat(elements.radiusInput.value) || 3,
+    size: parseInt(elements.sizeInput.value, 10) || 4,
+    over: parseInt(elements.overSelect.value, 10) || 1,
+    sdwn: parseInt(elements.sdwnSelect.value, 10)  // può restituire -1
+  };
 
-    // Se lat/lon non sono compilati, usa ICAO
-    if (elements.latlonContainer.style.display === 'block' &&
-        elements.latInput.value &&
-        elements.lonInput.value) {
-        jobParams.lat = parseFloat(elements.latInput.value);
+  // Se lat/lon non sono compilati, usa ICAO
+  if (elements.latlonContainer.style.display === 'block' &&
+    elements.latInput.value &&
+    elements.lonInput.value) {
+    jobParams.lat = parseFloat(elements.latInput.value);
     jobParams.lon = parseFloat(elements.lonInput.value);
-        } else {
-            jobParams.icao = elements.icaoInput.value.trim();
-        }
+  } else {
+    jobParams.icao = elements.icaoInput.value.trim();
+  }
 
-        // Mai null/undefined
-        Object.keys(jobParams).forEach(k => {
-            if (jobParams[k] == null || Number.isNaN(jobParams[k])) {
-                jobParams[k] = (k === 'sdwn') ? -1 : 3; // default sicuro
-            }
-        });
+  // Mai null/undefined
+  Object.keys(jobParams).forEach(k => {
+    if (jobParams[k] == null || Number.isNaN(jobParams[k])) {
+      jobParams[k] = (k === 'sdwn') ? -1 : 3; // default sicuro
+    }
+  });
 
-        return jobParams;
+  return jobParams;
 }
 
 function clearPreview() {
-    if (window.pendingCircle) {
-        elements.map.removeLayer(window.pendingCircle);
-        window.pendingCircle = null;
-    }
+  if (window.pendingCircle) {
+    elements.map.removeLayer(window.pendingCircle);
+    window.pendingCircle = null;
+  }
 }
 
 function setupInteractiveSelection() {
-    // Update preview when parameters change
-    // Clear preview when switching to ICAO mode
-    elements.icaoInput.addEventListener('input', () => {
-        if (elements.icaoInput.value && window.pendingCircle) {
-            clearPreview();
-        }
-    });
-
-    function updatePreview() {
-        if (elements.latInput.value && elements.lonInput.value && elements.radiusInput.value) {
-            previewArea(
-                parseFloat(elements.latInput.value),
-                        parseFloat(elements.lonInput.value),
-                        parseFloat(elements.radiusInput.value)
-            );
-        }
+  // Update preview when parameters change
+  // Clear preview when switching to ICAO mode
+  elements.icaoInput.addEventListener('input', () => {
+    if (elements.icaoInput.value && window.pendingCircle) {
+      clearPreview();
     }
+  });
+
+  function updatePreview() {
+    if (elements.latInput.value && elements.lonInput.value && elements.radiusInput.value) {
+      previewArea(
+        parseFloat(elements.latInput.value),
+        parseFloat(elements.lonInput.value),
+        parseFloat(elements.radiusInput.value)
+      );
+    }
+  }
 }
 
 function linkRadiusHandleToInput(circle) {
-    // Update the input field's text value continuously for live feedback.
-    circle.on('pm:markerdrag', e => {
-        const nm = (circle.getRadius() / 1852).toFixed(1);
-        elements.radiusInput.value = nm;
-    });
+  // Update the input field's text value continuously for live feedback.
+  circle.on('pm:markerdrag', e => {
+    const nm = (circle.getRadius() / 1852).toFixed(1);
+    elements.radiusInput.value = nm;
+  });
 
-    // Update the handle's visual style only ONCE at the end of the drag.
-    circle.on('pm:markerdragend', e => {
-        updateHandleStyles(circle);
-    });
+  // Update the handle's visual style only ONCE at the end of the drag.
+  circle.on('pm:markerdragend', e => {
+    updateHandleStyles(circle);
+  });
 }
 
 
@@ -917,26 +917,26 @@ function linkRadiusHandleToInput(circle) {
  * @param {boolean} isVisible - Se la linea deve essere visibile.
  */
 function updateFlightPathPolyline(flightPath, isVisible) {
-    if (!isVisible) {
-        if (flightPathPolyline) elements.map.removeLayer(flightPathPolyline);
-        return;
-    }
-    if (flightPath && flightPath.length >= 2) {
-        const latLngs = flightPath.map(p => [p.lat, p.lon]);
-        if (flightPathPolyline) {
-            flightPathPolyline.setLatLngs(latLngs);
-            if (!elements.map.hasLayer(flightPathPolyline)) {
-                flightPathPolyline.addTo(elements.map);
-            }
-        } else {
-            flightPathPolyline = L.polyline(latLngs, { color: '#ff00ff', weight: 3, opacity: 0.7 }).addTo(elements.map);
-        }
+  if (!isVisible) {
+    if (flightPathPolyline) elements.map.removeLayer(flightPathPolyline);
+    return;
+  }
+  if (flightPath && flightPath.length >= 2) {
+    const latLngs = flightPath.map(p => [p.lat, p.lon]);
+    if (flightPathPolyline) {
+      flightPathPolyline.setLatLngs(latLngs);
+      if (!elements.map.hasLayer(flightPathPolyline)) {
+        flightPathPolyline.addTo(elements.map);
+      }
     } else {
-        if (flightPathPolyline) {
-            elements.map.removeLayer(flightPathPolyline);
-            flightPathPolyline = null;
-        }
+      flightPathPolyline = L.polyline(latLngs, { color: '#ff00ff', weight: 3, opacity: 0.7 }).addTo(elements.map);
     }
+  } else {
+    if (flightPathPolyline) {
+      elements.map.removeLayer(flightPathPolyline);
+      flightPathPolyline = null;
+    }
+  }
 }
 
 /**
@@ -945,36 +945,36 @@ function updateFlightPathPolyline(flightPath, isVisible) {
  * @param {boolean} isVisible - Se i punti devono essere visibili.
  */
 function updateFlightPathMarkers(flightPath, isVisible) {
-    flightPathMarkersLayer.clearLayers(); // Pulisce i punti precedenti
+  flightPathMarkersLayer.clearLayers(); // Pulisce i punti precedenti
 
-    if (!isVisible || !flightPath || flightPath.length < 2) {
-        return;
-    }
+  if (!isVisible || !flightPath || flightPath.length < 2) {
+    return;
+  }
 
-    // Itera sul percorso, prendendo un punto ogni MARKER_SAMPLING_INTERVAL
-    for (let i = 0; i < flightPath.length; i += MARKER_SAMPLING_INTERVAL) {
-        const point = flightPath[i];
+  // Itera sul percorso, prendendo un punto ogni MARKER_SAMPLING_INTERVAL
+  for (let i = 0; i < flightPath.length; i += MARKER_SAMPLING_INTERVAL) {
+    const point = flightPath[i];
 
-        // Determina lo stile in base allo stato 'isActivated' del punto
-        const style = point.isActivated ? activatedMarkerStyle : defaultMarkerStyle;
+    // Determina lo stile in base allo stato 'isActivated' del punto
+    const style = point.isActivated ? activatedMarkerStyle : defaultMarkerStyle;
 
-        const marker = L.circleMarker([point.lat, point.lon], { ...style, pane: 'flightPathPane' })
-            .addTo(flightPathMarkersLayer);
+    const marker = L.circleMarker([point.lat, point.lon], { ...style, pane: 'flightPathPane' })
+      .addTo(flightPathMarkersLayer);
 
-        // Aggiungi l'evento click
-        marker.on('click', () => {
-            // 1. Inverti lo stato del punto nei dati originali
-            point.isActivated = !point.isActivated;
+    // Aggiungi l'evento click
+    marker.on('click', () => {
+      // 1. Inverti lo stato del punto nei dati originali
+      point.isActivated = !point.isActivated;
 
-            // 2. Aggiorna lo stile del marker cliccato
-            marker.setStyle(point.isActivated ? activatedMarkerStyle : defaultMarkerStyle);
+      // 2. Aggiorna lo stile del marker cliccato
+      marker.setStyle(point.isActivated ? activatedMarkerStyle : defaultMarkerStyle);
 
-            // 3. Qui puoi aggiungere logica futura. Esempio:
-            console.log(`Punto del percorso a [${point.lat.toFixed(4)}, ${point.lon.toFixed(4)}] ${point.isActivated ? 'attivato' : 'disattivato'}.`);
-        });
+      // 3. Qui puoi aggiungere logica futura. Esempio:
+      console.log(`Punto del percorso a [${point.lat.toFixed(4)}, ${point.lon.toFixed(4)}] ${point.isActivated ? 'attivato' : 'disattivato'}.`);
+    });
 
-        marker.bindTooltip(`Alt: ${Math.round(point.altitude_ft)} ft<br>Speed: ${Math.round(point.speed_kts)} kts`);
-    }
+    marker.bindTooltip(`Alt: ${Math.round(point.altitude_ft)} ft<br>Speed: ${Math.round(point.speed_kts)} kts`);
+  }
 }
 
 /**
@@ -984,22 +984,22 @@ function updateFlightPathMarkers(flightPath, isVisible) {
  * @param {boolean} isRouteFilterActive - NUOVO: Stato del filtro 'route'.
  */
 function renderFlightPath(flightPath, isVisible) {
-    // ⚠️ ASSUMIAMO che 'state.visibilityFilters.route' sia letto dal modulo 'main.js'
-    //    e passato qui o che 'main.js' gestisca il layer.
+  // ⚠️ ASSUMIAMO che 'state.visibilityFilters.route' sia letto dal modulo 'main.js'
+  //    e passato qui o che 'main.js' gestisca il layer.
 
-    // Siccome 'main.js' chiama renderFlightPath da dentro la sua logica:
-    const routeFilterActive = window.main?.state?.visibilityFilters?.route ?? true;
+  // Siccome 'main.js' chiama renderFlightPath da dentro la sua logica:
+  const routeFilterActive = window.main?.state?.visibilityFilters?.route ?? true;
 
-    // Se il filtro generale è OFF, la rotta è nascosta
-    if (!routeFilterActive) {
-        updateFlightPathPolyline(flightPath, false);
-        updateFlightPathMarkers(flightPath, false);
-        return;
-    }
+  // Se il filtro generale è OFF, la rotta è nascosta
+  if (!routeFilterActive) {
+    updateFlightPathPolyline(flightPath, false);
+    updateFlightPathMarkers(flightPath, false);
+    return;
+  }
 
-    // Se il filtro generale è ON, usiamo lo stato 'isVisible' (Hide/Show Path)
-    updateFlightPathPolyline(flightPath, isVisible);
-    updateFlightPathMarkers(flightPath, isVisible);
+  // Se il filtro generale è ON, usiamo lo stato 'isVisible' (Hide/Show Path)
+  updateFlightPathPolyline(flightPath, isVisible);
+  updateFlightPathMarkers(flightPath, isVisible);
 }
 
 
@@ -1023,7 +1023,7 @@ export function showSearchMarker(lat, lon) {
 
   // rimuovi eventuale marker precedente
   if (window._searchMarker) {
-    try { map.removeLayer(window._searchMarker); } catch (_) {}
+    try { map.removeLayer(window._searchMarker); } catch (_) { }
     window._searchMarker = null;
   }
 
@@ -1041,7 +1041,7 @@ export function showSearchMarker(lat, lon) {
         window.addWaypointManual({ name: 'SEARCH', lat, lon, source: 'icao' });
       }
     }
-  } catch {}
+  } catch { }
 
   return m; // importante: ci serve in main.js per agganciare il click
 }
@@ -1050,7 +1050,7 @@ export function showSearchMarker(lat, lon) {
 export function removeSearchMarker() {
   const map = elements.map;
   if (window._searchMarker && map) {
-    try { map.removeLayer(window._searchMarker); } catch (_) {}
+    try { map.removeLayer(window._searchMarker); } catch (_) { }
     window._searchMarker = null;
   }
 }
@@ -1082,28 +1082,28 @@ export function toggleSearchCircleFromInputs(lat, lon) {
  * e la aggiunge al DOM.
  */
 function createSuggestionList(icaoInput) {
-    if (currentSuggestionList) {
-        currentSuggestionList.remove();
-    }
+  if (currentSuggestionList) {
+    currentSuggestionList.remove();
+  }
 
-    // 1. Crea la lista
-    const ul = document.createElement('ul');
-    ul.id = ICAO_SUGGESTION_ID;
-    ul.classList.add('suggest'); // Riutilizzo la classe CSS del modale di rotta
+  // 1. Crea la lista
+  const ul = document.createElement('ul');
+  ul.id = ICAO_SUGGESTION_ID;
+  ul.classList.add('suggest'); // Riutilizzo la classe CSS del modale di rotta
 
-    // 2. Aggiungi stili per posizionamento assoluto
-    ul.style.position = 'absolute';
-    ul.style.zIndex = '1000';
-    ul.style.width = `${icaoInput.offsetWidth}px`;
+  // 2. Aggiungi stili per posizionamento assoluto
+  ul.style.position = 'absolute';
+  ul.style.zIndex = '1000';
+  ul.style.width = `${icaoInput.offsetWidth}px`;
 
-    // 3. Posiziona sotto l'input
-    const rect = icaoInput.getBoundingClientRect();
-    ul.style.top = `${rect.bottom + window.scrollY}px`;
-    ul.style.left = `${rect.left + window.scrollX}px`;
+  // 3. Posiziona sotto l'input
+  const rect = icaoInput.getBoundingClientRect();
+  ul.style.top = `${rect.bottom + window.scrollY}px`;
+  ul.style.left = `${rect.left + window.scrollX}px`;
 
-    document.body.appendChild(ul);
-    currentSuggestionList = ul;
-    return ul;
+  document.body.appendChild(ul);
+  currentSuggestionList = ul;
+  return ul;
 }
 
 /**
@@ -1113,39 +1113,39 @@ function createSuggestionList(icaoInput) {
  * @param {Function} onSelect - Callback da chiamare alla selezione.
  */
 function showIcaoSuggestions(items, icaoInput, onSelect) {
-    if (!items || items.length === 0) {
-        hideIcaoSuggestions();
-        return;
-    }
+  if (!items || items.length === 0) {
+    hideIcaoSuggestions();
+    return;
+  }
 
-    const ul = createSuggestionList(icaoInput);
-    ul.innerHTML = items.map(a => {
-        const city = a.municipality ? ` (${a.municipality})` : '';
-        const iata = a.iata_code ? ` ${a.iata_code}` : '';
-        // Includi tutti i dati utili nell'attributo data-airport
-        const data = JSON.stringify({icao: a.icao, lat: a.lat, lon: a.lon, name: a.name});
+  const ul = createSuggestionList(icaoInput);
+  ul.innerHTML = items.map(a => {
+    const city = a.municipality ? ` (${a.municipality})` : '';
+    const iata = a.iata_code ? ` ${a.iata_code}` : '';
+    // Includi tutti i dati utili nell'attributo data-airport
+    const data = JSON.stringify({ icao: a.icao, lat: a.lat, lon: a.lon, name: a.name });
 
-        return `<li data-airport='${data}'><b>${a.icao}</b>${iata} — ${a.name}${city}</li>`;
-    }).join('');
+    return `<li data-airport='${data}'><b>${a.icao}</b>${iata} — ${a.name}${city}</li>`;
+  }).join('');
 
-    ul.onclick = (ev) => {
-        const li = ev.target.closest('li');
-        if (!li) return;
+  ul.onclick = (ev) => {
+    const li = ev.target.closest('li');
+    if (!li) return;
 
-        const airportData = JSON.parse(li.dataset.airport);
-        onSelect(airportData);
-        hideIcaoSuggestions();
-    };
+    const airportData = JSON.parse(li.dataset.airport);
+    onSelect(airportData);
+    hideIcaoSuggestions();
+  };
 }
 
 /**
  * Rimuove la lista di suggerimenti dal DOM.
  */
 function hideIcaoSuggestions() {
-    if (currentSuggestionList) {
-        currentSuggestionList.remove();
-        currentSuggestionList = null;
-    }
+  if (currentSuggestionList) {
+    currentSuggestionList.remove();
+    currentSuggestionList = null;
+  }
 }
 
 
@@ -1173,16 +1173,16 @@ function drawNavaids(navaids, mapInstance) {
   // util per formattare frequenze
   const fmt = {
     mhz: v => (isFinite(v) ? `${(+v).toFixed(2)} MHz` : 'N/D'),
-    khzToMhz: v => (isFinite(v) ? `${(+v/1000).toFixed(2)} MHz` : 'N/D')
+    khzToMhz: v => (isFinite(v) ? `${(+v / 1000).toFixed(2)} MHz` : 'N/D')
   };
 
   navaids.forEach(n => {
     const lat = Number(n.lat), lon = Number(n.lon);
     if (!isFinite(lat) || !isFinite(lon)) return;
 
-    const type  = String(n.type || n.kind || '').toUpperCase();   // NDB/VOR/DME/TACAN/…
+    const type = String(n.type || n.kind || '').toUpperCase();   // NDB/VOR/DME/TACAN/…
     const ident = n.ident || n.code || '';
-    const name  = n.name || '';
+    const name = n.name || '';
 
     // 1) icona (usa la tua funzione; fallback a un default se assente)
     let icon;
@@ -1213,9 +1213,9 @@ function drawNavaids(navaids, mapInstance) {
     });
 
     // 3) popup
-    const freqMhz   = n.frequency_mhz ?? (n.frequency_khz != null ? n.frequency_khz / 1000 : undefined);
-    const dmeMhz    = n.dme_frequency_mhz;
-    const dmeChan   = n.dme_channel;
+    const freqMhz = n.frequency_mhz ?? (n.frequency_khz != null ? n.frequency_khz / 1000 : undefined);
+    const dmeMhz = n.dme_frequency_mhz;
+    const dmeChan = n.dme_channel;
 
     const popupHtml = `
       <b>${ident || '—'}${name ? ` - ${name}` : ''}</b><br>
@@ -1235,15 +1235,15 @@ function drawNavaids(navaids, mapInstance) {
         if (typeof window.addWaypointManual !== 'function') return;
 
         const ident = n.ident || n.code || '';
-        const nm    = n.name || '';
-        const kind  = String(n.type || n.kind || '').toUpperCase();
+        const nm = n.name || '';
+        const kind = String(n.type || n.kind || '').toUpperCase();
 
         window.addWaypointManual({
           name: ident || nm || kind || 'NAVAID',
           lat: Number(n.lat),
-                                 lon: Number(n.lon),
-                                 type: kind || 'Navaid',
-                                 source: 'navaid'
+          lon: Number(n.lon),
+          type: kind || 'Navaid',
+          source: 'navaid'
         });
       } catch (e) {
         console.warn('addWaypointManual (navaid) skipped:', e);
@@ -1368,23 +1368,23 @@ function drawAirports(airports, mapInstance, showMinor, showMajor, showHeliports
     if (!isFinite(lat) || !isFinite(lon)) return;
 
     const tRaw = (a.type ?? a.kind ?? '').toString();
-    const t    = tRaw.toLowerCase();
+    const t = tRaw.toLowerCase();
     const icao = (a.icao ?? '').toString();
     const iata = (a.iata ?? a.iata_code ?? '').toString();
 
-    const isHeli   = t === 'heliport' || /heli/.test(t);
+    const isHeli = t === 'heliport' || /heli/.test(t);
     const isClosed = t === 'closed';
-    const isMinor  = !isHeli && (
+    const isMinor = !isHeli && (
       /small_airport|seaplane/.test(t) ||
       icao.includes('-')                      // tua euristica “codice con trattino”
     );
-    const isMajor  = !isHeli && !isMinor;     // tutto il resto
+    const isMajor = !isHeli && !isMinor;     // tutto il resto
 
     // Esclusioni e visibilità in base ai toggle
     if (isClosed) return;
-    if (isHeli   && !showHeliports) return;
-    if (isMinor  && !showMinor)     return;
-    if (isMajor  && !showMajor)     return;
+    if (isHeli && !showHeliports) return;
+    if (isMinor && !showMinor) return;
+    if (isMajor && !showMajor) return;
 
     // Scegli l’icona
     let icon;
@@ -1396,8 +1396,8 @@ function drawAirports(airports, mapInstance, showMinor, showMajor, showHeliports
       icon = allowMajorLabels
         ? createAirportTextIcon(icao, iata || '')
         : (typeof createAirportSymbolIcon === 'function'
-            ? createAirportSymbolIcon()
-            : createAirportTextIcon(icao, iata || ''));
+          ? createAirportSymbolIcon()
+          : createAirportTextIcon(icao, iata || ''));
     }
 
     // Crea il marker PRIMA di usarlo
@@ -1464,32 +1464,32 @@ function drawAirports(airports, mapInstance, showMinor, showMajor, showHeliports
  * ES6 syntax short form*
  */
 export {
-    elements,
-    initializeMap,
-    updateMapCoverage,
-    updateAircraftPosition,
-    renderFlightPath,
-    populateSdwnDropdown,
-    getJobParameters,
-    renderSvgButtons,
-    toggleMapSelectionMode,
-    showIcaoMode,
-    showTileInPanel,
-    previewArea,
-    clearPreview,
-    setupInteractiveSelection,
-    updateHandleStyles,
-    linkRadiusHandleToInput,
-    updateFgfsIndicator,
-    populateMapServerSelector,
-    drawCircle,
-    showIcaoSuggestions,
-    hideIcaoSuggestions,
-    drawNavaids,
-    drawAirports,
-    airportMarkers,
-    ICAO_SUGGESTION_ID,
-    renderVisibilityFilters
+  elements,
+  initializeMap,
+  updateMapCoverage,
+  updateAircraftPosition,
+  renderFlightPath,
+  populateSdwnDropdown,
+  getJobParameters,
+  renderSvgButtons,
+  toggleMapSelectionMode,
+  showIcaoMode,
+  showTileInPanel,
+  previewArea,
+  clearPreview,
+  setupInteractiveSelection,
+  updateHandleStyles,
+  linkRadiusHandleToInput,
+  updateFgfsIndicator,
+  populateMapServerSelector,
+  drawCircle,
+  showIcaoSuggestions,
+  hideIcaoSuggestions,
+  drawNavaids,
+  drawAirports,
+  airportMarkers,
+  ICAO_SUGGESTION_ID,
+  renderVisibilityFilters
 };
 
 

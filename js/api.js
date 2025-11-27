@@ -19,7 +19,7 @@ export function startJob(params) {
     console.log("API: Sending job request:", params);
     return fetch('/api/start-job', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params)
     }).then(res => {
         if (!res.ok) {
@@ -54,7 +54,7 @@ export function connectToFgfs(port) {
     console.log(`API: Requesting FGFS connection on port ${port}`);
     return fetch('/api/connect', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ port })
     });
 }
@@ -109,8 +109,8 @@ export function shutdownServer() {
  */
 export function getFgfsConnectionState() {
     return fetch('/api/connection-state')
-    .then(r => r.json())
-    .then(obj => obj.state);
+        .then(r => r.json())
+        .then(obj => obj.state);
 }
 
 /**
@@ -123,16 +123,16 @@ export function fillHoles(bounds, settings) {
     const payload = {
         bounds: {
             south: bounds._southWest.lat,
-            west:  bounds._southWest.lng,
+            west: bounds._southWest.lng,
             north: bounds._northEast.lat,
-            east:  bounds._northEast.lng
+            east: bounds._northEast.lng
         },
         settings: settings
     };
     console.log("API: Sending fill holes request:", payload);
     return fetch('/api/fill-holes', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     }).then(res => {
         if (!res.ok) throw new Error(`Server error: ${res.statusText}`);
@@ -148,7 +148,7 @@ export function getMapServers() {
     return fetch('/api/map-servers').then(r => r.json());
 }
 
-// Aggiungi questa funzione
+// Add this function
 export function getAppConfig() {
     return fetch('/api/app-config').then(r => r.json());
 }
@@ -160,109 +160,165 @@ export function getPaths() {
 export function setPaths(path, save) {
     return fetch('/api/paths', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ path, save })
     });
 }
 
-// Salva una rotta come GPX lato backend
+// Saves a route as GPX on the backend
 export function saveRouteGpx(payload) {
     return fetch('/api/save-route', {
         method: 'POST',
-        headers: {'Content-Type':'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     }).then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
 }
 
-export function listRoutes({limit=50, offset=0, order='desc'}={}) {
-    const q = new URLSearchParams({limit, offset, order});
-    return fetch('/api/routes?'+q).then(r => r.json());
+export function listRoutes({ limit = 50, offset = 0, order = 'desc' } = {}) {
+    const q = new URLSearchParams({ limit, offset, order });
+    return fetch('/api/routes?' + q).then(r => r.json());
 }
 
 export function downloadRoute(filename) {
-    return fetch('/api/routes/'+encodeURIComponent(filename))
-    .then(r => r.blob()); // poi crea <a download=...> come già fai
+    return fetch('/api/routes/' + encodeURIComponent(filename))
+        .then(r => r.blob()); // then create <a download=...> as you already do
 }
 
 export function resolveIcao(icao) {
-    return fetch('/api/resolve-icao/'+encodeURIComponent(icao))
-    .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
+    return fetch('/api/resolve-icao/' + encodeURIComponent(icao))
+        .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
 }
 
-export function airportsSearch(q, limit=10) {
-  const qs = new URLSearchParams({ q, limit });
-  return fetch('/api/airports/search?' + qs.toString())
-    .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
+export function airportsSearch(q, limit = 10) {
+    const qs = new URLSearchParams({ q, limit });
+    return fetch('/api/airports/search?' + qs.toString())
+        .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
 }
 
-// === POLLING GENTILE: Connection, Jobs, Coverage ===
+// === GENTLE POLLING: Connection, Jobs, Coverage ===
 
 let _cs_inflight = false;
 let _cj_inflight = false;
 let _cov_inflight = false;
 
 function isPageVisible() {
-  return typeof document === 'undefined' ? true : !document.hidden;
+    return typeof document === 'undefined' ? true : !document.hidden;
 }
 
-/** Stato connessione FGFS */
+/** FGFS Connection Status */
 export async function pollConnectionState(onUpdate) {
-  if (_cs_inflight || !isPageVisible()) return;
-  _cs_inflight = true;
-  try {
-    const r = await fetch('/api/connection-state', { cache: 'no-store' });
-    if (!r.ok) return;
-    const data = await r.json();
-    if (onUpdate) onUpdate(data);
-  } finally {
-    _cs_inflight = false;
-  }
+    if (_cs_inflight || !isPageVisible()) return;
+    _cs_inflight = true;
+    try {
+        const r = await fetch('/api/connection-state', { cache: 'no-store' });
+        if (!r.ok) return;
+        const data = await r.json();
+        if (onUpdate) onUpdate(data);
+    } finally {
+        _cs_inflight = false;
+    }
 }
 
-/** Job completati */
+/** Completed Jobs */
 export async function pollCompletedJobs(onUpdate) {
-  if (_cj_inflight || !isPageVisible()) return;
-  _cj_inflight = true;
-  try {
-    const r = await fetch('/api/completed-jobs', { cache: 'no-store' });
-    if (!r.ok) return;
-    const n = await r.json();
-    if (onUpdate) onUpdate(n);
-  } finally {
-    _cj_inflight = false;
-  }
+    if (_cj_inflight || !isPageVisible()) return;
+    _cj_inflight = true;
+    try {
+        const r = await fetch('/api/completed-jobs', { cache: 'no-store' });
+        if (!r.ok) return;
+        const n = await r.json();
+        if (onUpdate) onUpdate(n);
+    } finally {
+        _cj_inflight = false;
+    }
 }
 
-/** Coverage.json (a richiesta) */
+/** Coverage.json (on request) */
 export async function fetchCoverageOnce(onUpdate) {
-  if (_cov_inflight) return;
-  _cov_inflight = true;
-  try {
-    const r = await fetch('/coverage.json', { cache: 'no-store' });
-    if (!r.ok) return;
-    const json = await r.json();
-    if (onUpdate) onUpdate(json);
-  } finally {
-    _cov_inflight = false;
-  }
+    if (_cov_inflight) return;
+    _cov_inflight = true;
+    try {
+        const r = await fetch('/coverage.json?t=' + Date.now(), { cache: 'no-store' });
+        if (!r.ok) return;
+        const json = await r.json();
+        if (onUpdate) onUpdate(json);
+    } finally {
+        _cov_inflight = false;
+    }
 }
 
-/** Avvia i poller (chiamare una sola volta) */
+/** Start pollers (call only once) */
 let _pollersStarted = false;
 export function startPollers(handlers = {}) {
-  if (_pollersStarted) return;
-  _pollersStarted = true;
+    if (_pollersStarted) return;
+    _pollersStarted = true;
 
-  const {
-    onConnectionState = null,
-    onCompletedJobs  = null,
-  } = handlers;
+    const {
+        onConnectionState = null,
+        onCompletedJobs = null,
+    } = handlers;
 
-  // intervalli ragionevoli
-  setInterval(() => pollConnectionState(onConnectionState), 1500);
-  setInterval(() => pollCompletedJobs(onCompletedJobs),     2000);
+    // reasonable intervals
+    setInterval(() => pollConnectionState(onConnectionState), 1500);
+    setInterval(() => pollCompletedJobs(onCompletedJobs), 2000);
 
-  // chiamata immediata allo start
-  pollConnectionState(onConnectionState);
-  pollCompletedJobs(onCompletedJobs);
+    // immediate call at start
+    pollConnectionState(onConnectionState);
+    pollCompletedJobs(onCompletedJobs);
+}
+
+/**
+ * Polls the backend for the current file migration status.
+ * @returns {Promise<Object>} Object containing transfer stats (FileMover.TRANSFER_STATE)
+ */
+export function pollMigrationStatus() {
+    // Note: We use a dedicated GET route for polling
+    return fetch('/api/migration-status', { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : r.text().then(t => { throw new Error(t) }));
+}
+
+/**
+ * Sends the request to update paths and start the migration process.
+ * @param {string} path - New main path
+ * @param {string} save - New save path
+ * @returns {Promise<Object>} Resolves when the server acknowledges the start (202 Accepted)
+ */
+export function startPathMigration(path, save) {
+    // This call triggers the handle_set_paths function on the backend (Julia)
+    return fetch('/api/paths', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path, save })
+    });
+}
+
+/**
+ * Requests the list of directories from the server.
+ * @param {string} path - The path to explore (optional).
+ */
+export function listServerDirectories(path = "") {
+    return fetch('/api/list-dirs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path })
+    }).then(r => r.json());
+}
+
+/**
+ * Creates a new directory on the server.
+ * @param {string} parentPath - The path where to create the folder.
+ * @param {string} newDirName - The name of the new folder.
+ */
+export function createServerDirectory(parentPath, newDirName) {
+    return fetch('/api/create-dir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ parentPath, newDirName })
+    }).then(async r => {
+        if (!r.ok) {
+            const txt = await r.text();
+            throw new Error(txt);
+        }
+        return true;
+    });
 }

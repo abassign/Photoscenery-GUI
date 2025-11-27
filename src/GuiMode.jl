@@ -37,6 +37,8 @@ export run
 
 using ..Connector, ..GeoEngine, ..ddsFindScanner, ..Photoscenary.dds2pngDXT1, ..Commons, ..Downloader, ..Route, ..AppConfig, ..AssemblyMonitor
 using ..AirportsNavaids
+using ..FileMover
+using ..StatusMonitor
 using Logging, JSON3, HTTP, Images, Dates, LightXML
 using Base.Threads: @spawn
 using Base.Threads: Atomic, atomic_add!
@@ -46,6 +48,10 @@ using Base.Threads: Atomic, atomic_add!
 
 # Stores the absolute path of the package root (e.g., .../Photoscenary/ftKWW/)
 const PACKAGE_ROOT_PATH = Ref{String}("")
+
+const TMP_DIR = joinpath(PACKAGE_ROOT_PATH[], "tmp")
+mkpath(TMP_DIR)
+@info "GuiMode: Temporary directory set to fixed path: $TMP_DIR"
 
 const SERVER_START_TIME = now()
 const FGFS_CONNECTION = Ref{Union{Connector.FGFSPositionRoute, Nothing}}(nothing)
@@ -63,6 +69,10 @@ const JOB_WORKER = Ref{Task}()
 const FGFS_LOCK = ReentrantLock()
 
 const DEFAULT_GUI_ARGS = ["--http", "--map=1"]
+
+# List of file paths that were not recovered and must be deleted on shutdown
+const TMP_DELETE_WATCHLIST = Dict{String, Bool}()
+const TMP_DELETE_LOCK = ReentrantLock()
 
 
 # Function to get a new unique job ID in a thread-safe manner
@@ -115,25 +125,10 @@ function handle(req::HTTP.Request)
     if m == "GET"
         if p == "/api/connection-state"
             conn = FGFS_CONNECTION[]
-            st = conn === nothing ? "disconnected" :
-                conn.actual === nothing ? "connecting" : "connected"
+            st = conn === nothing ? "disconnected" : conn.actual === nothing ? "connecting" : "connected"
 
             body = JSON3.write((state = st,
-                                server_time = Dates.format(Dates.now(), dateformat"yyyy-mm-ddTHH:MM:SS")))
-            return HTTP.Response(
-                200,
-                ["Content-Type" => "application/json",
-                "Cache-Control" => "no-store",
-                "Connection"    => "close",
-                "Content-Length"=> string(sizeof(body))],   # forza content-length
-                body
-            )
-        elseif p == "/api/session-info"
-            return h_session_info(req)
-        elseif p == "/api/fgfs-status"
-            return h_fgfs_status(req)
-        elseif p == "/api/completed-jobs"
-            body = JSON3.write(Base.n_avail(JOB_QUEUE))
+                                 server_time = Dates.format(Dates.now(), dateformat"yyyy-mm-ddTHH:MM:SS")))
             return HTTP.Response(
                 200,
                 ["Content-Type" => "application/json",
@@ -142,6 +137,17 @@ function handle(req::HTTP.Request)
                 "Content-Length"=> string(sizeof(body))],
                 body
             )
+        elseif p == "/api/session-info"
+            return h_session_info(req)
+        elseif p == "/api/fgfs-status"
+            return h_fgfs_status(req)
+        elseif p == "/api/completed-jobs"
+            # This endpoint must be corrected to return IDs, not the queue size
+            completed_ids = Int[]
+            while isready(COMPLETED_JOBS)
+                push!(completed_ids, take!(COMPLETED_JOBS))
+            end
+            return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(completed_ids))
         elseif p == "/api/queue-size"
             return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(Base.n_avail(JOB_QUEUE)))
         elseif startswith(p, "/preview")
@@ -152,6 +158,8 @@ function handle(req::HTTP.Request)
             return h_app_config(req)
         elseif p == "/api/paths"
             return h_get_paths(req)
+        elseif p == "/api/migration-status" # NEW ENDPOINT FOR POLLING
+            return handle_migration_status(req)
         elseif startswith(p, "/api/resolve-icao")
             return h_resolve_icao(req)
         elseif startswith(p, "/api/airports/search")
@@ -160,8 +168,8 @@ function handle(req::HTTP.Request)
             return h_list_routes(req)
         elseif startswith(p, "/api/routes/")
             return h_download_route(req)
-        elseif p == "/coverage.json"
-            path = "coverage.json"  # adegua se lo salvi altrove
+        elseif startswith(p, "/coverage.json")
+            path = joinpath(pwd(), "coverage.json")
             if isfile(path)
                 bytes = read(path)
                 return HTTP.Response(
@@ -173,11 +181,22 @@ function handle(req::HTTP.Request)
                     bytes
                 )
             else
+                @warn "GuiMode: coverage.json not found at $path. Triggering regeneration..."
+                try
+                    ddsFindScanner.generate_coverage_json()
+                    # Try reading again after generation
+                    if isfile(path)
+                        bytes = read(path)
+                        return HTTP.Response(200, ["Content-Type" => "application/json"], bytes)
+                    end
+                catch e
+                    @error "GuiMode: Failed to regenerate coverage.json" exception=(e, catch_backtrace())
+                end
+                
                 return HTTP.Response(
                     404,
-                    ["Content-Type" => "text/plain",
-                    "Connection"   => "close"],
-                    "coverage.json not found"
+                    ["Content-Type" => "text/plain", "Connection" => "close"],
+                    "coverage.json not found at $path"
                 )
             end
         elseif startswith(p, "/api/geo/box")
@@ -189,6 +208,7 @@ function handle(req::HTTP.Request)
         else
             return serve_static_file(req)
         end
+
     elseif m == "POST"
         if p == "/api/connect"
             return h_connect(req)
@@ -200,10 +220,14 @@ function handle(req::HTTP.Request)
             return h_fill_holes(req)
         elseif p == "/api/shutdown"
             return h_shutdown(req)
-        elseif p == "/api/paths"
-            return h_set_paths(req)
+        elseif p == "/api/paths" # EXISTING ENDPOINT, MODIFIED LOGIC
+            return handle_set_paths(req)
         elseif p == "/api/save-route"
             return h_save_route(req)
+        elseif p == "/api/list-dirs"
+            return h_list_dirs(req)
+        elseif p == "/api/create-dir"
+            return h_create_dir(req)
         else
             return HTTP.Response(404, "Not found")
         end
@@ -301,37 +325,21 @@ end
 
 function h_fill_holes(req)
     params = JSON3.read(req.body)
-    job_id = next_job_id() # Assegniamo un ID anche a questo tipo di job
+    job_id = next_job_id() # Assign an ID to this type of job as well
 
-    # Accodiamo un nuovo tipo di "meta-job" che verrà gestito da launch_job_from_api
+    # Enqueue a new type of "meta-job" that will be handled by launch_job_from_api
     job_params = Dict(
         "job_id"   => job_id,
-        "mode"     => "fill_holes", # Un nuovo modo per identificarlo
+        "mode"     => "fill_holes", # A new way to identify it
         "bounds"   => params.bounds,
         "settings" => params.settings
         )
 
     put!(JOB_QUEUE, job_params)
 
-    # Rispondi subito al client per non tenerlo in attesa
+    # Respond immediately to the client to avoid keeping it waiting
     response_payload = Dict("status" => "Fill holes job queued", "jobId" => job_id)
     return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(response_payload))
-end
-
-
-# Handler for server shutdown
-#
-# This endpoint provides a clean way to shutdown the server from the web interface.
-# It logs the shutdown request and terminates the application process.
-#
-# Parameters: None
-#
-# Returns:
-#   - This function does not return as it calls exit(0)
-
-function h_shutdown(_req)
-    @info "Shutdown requested by client"
-    exit(0)
 end
 
 
@@ -480,7 +488,7 @@ function h_serve_coverage(_req)
         200,
         ["Content-Type" => "application/json",
          "Cache-Control" => "no-store",
-         "Connection"    => "close"],  # <-- evita EPIPE
+         "Connection"    => "close"],  # <-- avoids EPIPE
         body
     )
 end
@@ -532,7 +540,7 @@ function serve_static_file(req)
     # Use the reliably stored package root path for static assets
     package_root = PACKAGE_ROOT_PATH[]
 
-    # Fallback/Safety Check: Se per qualche motivo il percorso è vuoto, usa la CWD
+    # Fallback/Safety Check: If for some reason the path is empty, use CWD
     if isempty(package_root)
         package_root = pwd()
     end
@@ -550,7 +558,7 @@ function serve_static_file(req)
     try
         body = read(filepath)
         # Determine appropriate MIME type based on file extension
-        # ... (logica MIME type omessa per brevità, ma non modificata)
+        # ... (MIME type logic omitted for brevity, but unchanged)
         mime = endswith(filepath, ".html")  ?
         "text/html" :
             endswith(filepath, ".js")    ?
@@ -587,14 +595,14 @@ end
 function h_resolve_icao(req::HTTP.Request)
     qs   = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
     raw  = get(qs, "icao", "")
-    q    = String(raw)               # evita SubString
+    q    = String(raw)               # avoids SubString
     q_uc = uppercase(q)
 
-    # 1) Caso "sembra un ICAO" (4-5 alfanumerici): prova resolve diretto
+    # 1) Case "looks like an ICAO" (4-5 alphanumerics): try direct resolve
     if occursin(r"^[A-Z0-9]{4,5}$", q_uc)
         a = AirportsNavaids.resolve_icao(q_uc)
         if a === nothing
-            # fallback: forse l'utente ha scritto un IATA o un codice locale → prova full-text
+            # fallback: maybe the user wrote an IATA or a local code -> try full-text
             cand = AirportsNavaids.search_airports(q; limit=5)
             if isempty(cand)
                 return HTTP.Response(404, ["Content-Type"=>"application/json"],
@@ -602,7 +610,7 @@ function h_resolve_icao(req::HTTP.Request)
                 elseif length(cand) == 1
                 return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(cand[1]))
             else
-                # Ambiguo: ritorna lista
+                # Ambiguous: return list
                 arr = [ (icao=x.icao, name=x.name, lat=x.lat, lon=x.lon, elev_ft=x.elev_ft) for x in cand ]
                 return HTTP.Response(409, ["Content-Type"=>"application/json"], JSON3.write((error="ambiguous", query=q, items=arr)))
             end
@@ -611,7 +619,7 @@ function h_resolve_icao(req::HTTP.Request)
         end
     end
 
-    # 2) Caso "testo libero" (es: 'ROMA', 'BERGAMO'): usa ricerca full-text
+    # 2) Case "free text" (e.g. 'ROMA', 'BERGAMO'): use full-text search
     cand = AirportsNavaids.search_airports(q; limit=5)
     if isempty(cand)
         return HTTP.Response(404, ["Content-Type"=>"application/json"], JSON3.write((error="not found", query=q)))
@@ -625,7 +633,7 @@ end
 
 
 """
-Legge params.xml e restituisce una lista di server disponibili in formato JSON.
+Reads params.xml and returns a list of available servers in JSON format.
 """
 function h_get_map_servers(req)
     servers_list = []
@@ -642,7 +650,7 @@ function h_get_map_servers(req)
             end
         end
     catch e
-        @error "Impossibile leggere o parsare params.xml per i server" exception=(e, catch_backtrace())
+        @error "Unable to read or parse params.xml for servers" exception=(e, catch_backtrace())
         return HTTP.Response(500, "Error reading server list from params.xml")
     end
 
@@ -651,7 +659,7 @@ end
 
 
 function h_app_config(req)
-    # Legge il valore "server" dalla config salvata, con un default di 1 se non presente
+    # Reads the "server" value from saved config, with a default of 1 if not present
     default_server_id = get(APP_CONFIG[], "server", 1)
     low_detail_threshold = get(APP_CONFIG[], "low_detail_threshold", 1.0)
     payload = Dict(
@@ -663,10 +671,10 @@ end
 
 
 """
-Restituisce i percorsi 'path' e 'save' attualmente in uso.
+Returns the 'path' and 'save' paths currently in use.
 """
 function h_get_paths(req)
-    lock(FGFS_LOCK) do # Usiamo un lock per l'accesso sicuro alla config
+    lock(FGFS_LOCK) do # Use a lock for safe access to config
         payload = Dict(
             "path" => get(APP_CONFIG[], "path", "N/A"),
             "save" => get(APP_CONFIG[], "save", "N/A")
@@ -676,7 +684,7 @@ function h_get_paths(req)
 end
 
 """
-Aggiorna i percorsi 'path' e 'save' nella configurazione di sessione.
+Updates 'path' and 'save' paths in the session configuration.
 """
 function h_set_paths(req)
     try
@@ -687,7 +695,7 @@ function h_set_paths(req)
         lock(FGFS_LOCK) do
             if new_path !== nothing
                 APP_CONFIG[][ "path" ] = new_path
-                mkpath(new_path) # Tentiamo di creare la cartella se non esiste
+                mkpath(new_path) # Try to create the folder if it doesn't exist
             end
             if new_save !== nothing
                 APP_CONFIG[][ "save" ] = new_save
@@ -695,10 +703,10 @@ function h_set_paths(req)
             end
         end
 
-        @info "Percorsi aggiornati via API" path=new_path save=new_save
+        @info "Paths updated via API" path=new_path save=new_save
         return HTTP.Response(200, "Paths updated successfully")
         catch e
-        @error "Errore nell'aggiornamento dei percorsi via API" exception=(e, catch_backtrace())
+        @error "Error updating paths via API" exception=(e, catch_backtrace())
         return HTTP.Response(500, "Failed to update paths")
     end
 end
@@ -709,20 +717,20 @@ function h_save_route(req::HTTP.Request)
     waypoints = get(body, "waypoints", nothing)
     dep_icao = get(body, "dep_icao", nothing)
     arr_icao = get(body, "arr_icao", nothing)
-    include_ele = false  # puoi esporlo più avanti
+    include_ele = false  # can expose it later
 
     if waypoints === nothing || length(waypoints) < 2
         return HTTP.Response(400, "At least 2 waypoints required")
     end
 
-    # funzione di lookup ICAO → (lat,lon) riusando Route.selectIcao
+    # ICAO lookup function -> (lat,lon) reusing Route.selectIcao
     lookup = icao::String -> begin
         (lat, lon, err) = Route.selectIcao(icao, 0.0)
         err == 0 || error("Cannot resolve ICAO $icao (err=$err)")
         (lat=lat, lon=lon)
     end
 
-    # cartella di uscita: dentro la save path di sessione, in "routes"
+    # output folder: inside session save path, in "routes"
     out_base = get(APP_CONFIG[], "save", "Orthophotos-saved")
     out_dir  = joinpath(out_base, "routes")
     mkpath(out_dir)
@@ -737,7 +745,7 @@ function h_save_route(req::HTTP.Request)
             include_ele=include_ele,
             route_name=nothing
         )
-        # rispondi con filename + gpx (così la UI può scaricarlo subito)
+        # respond with filename + gpx (so UI can download it immediately)
         payload = Dict("filename"=>filename, "gpx"=>gpx)
         return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(payload))
     catch e
@@ -756,7 +764,7 @@ end
 function h_list_routes(_req::HTTP.Request)
     dir = _routes_outdir()
     files = filter(f -> endswith(f, ".gpx"), readdir(dir; join=true))
-    # Ordina per mtime desc
+    # Sort by mtime desc
     sorted = sort(files, by=f->stat(f).mtime, rev=true)
     data = [Dict(
         "name"=>basename(f),
@@ -794,16 +802,16 @@ function h_airports_search(req::HTTP.Request)
     isempty(q) && return HTTP.Response(400, "Missing q")
 
     try
-        # 1) Cerca SEMPRE sia negli aeroporti (inclusi eliporti) che nei navaid
+        # 1) ALWAYS search in both airports (including heliports) and navaids
         results_ap = AirportsNavaids.search_airports(q;  limit = limit)
         results_nv = AirportsNavaids.search_navaids(q;   limit = limit)
 
-        # Helper per leggere i campi in modo robusto
+        # Helper to read fields robustly
         _extract(a, sym::Symbol, default) =
             hasproperty(a, sym) ? getfield(a, sym) :
                 (a isa AbstractDict ? get(a, sym, get(a, String(sym), default)) : default)
 
-        # 2) Mappa gli aeroporti
+        # 2) Map airports
         items_ap = [Dict(
             "kind"         => "airport",
             "icao"         => String(_extract(a, :icao, "")),
@@ -815,7 +823,7 @@ function h_airports_search(req::HTTP.Request)
             "iata_code"    => String(_extract(a, :iata_code, ""))
             ) for a in results_ap]
 
-        # 3) Mappa i navaid (ident -> icao, type nel campo iata_code per mostrarlo fra parentesi)
+        # 3) Map navaids (ident -> icao, type in iata_code field to show in parentheses)
         items_nv = [Dict(
             "kind"         => "navaid",
             "icao"         => String(_extract(nv, :ident, "")),
@@ -827,7 +835,7 @@ function h_airports_search(req::HTTP.Request)
             "iata_code"    => String(_extract(nv, :type, ""))  # es. "VOR", "NDB"
             ) for nv in results_nv]
 
-            # 4) Unisci; opzionale: taglia a 'limit' risultati totali
+            # 4) Merge; optional: cut to 'limit' total results
             items = vcat(items_ap, items_nv)
             if length(items) > limit
                 items = items[1:limit]
@@ -847,7 +855,7 @@ end
 
 
 function h_connection_state(_req::HTTP.Request)
-    # metti qui eventuali flag reali se li hai:
+    # put real flags here if you have them:
     payload = Dict(
         "ok" => true,
         "fgfs_connected" => get(GLOBAL_STATE, :fgfs_connected, false),
@@ -860,7 +868,7 @@ function h_connection_state(_req::HTTP.Request)
     )
 end
 
-# -------- helpers sottotipi airport --------
+# -------- airport subtype helpers --------
 @inline function _is_heli(a::Dict)
     t = lowercase(String(get(a, "type", get(a,"kind",""))))
     return occursin("heliport", t) || occursin("helipad", t)
@@ -872,7 +880,7 @@ end
 end
 
 @inline function _is_major(a::Dict)
-    # large/medium => major; se manca il type, considera major se ha IATA
+    # large/medium => major; if type is missing, consider major if it has IATA
     t = lowercase(String(get(a, "type", "")))
     return occursin("large_airport", t) || occursin("medium_airport", t) || _has_iata(a)
 end
@@ -886,13 +894,13 @@ function h_geo_box(req::HTTP.Request)
     se_lat = parse(Float64, get(qs, "se_lat", "0"))
     se_lon = parse(Float64, get(qs, "se_lon", "0"))
 
-    # types può essere:
+    # types can be:
     #  - "all" | "airports" | "navaids" (back-compat)
-    #  - CSV con sottotipi: airports_major,airports_minor,heliports,navaids
+    #  - CSV with subtypes: airports_major,airports_minor,heliports,navaids
     types_raw = lowercase(get(qs, "types", "all"))
     types_set = Set(split(types_raw, ','))
 
-    # back-compat: mappa "all"/"airports" ai sottotipi
+    # back-compat: map "all"/"airports" to subtypes
     if types_raw == "all"
         empty!(types_set)
         push!(types_set, "airports_major", "airports_minor", "heliports", "navaids")
@@ -901,17 +909,17 @@ function h_geo_box(req::HTTP.Request)
         push!(types_set, "airports_major", "airports_minor", "heliports")
     end
 
-    # quali gruppi servono davvero
+    # which groups are really needed
     want_nv   = "navaids"        in types_set
     want_amaj = "airports_major" in types_set
     want_amin = "airports_minor" in types_set
     want_heli = "heliports"      in types_set
 
-    # cap (totali per gruppo; lato client puoi passare &max_total=..., qui li applichiamo per-gruppo)
+    # cap (totals per group; client-side you can pass &max_total=..., here we apply them per-group)
     max_airports_total = parse(Int, get(qs, "max_total", get(qs, "max_airports", "1000")))
     max_navaids_total  = parse(Int, get(qs, "max_total", get(qs, "max_navaids",  "1000")))
 
-    # chiama una sola volta il collector (altrimenti = doppio lavoro)
+    # call the collector only once (otherwise = double work)
     include_airports = (want_amaj || want_amin || want_heli)
     include_navaids  = want_nv
 
@@ -919,15 +927,15 @@ function h_geo_box(req::HTTP.Request)
         nw_lat, nw_lon, se_lat, se_lon;
         include_airports=include_airports,
         include_navaids=include_navaids,
-        # chiediamo un po' più ampio e poi tagliamo per sottotipo
+        # ask for a bit wider and then cut by subtype
         max_airports = max(2*max_airports_total, 10_000),
         max_navaids  = max_navaids_total,
     )
 
-    # risposta con chiavi separate
+    # response with separate keys
     resp = Dict{String,Any}()
 
-    # navaid: passa diretto (già filtrati nel bbox)
+    # navaid: pass direct (already filtered in bbox)
     if want_nv
         resp["navaids"] = get(collected, "navaids", Any[])
         if length(resp["navaids"]) > max_navaids_total
@@ -935,7 +943,7 @@ function h_geo_box(req::HTTP.Request)
         end
     end
 
-    # airports: splitta in tre array
+    # airports: split into three arrays
     if include_airports
         airports_all = get(collected, "airports", Any[])
         majors   = Any[]
@@ -952,7 +960,7 @@ function h_geo_box(req::HTTP.Request)
             end
         end
 
-        # cap per gruppo
+        # cap per group
         if want_amaj
             if length(majors) > max_airports_total
                 resize!(majors, max_airports_total)
@@ -973,8 +981,8 @@ function h_geo_box(req::HTTP.Request)
         end
     end
 
-    # per completezza, includi bbox/contatori se ti servono in futuro
-    # (commenta se vuoi una payload minimale)
+    # for completeness, include bbox/counters if you need them in the future
+    # (comment if you want a minimal payload)
     # resp["bbox"]   = collected["bbox"]
 
     return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(resp))
@@ -1168,190 +1176,6 @@ function handle_server_error(req, e)
     end
 end
 
-###############################################################################
-# Server Startup and Configuration
-#
-# This section contains the main server initialization and startup logic.
-# It handles command line argument parsing, service initialization,
-# and launching the HTTP server with proper configuration.
-###############################################################################
-
-# Main Server Startup Function - HTTP Server Initialization
-#
-# This is the primary entry point for starting the web GUI server.
-# It handles command line argument parsing, initializes background services,
-# configures logging, and launches the HTTP server with appropriate settings.
-#
-# Startup Sequence:
-#   1. Parse command line arguments for HTTP port configuration
-#   2. Set default host and port values
-#   3. Configure global logging settings
-#   4. Start background services (DDS scanner, job worker)
-#   5. Launch the HTTP server with custom error handler
-#   6. Log server startup information
-#
-# Command Line Arguments:
-#   --http[=PORT]: Specify HTTP port (default: 8000)
-#   Examples:
-#     --http          → Use default port 8000
-#     --http=8080     → Use port 8080
-#     (no argument)   → Use default port 8000
-#
-# Configuration Parameters:
-#   - host: Server bind address (fixed: 127.0.0.1 for local access)
-#   - port: HTTP port for web interface (default: 8000, configurable)
-#   - logging: Console logger with Info level verbosity
-#   - error_handler: Custom error handling function
-#   - verbose: Disabled to reduce log noise
-#
-# Background Services Started:
-#   - DDS Scanner: Asynchronous tile file discovery (ddsFindScanner.startFind())
-#   - Job Worker: Background job processing queue (start_background_worker())
-#
-# Server Features:
-#   - HTTP/1.1 server with keep-alive support
-#   - Static file serving (HTML, CSS, JavaScript)
-#   - RESTful API endpoints
-#   - Real-time FlightGear connectivity
-#   - Asynchronous job processing
-#   - Custom error handling and logging
-#
-# Parameters:
-#   - args: Vector{String} of command line arguments (default: ARGS)
-#
-# Returns: Nothing (side effect: starts HTTP server that runs indefinitely)
-#
-# Error Handling:
-#   - Command line parsing errors use default values
-#   - Server startup errors are logged and may cause program termination
-#   - Runtime errors are handled by the custom error handler
-#
-# Usage Examples:
-#   - run()                    → Start with default settings (port 8000)
-#   - run(["--http=8080"])     → Start on port 8080
-#   - run(["--http"])          → Start with default port (explicit)
-#
-# Note: This function blocks indefinitely once the HTTP server starts.
-#       The server runs until explicitly shut down via /api/shutdown or
-#       terminated by the operating system.
-
-function run(args::Vector{String}=ARGS)
-    # 1. Parsa gli argomenti e inizializza la configurazione globale
-    final_args = isempty(args) ? DEFAULT_GUI_ARGS : args
-    APP_CONFIG[] = AppConfig.parse_args(final_args)
-
-    # NEW: Determine the absolute path of the installed package root.
-    # This should reliably point to the path inside the Julia depot,
-    # overriding issues with @__DIR__.
-    try
-        # parentmodule(GuiMode) returns the Photoscenary module
-        pkg_root = Base.pkgdir(parentmodule(GuiMode))
-        if pkg_root !== nothing
-            PACKAGE_ROOT_PATH[] = String(pkg_root)
-        else
-            @warn "Could not resolve package root using pkgdir. Falling back to @__DIR__."
-            PACKAGE_ROOT_PATH[] = normpath(joinpath(@__DIR__, ".."))
-        end
-        catch e
-        @error "Error resolving package root: $e"
-        PACKAGE_ROOT_PATH[] = normpath(joinpath(@__DIR__, ".."))
-    end
-
-    # 2. Determina i percorsi una sola volta all'avvio
-    home_path = @__DIR__
-    _, _, initial_root_path, initial_save_path = GeoEngine.prepare_paths_and_location(APP_CONFIG[], home_path)
-
-    # Questa sezione sfrutta il PACKAGE_ROOT_PATH appena risolto.
-    project_root = pwd() # La directory di lancio (mutabile)
-    target_path = joinpath(project_root, "params.xml")
-
-    # 1. Trova la radice del pacchetto installato (Percorso Immutabile)
-    # package_root è già in PACKAGE_ROOT_PATH[] se l'inizializzazione è andata bene
-    source_path = joinpath(PACKAGE_ROOT_PATH[], "params.xml")
-
-    # 2. Logica di Fallback Automatico: Copia se non esiste
-    if isfile(source_path) && !isfile(target_path)
-        @info "Configurazione: params.xml non trovato nella directory di lancio. Copia da radice del pacchetto ($source_path)..."
-        try
-            cp(source_path, target_path)
-            @info "Configurazione: params.xml copiato con successo in $target_path"
-            catch e
-            @error "Configurazione: Impossibile copiare params.xml da $source_path" exception=e
-        end
-        elseif !isfile(source_path)
-        @warn "Il file params.xml originale non è stato trovato in $source_path. Continuazione senza lista server."
-    end
-
-    # 3. Salva i percorsi definitivi nella configurazione globale
-    APP_CONFIG[][ "path" ] = initial_root_path
-    APP_CONFIG[][ "save" ] = initial_save_path
-
-    # 4. Costruisci la lista COMPLETA dei percorsi da scansionare
-    @info "GuiMode: Costruzione della lista dei percorsi di scansione..."
-
-    # 4a. Carica i metadati dall'indice esistente per recuperare i percorsi precedenti
-    metadata, _ = ddsFindScanner.load_data()
-    previous_paths = String[]
-    if metadata !== nothing
-        # Usiamo get() per sicurezza, nel caso la chiave non esista
-        previous_paths = get(metadata, "scanned_paths", [])
-        @info "Trovati $(length(previous_paths)) percorsi dalle scansioni precedenti."
-    end
-
-    # 4b. Unisci i percorsi attivi con quelli precedenti usando un Set per evitare duplicati
-    combined_paths = Set{String}()
-    push!(combined_paths, initial_root_path)
-    if initial_save_path !== nothing
-        push!(combined_paths, initial_save_path)
-    end
-    union!(combined_paths, previous_paths) # Aggiunge tutti i percorsi precedenti al set
-
-    # Converte il set di nuovo in un vettore per la funzione
-    final_scan_paths = collect(combined_paths)
-    @info "Scansione avviata su un totale di $(length(final_scan_paths)) percorsi unici."
-
-    # 5. Avvia lo scanner DDS in modo intelligente con la lista completa
-    ddsFindScanner.startFind(final_scan_paths, ddsFindScanner.PROGRAM_VERSION)
-
-    # 6. Definisci tmp_dir qui, dove è visibile a tutta la funzione
-    tmp_dir = joinpath(initial_save_path, "tmp")
-    mkpath(tmp_dir) # Assicurati che la cartella tmp esista
-
-    # Esegui il recupero dei tile orfani prima di avviare i servizi principali
-    ## GeoEngine.recover_orphaned_tiles(tmp_dir, initial_root_path, initial_save_path, APP_CONFIG[])
-    @async begin
-        while true
-            sleep(60) # ogni 1 minuti, regola a piacere
-            try
-                GeoEngine.recover_orphaned_tiles(tmp_dir, initial_root_path, initial_save_path, APP_CONFIG[])
-                catch e
-                @error "Recover orphaned tiles periodic failed" exception=(e, catch_backtrace())
-            end
-        end
-    end
-
-    # Start Airports/Navaids service asynchronously (non blocca la GUI)
-    try
-        AirportsNavaids.start!(; async=true)   # 👈 ora chiami diretto, senza Photoscenary.
-        @info "[AirportsNavaids] background bootstrap started"
-    catch e
-        @warn "[AirportsNavaids] could not start" exception=e
-    end
-
-    port = get(APP_CONFIG[], "http", 8000)
-    host = "127.0.0.1"
-
-    # 5. Configura il logger e avvia i servizi in background
-    global_logger(ConsoleLogger(stderr, Logging.Info))
-    start_background_worker()
-
-    # 6. Usa le variabili corrette (`initial_...` e `tmp_dir`) per avviare il monitor
-    runtime_cfg = Dict{String, Any}(APP_CONFIG[])
-    @async AssemblyMonitor.monitor_and_assemble(initial_root_path, initial_save_path, tmp_dir, runtime_cfg)
-
-    @info "Web GUI server running at http://$host:$port/"
-    HTTP.serve(handle, host, port; on_error=handle_server_error, verbose=false)
-end
 
 ###############################################################################
 # Job Processing Function
@@ -1442,17 +1266,17 @@ function launch_job_from_api(params::Dict)
     @info "Starting job #$job_id in parallel task" job=params
 
     try
-        # Normalizza le chiavi a stringa per un accesso sicuro
+        # Normalize keys to string for safe access
         p = Dict(string(k) => v for (k, v) in pairs(params))
         job_mode = get(p, "mode", "manual")
         home_path = @__DIR__
 
-        # --- INIZIO BLOCCO DI SMISTAMENTO ---
+        # --- START DISPATCH BLOCK ---
 
         if job_mode == "manual" || job_mode == "daa"
-            # --- PERCORSO LOGICO 1: JOB STANDARD (DAA O MANUALE) ---
+            # --- LOGICAL PATH 1: STANDARD JOB (DAA OR MANUAL) ---
 
-            # 1. Costruisci la configurazione 'cfg' che richiede lat/lon
+            # 1. Build 'cfg' configuration which requires lat/lon
             sdwn_value = get(p, "sdwn", -1)
             if sdwn_value == -1 || sdwn_value === nothing; sdwn_value = 0; else sdwn_value = Int(sdwn_value); end
 
@@ -1460,18 +1284,18 @@ function launch_job_from_api(params::Dict)
                 "radius" => get(p, "radius", 10.0),
                 "size"   => get(p, "size", 4),
                 "over"   => get(p, "over", 1),
-                "lat"    => p["lat"], # Qui è sicuro, perché questo job DEVE avere lat/lon
+                "lat"    => p["lat"], # Here it is safe, because this job MUST have lat/lon
                 "lon"    => p["lon"],
                 "server" => get(p, "server", 1),
                 "sdwn"   => sdwn_value,
                 "mode"   => job_mode,
                 )
 
-            # 2. Prepara percorsi e server mappe
+            # 2. Prepare paths and map servers
             route_vec, _, root_path, save_path = GeoEngine.prepare_paths_and_location(cfg, home_path)
             map_srv = Downloader.MapServer(get(cfg, "server", 1))
 
-            # 3. Esegui il processo per ogni punto della rotta
+            # 3. Execute process for each route point
             for (lat, lon) in route_vec
                 area = Commons.MapCoordinates(lat, lon, Float64(cfg["radius"]))
                 heading_deg = nothing
@@ -1486,31 +1310,507 @@ function launch_job_from_api(params::Dict)
                         heading_deg, alt_ft = nothing, nothing
                     end
                 end
-                GeoEngine.process_target_area(area, cfg, map_srv, root_path, save_path, heading_deg, alt_ft)
+                GeoEngine.process_target_area(area, cfg, map_srv, root_path, save_path, TMP_DIR, heading_deg, alt_ft)
             end
 
         elseif job_mode == "fill_holes"
-            # 1. Estrai i dati specifici per questo job
+            # 1. Extract specific data for this job
             bounds = p["bounds"]
             settings = p["settings"]
             fill_cfg = Dict(string(k)=>v for (k,v) in pairs(settings))
 
-            # 2. Abbiamo bisogno dei percorsi, ma non abbiamo un lat/lon.
-            #    Chiamiamo prepare_paths_and_location con una config vuota
-            #    per fargli usare la sua logica di ricerca automatica della cartella "Orthophotos".
+            # 2. We need paths, but we don't have a lat/lon.
+            #    Call prepare_paths_and_location with an empty config
+            #    to make it use its automatic search logic for the "Orthophotos" folder.
             _, _, root_path, save_path = GeoEngine.prepare_paths_and_location(Dict{String, Any}(), home_path)
-            tmp_dir = joinpath(save_path, "tmp")
-            mkpath(tmp_dir)
             map_srv = Downloader.MapServer(get(fill_cfg, "server", 1))
-
-            # 3. Chiama la funzione specializzata per il riempimento
-            @async GeoEngine.process_fill_holes(bounds, fill_cfg, map_srv, root_path, save_path, tmp_dir)
+            # 3. Call the specialized function for filling
+            @async GeoEngine.process_fill_holes(bounds, fill_cfg, map_srv, root_path, save_path, TMP_DIR)
         end
     catch e
         @error "GuiMode.launch_job_from_api: ❌ Job failed" exception=(e, catch_backtrace())
     finally
         @info "GuiMode.launch_job_from_api: Job #$job_id **always** completed"
     end
+end
+
+
+# Handler to explore server directories
+function h_list_dirs(req)
+    try
+        params = JSON3.read(req.body)
+        # If current_path is empty or invalid, use user home or root
+        current_path = get(params, "path", "")
+
+        if isempty(current_path) || !isdir(current_path)
+            current_path = homedir()
+        end
+
+        # Read content
+        items = readdir(current_path; join=true)
+
+        # Filter only directories and prepare response
+        dirs = []
+
+        # Add option to go up a level (..)
+        parent_dir = dirname(current_path)
+        if parent_dir != current_path # Avoid loop on root
+            push!(dirs, Dict("name" => "..", "path" => parent_dir, "type" => "parent"))
+        end
+
+        for item in items
+            try
+                if isdir(item)
+                    push!(dirs, Dict("name" => basename(item), "path" => item, "type" => "dir"))
+                end
+            catch
+                # Ignore folders without permissions
+            end
+        end
+
+        # Sort: parent first, then alphabetical
+        sort!(dirs, by = x -> (x["type"] == "parent" ? 0 : 1, lowercase(x["name"])))
+
+        payload = Dict(
+            "currentPath" => current_path,
+            "directories" => dirs
+            )
+
+        return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(payload))
+        catch e
+        return HTTP.Response(500, JSON3.write(Dict("error" => "Errore lettura directory: $(e)")))
+    end
+end
+
+
+function h_create_dir(req)
+    try
+        params = JSON3.read(req.body)
+        parent_path = get(params, "parentPath", "")
+        new_name = get(params, "newDirName", "")
+
+        if isempty(parent_path) || isempty(new_name)
+            return HTTP.Response(400, "Path or name missing")
+        end
+
+        # Basic name cleaning to avoid illegal characters or '..'
+        # (Optional but recommended for safety)
+        safe_name = replace(new_name, r"[^\w\-\._]" => "")
+        if safe_name != new_name
+            return HTTP.Response(400, "Invalid characters in folder name")
+        end
+
+        new_full_path = joinpath(parent_path, safe_name)
+
+        if isdir(new_full_path)
+            return HTTP.Response(409, "Directory already exists")
+        end
+
+        mkpath(new_full_path)
+
+        @info "Created new directory: $new_full_path"
+        return HTTP.Response(200, "Directory created")
+
+        catch e
+        return HTTP.Response(500, JSON3.write(Dict("error" => "Error creating directory: $(e)")))
+    end
+end
+
+
+# -------------------------------------------------------------------------------
+# API FOR PATH MANAGEMENT AND MIGRATION
+# -------------------------------------------------------------------------------
+
+"""
+    handle_set_paths(req::HTTP.Request)
+
+Handles the POST request to set new Orthophotos and Orthophotos-saved paths.
+It saves the new paths to the configuration and starts the migration task asynchronously
+if paths have changed.
+
+NOTE: This function assumes that AppConfig has implemented:
+- get_current_orthophotos_path(), get_current_saves_path() to get active paths.
+- update_paths!(new_path, new_save) to update the params.xml file.
+- set_active_orthophotos_path(path), set_active_saves_path(path) to update
+  the global configuration used by GeoEngine/ddsFindScanner after a successful move.
+"""
+function handle_set_paths(req::HTTP.Request)
+    # 1. Parse request body
+    try
+        p = JSON3.read(String(req.body))
+        new_path = get(p, "path", "")
+        new_save = get(p, "save", "")
+
+        # Get CURRENT active paths for comparison and migration source.
+        old_path = AppConfig.get_current_orthophotos_path()
+        old_save = AppConfig.get_current_saves_path()
+
+        # ⚠️ REMOVED immediate call to AppConfig.update_paths!(new_path, new_save)
+        # The update of params.xml will happen ONLY at the end of the @async task.
+
+        @info "GuiMode: New paths received. Old: P=$old_path, S=$old_save. New: P=$new_path, S=$new_save."
+
+        # 3. Start Migration in Background
+        @async begin
+            migration_succeeded = true
+            try
+                # --- Path Migration (Orthophotos) ---
+                if old_path != new_path
+                    @info "GuiMode: Starting migration for Orthophotos from '$old_path' to '$new_path'."
+                    success = FileMover.move_orthophoto_directory(old_path, new_path, false)
+                    if !success
+                        migration_succeeded = false
+                        # Do not call AppConfig.set_active... in case of failure
+                    end
+                end
+
+                # --- Save Path Migration (Orthophotos-saved) ---
+                if migration_succeeded && old_save != new_save
+                    @info "GuiMode: Starting migration for Orthophotos-saved from '$old_save' to '$new_save'."
+                    success = FileMover.move_orthophoto_directory(old_save, new_save, true)
+                    if !success
+                        migration_succeeded = false
+                    end
+                end
+
+                # -------------------------------------------------------------
+                # ✅ CRITICAL POINT: PERSISTENT UPDATE ONLY ON SUCCESS
+                # -------------------------------------------------------------
+                if migration_succeeded
+                    # 1. Update params.xml (persistence)
+                    AppConfig.update_paths!(new_path, new_save)
+
+                    # 2. Update active configuration in memory
+                    # (Only if migration was executed and completed successfully)
+                    if old_path != new_path
+                        AppConfig.set_active_orthophotos_path(new_path)
+                    end
+                    if old_save != new_save
+                        AppConfig.set_active_saves_path(new_save)
+                    end
+
+                    StatusMonitor.log_message("Path migration successfully completed.")
+                else
+                    # Failure intercepted in asynchronous task
+                    @warn "GuiMode: Path migration failed internally. Index and config files remain unchanged."
+                    StatusMonitor.log_message("Path migration failed. Please check server log for details.")
+                end
+
+            catch e
+                @error "GuiMode: Path migration failed. Active paths remain unchanged." exception=(e, catch_backtrace())
+                StatusMonitor.log_message("Path migration failed. Please check server log for details.")
+            end
+        end
+
+        # Return 202 (Accepted) immediately, even if migration is running.
+        return HTTP.Response(202, JSON3.write(Dict("status" => "Migration started. Check /api/migration-status for progress.")))
+
+    catch e
+        @error "GuiMode.handle_set_paths: ❌ Failed to process request" exception=(e, catch_backtrace())
+        return HTTP.Response(500, JSON3.write(Dict("error" => "Internal server error during path update.")))
+    end
+end
+
+
+"""
+    handle_migration_status(req::HTTP.Request)
+
+Handles the GET request to retrieve the real-time status of the ongoing file migration.
+"""
+function handle_migration_status(req::HTTP.Request)
+    status = FileMover.get_transfer_status()
+    # The status dictionary contains real-time data for the GUI pop-up.
+    status_dict = Dict(k => v for (k, v) in pairs(status))
+    # CORRECTION: Use JSON3.write
+    return HTTP.Response(200, JSON3.write(status_dict))
+end
+
+
+# Handler for server shutdown
+#
+# This endpoint provides a clean way to shutdown the server from the web interface.
+# It logs the shutdown request and terminates the application process.
+#
+# Parameters: None
+#
+# Returns:
+#   - This function does not return as it calls exit(0)
+
+function h_shutdown(_req)
+    @info "Shutdown requested by client"
+    @info "Processing temporary files cleanup..."
+    deleted_count = 0
+
+    lock(TMP_DELETE_LOCK) do
+        for (path, delete_on_exit) in TMP_DELETE_WATCHLIST
+            # DELETE ONLY IF FLAG IS TRUE (was present at cycle zero)
+            if delete_on_exit
+                try
+                    if isfile(path)
+                        rm(path, force=true)
+                        deleted_count += 1
+                        @info "Deleted 'Cycle-0' orphaned file: $path"
+                    end
+                catch e
+                    @warn "Failed to delete $path"
+                end
+            else
+                # @info "Skipping session file: $path"
+            end
+        end
+        empty!(TMP_DELETE_WATCHLIST)
+    end
+
+    @info "Cleanup finished. Deleted $deleted_count files."
+    exit(0)
+end
+
+
+###############################################################################
+# Server Startup and Configuration
+#
+# This section contains the main server initialization and startup logic.
+# It handles command line argument parsing, service initialization,
+# and launching the HTTP server with proper configuration.
+###############################################################################
+
+# Main Server Startup Function - HTTP Server Initialization
+#
+# This is the primary entry point for starting the web GUI server.
+# It handles command line argument parsing, initializes background services,
+# configures logging, and launches the HTTP server with appropriate settings.
+#
+# Startup Sequence:
+#   1. Parse command line arguments for HTTP port configuration
+#   2. Set default host and port values
+#   3. Configure global logging settings
+#   4. Start background services (DDS scanner, job worker)
+#   5. Launch the HTTP server with custom error handler
+#   6. Log server startup information
+#
+# Command Line Arguments:
+#   --http[=PORT]: Specify HTTP port (default: 8000)
+#   Examples:
+#     --http          → Use default port 8000
+#     --http=8080     → Use port 8080
+#     (no argument)   → Use default port 8000
+#
+# Configuration Parameters:
+#   - host: Server bind address (fixed: 127.0.0.1 for local access)
+#   - port: HTTP port for web interface (default: 8000, configurable)
+#   - logging: Console logger with Info level verbosity
+#   - error_handler: Custom error handling function
+#   - verbose: Disabled to reduce log noise
+#
+# Background Services Started:
+#   - DDS Scanner: Asynchronous tile file discovery (ddsFindScanner.startFind())
+#   - Job Worker: Background job processing queue (start_background_worker())
+#
+# Server Features:
+#   - HTTP/1.1 server with keep-alive support
+#   - Static file serving (HTML, CSS, JavaScript)
+#   - RESTful API endpoints
+#   - Real-time FlightGear connectivity
+#   - Asynchronous job processing
+#   - Custom error handling and logging
+#
+# Parameters:
+#   - args: Vector{String} of command line arguments (default: ARGS)
+#
+# Returns: Nothing (side effect: starts HTTP server that runs indefinitely)
+#
+# Error Handling:
+#   - Command line parsing errors use default values
+#   - Server startup errors are logged and may cause program termination
+#   - Runtime errors are handled by the custom error handler
+#
+# Usage Examples:
+#   - run()                    → Start with default settings (port 8000)
+#   - run(["--http=8080"])     → Start on port 8080
+#   - run(["--http"])          → Start with default port (explicit)
+#
+# Note: This function blocks indefinitely once the HTTP server starts.
+#       The server runs until explicitly shut down via /api/shutdown or
+#       terminated by the operating system.
+
+function run(args::Vector{String}=ARGS)
+    # --------------------------------------------------------------------------
+    # STEP 1: Parsing and Initialization of Global Configuration
+    # --------------------------------------------------------------------------
+
+    # 1.1: Parse CLI arguments and initialize APP_CONFIG[]
+    final_args = isempty(args) ? DEFAULT_GUI_ARGS : args
+    APP_CONFIG[] = AppConfig.parse_args(final_args)
+
+    # 1.2: Determine PACKAGE_ROOT_PATH (immutable absolute path)
+    pkg_root = Base.pkgdir(parentmodule(GuiMode))
+    if pkg_root !== nothing
+        PACKAGE_ROOT_PATH[] = String(pkg_root)
+    else
+        @warn "Could not resolve package root using pkgdir. Falling back to @__DIR__."
+        PACKAGE_ROOT_PATH[] = normpath(joinpath(@__DIR__, ".."))
+    end
+
+    # --------------------------------------------------------------------------
+    # STEP 2: Harmonization and Loading of Active Paths (Path Migration Flow)
+    # --------------------------------------------------------------------------
+
+    # 2.1: Initialize shared state 'AppConfig.GLOBAL_CONFIG'
+    # This is the active session variable used by GeoEngine and FileMover.
+    empty!(AppConfig.GLOBAL_CONFIG)
+    merge!(AppConfig.GLOBAL_CONFIG, APP_CONFIG[]) # Copy values from initial parsing
+
+    # 2.2: Overwrite active configuration with persistent paths (params.xml)
+    xml_path = AppConfig._read_path_from_xml("path")
+    xml_save = AppConfig._read_path_from_xml("save")
+
+    if xml_path !== nothing; AppConfig.GLOBAL_CONFIG["path"] = xml_path; end
+    if xml_save !== nothing; AppConfig.GLOBAL_CONFIG["save"] = xml_save; end
+
+    # 2.3: GeoEngine fallback logic finds default/best paths.
+    # Use AppConfig.GLOBAL_CONFIG as configuration source.
+    home_path = @__DIR__
+    _, _, initial_root_path, initial_save_path = GeoEngine.prepare_paths_and_location(AppConfig.GLOBAL_CONFIG, home_path)
+
+    # BLOCK: AUTOMATIC PARAMS.XML SYNCHRONIZATION
+    # Verify if calculated "real" paths differ from configured ones.
+    # If yes (e.g. fallback activated due to denied permissions), update the XML file.
+    current_cfg_path = get(AppConfig.GLOBAL_CONFIG, "path", "")
+    current_cfg_save = get(AppConfig.GLOBAL_CONFIG, "save", "")
+    # Safety management for save_path which could be nothing
+    safe_initial_save = isnothing(initial_save_path) ? "" : initial_save_path
+    if initial_root_path != current_cfg_path || safe_initial_save != current_cfg_save
+        @info "GuiMode: Path discrepancy detected (Fallback active). Updating params.xml..."
+        @info "  Old: $current_cfg_path / $current_cfg_save"
+        @info "  New: $initial_root_path / $safe_initial_save"
+        # Update params.xml
+        AppConfig.update_paths!(initial_root_path, safe_initial_save)
+    end
+
+    # 2.4: Finalize Active Configuration with definitive GeoEngine paths.
+    AppConfig.GLOBAL_CONFIG["path"] = initial_root_path
+    AppConfig.GLOBAL_CONFIG["save"] = initial_save_path
+    APP_CONFIG[] = AppConfig.GLOBAL_CONFIG # Makes active configuration consistent
+
+    # 2.5: Automatic Fallback Logic for params.xml (Copy if not exists)
+    project_root = pwd()
+    target_path = joinpath(project_root, "params.xml")
+    source_path = joinpath(PACKAGE_ROOT_PATH[], "params.xml")
+
+    if isfile(source_path) && !isfile(target_path)
+        @info "Configuration: params.xml not found in launch directory. Copying from package root ($source_path)..."
+        try
+            cp(source_path, target_path)
+            @info "Configuration: params.xml successfully copied to $target_path"
+        catch e
+            @error "Configuration: Unable to copy params.xml from $source_path" exception=e
+        end
+    elseif !isfile(source_path)
+        @warn "Original params.xml file not found in $source_path. Continuing without server list."
+    end
+
+    # --------------------------------------------------------------------------
+    # STEP 3: Data Preparation and Scanner Initialization
+    # --------------------------------------------------------------------------
+
+    # 3.1: Construction of COMPLETE list of paths to scan (active + previous)
+    @info "GuiMode: Building scan path list..."
+
+    metadata, _ = ddsFindScanner.load_data()
+    previous_paths = String[]
+    if metadata !== nothing
+        previous_paths = get(metadata, "scanned_paths", [])
+        @info "Found $(length(previous_paths)) paths from previous scans."
+    end
+
+    combined_paths = Set{String}()
+    push!(combined_paths, initial_root_path)
+    if initial_save_path !== nothing
+        push!(combined_paths, initial_save_path)
+    end
+    union!(combined_paths, previous_paths)
+
+    final_scan_paths = collect(combined_paths)
+    @info "Scan started on a total of $(length(final_scan_paths)) unique paths."
+
+    # 3.2: Start DDS scanner intelligently with the complete list
+    ddsFindScanner.startFind(final_scan_paths, ddsFindScanner.PROGRAM_VERSION)
+
+    # --------------------------------------------------------------------------
+    # STEP 4: Start Asynchronous Background Services (Monitoring and Data)
+    # --------------------------------------------------------------------------
+
+    # 4.1: Start main job dispatcher FIRST
+    # (Moved here from original point 4.3)
+    start_background_worker()
+    @info "GuiMode: Background Job Worker started."
+
+    # IMPORTANT: If Downloader.jl has its own start function (e.g. for channels),
+    # ensure it is active or activated by the jobs themselves.
+    # (Usually Downloader activates on-demand, but if it has persistent workers, start them here).
+
+    # 4.2: Start Airports/Navaids service
+    try
+        AirportsNavaids.start!(; async=true)
+        @info "[AirportsNavaids] background bootstrap started"
+    catch e
+        @warn "[AirportsNavaids] could not start" exception=e
+    end
+
+    # 4.3: "One-Off" Orphan Recovery at startup (MOVED AFTER WORKER START)
+    # Now that workers are active, if recover_orphaned_tiles enqueues jobs,
+    # they will be processed immediately.
+    @info "GuiMode: Performing initial orphan tile cleanup..."
+    try
+        GeoEngine.recover_orphaned_tiles(
+            TMP_DIR,
+            initial_root_path,
+            initial_save_path,
+            APP_CONFIG[],
+            TMP_DELETE_WATCHLIST,
+            TMP_DELETE_LOCK,
+            true # is_first_run = true
+        )
+    catch e
+        @error "Error during initial orphan recovery" exception=(e, catch_backtrace())
+    end
+
+    # 4.4: Start periodic monitoring of TMP folder (for future cleanup)
+    # Note: Here we pass is_first_run=false because we just did the first pass above.
+    @async begin
+        while true
+            sleep(60)
+            try
+                GeoEngine.recover_orphaned_tiles(
+                    TMP_DIR,
+                    initial_root_path,
+                    initial_save_path,
+                    APP_CONFIG[],
+                    TMP_DELETE_WATCHLIST,
+                    TMP_DELETE_LOCK,
+                    false # is_first_run = false (watchlist maintenance only)
+                )
+            catch e
+                @error "Recover orphaned tiles periodic failed" exception=(e, catch_backtrace())
+            end
+        end
+    end
+
+    # 4.5: Start Assembly Monitor
+    runtime_cfg = Dict{String, Any}(APP_CONFIG[])
+    @async AssemblyMonitor.monitor_and_assemble(initial_root_path, initial_save_path, TMP_DIR, runtime_cfg)
+
+    # --------------------------------------------------------------------------
+    # STEP 5: Start HTTP Server
+    # --------------------------------------------------------------------------
+
+    port = get(APP_CONFIG[], "http", 8000)
+    host = "127.0.0.1"
+
+    global_logger(ConsoleLogger(stderr, Logging.Info))
+
+    @info "Web GUI server running at http://$host:$port/"
+    HTTP.serve(handle, host, port; on_error=handle_server_error, verbose=false)
 end
 
 

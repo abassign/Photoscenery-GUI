@@ -7,8 +7,8 @@ export init_logger
 """
 init_logger(path; logger_mode::Int=1, min_level::LogLevel=Logging.Info)
 
-Imposta il logger:
-- logger_mode=0: SOLO file (nessuna console)
+Sets up the logger:
+- logger_mode=0: FILE ONLY (no console)
 - logger_mode=1: file + console
 """
 function init_logger(path::AbstractString;
@@ -37,7 +37,7 @@ function init_logger(path::AbstractString;
             end
         end
 
-        # --- MODIFICA CHIAVE ---
+        # --- KEY CHANGE ---
         # Flush the stream immediately after writing to ensure the log is saved to disk.
         flush(io)
     end
@@ -69,9 +69,9 @@ function init_logger(path::AbstractString;
         global_logger(tee)
     end
 
-    # --- MODIFICA CHIAVE ---
-    # Questa riga causava l'errore ed è stata rimossa.
-    # Il flush viene ora gestito da fmt_file.
+    # --- KEY CHANGE ---
+    # This line caused the error and was removed.
+    # Flushing is now handled by fmt_file.
     # Base.invokelatest(Logging.global_logger).loggers[1].logger.stream.flushed = true
 end
 

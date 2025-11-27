@@ -146,7 +146,7 @@ function compress_image_blocks(padded_img, padded_w, padded_h, num_threads::Int)
     blocks_y = padded_h ÷ 4
     total_blocks = blocks_x * blocks_y
 
-    # Calcola start/stop per ogni thread in modo da coprire tutto
+    # Calculate start/stop for each thread to cover everything
     splits = round.(Int, range(0, stop=total_blocks, length=num_threads+1))
 
     tasks = Vector{Task}(undef, num_threads)
@@ -246,10 +246,10 @@ function write_dds(file::String, img, num_threads::Int)
     padded_h = (h + 3) & ~3
     padded_w = (w + 3) & ~3
 
-    # Creiamo un'immagine di background bianco opaco
+    # Create an opaque white background image
     padded_img = fill(RGBA{N0f8}(1,1,1,1), padded_h, padded_w)
 
-    # Copiamo l'immagine originale sul background
+    # Copy the original image onto the background
     padded_img[1:h, 1:w] .= img
 
     header = create_dds_header(UInt32(w), UInt32(h), UInt32(1))
@@ -263,15 +263,15 @@ function write_dds(file::String, img, num_threads::Int)
 end
 
 # -------------------------------
-# Aggiungi questa funzione di conversione sicura
+# Add this safe conversion function
 function ensure_rgba_format(img::Matrix{<:Colorant})
-    # Crea una nuova matrice con tipo garantito
+    # Create a new matrix with guaranteed type
     h, w = size(img)
     new_img = Matrix{RGBA{N0f8}}(undef, h, w)
 
     for y in 1:h, x in 1:w
         c = img[y, x]
-        # Converti esplicitamente in RGBA{N0f8}
+        # Explicitly convert to RGBA{N0f8}
         new_img[y, x] = RGBA{N0f8}(red(c), green(c), blue(c), alpha(c))
     end
     return new_img
@@ -310,7 +310,7 @@ Direct image matrix conversion interface.
 - num_threads: Maximum threads to use
 """
 function convert(img::Matrix{<:Colorant}, output_dds::String, num_threads::Int=1)
-    # Converti in formato garantito
+    # Convert to guaranteed format
     img_conv = ensure_rgba_format(img)
     h, w = size(img_conv)
     megapixels = (h * w) / 1_000_000.0

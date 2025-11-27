@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Photoscenary GUI</title>
     <meta charset="utf-8" />
@@ -14,62 +15,101 @@
     <script src="https://cdn.jsdelivr.net/gh/bbecquet/Leaflet.RotatedMarker/leaflet.rotatedMarker.js"></script>
 
     <style>
-
         #controls h3 {
-            /* Imposta uno spazio di 20px sopra il titolo */
+            /* Set a 20px space above the title */
             margin-top: 1px;
-            /* Riduci lo spazio sotto il titolo a 10px */
+            /* Reduce the space below the title to 10px */
             margin-bottom: 1px;
         }
 
         /* Main layout styling */
         body {
-            display: flex; font-family: sans-serif; margin: 0; height: 100vh;
+            display: flex;
+            font-family: sans-serif;
+            margin: 0;
+            height: 100vh;
         }
+
         #controls {
-            width: 300px; padding: 15px; border-right: 1px solid #ccc;
-            display: flex; flex-direction: column;
+            width: 300px;
+            padding: 15px;
+            border-right: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
             overflow-y: auto;
         }
-        #main-content { flex-grow: 1; height: 100%; }
-        #map { height: 100%; }
+
+        #main-content {
+            flex-grow: 1;
+            height: 100%;
+        }
+
+        #map {
+            height: 100%;
+        }
 
         /* Style for the map selection button when it's active */
         #btn-select-from-map.active {
-            background-color: #ff7800; /* Orange background */
-            color: white;              /* White icon color */
+            background-color: #ff7800;
+            /* Orange background */
+            color: white;
+            /* White icon color */
             border: 1px solid rgba(0, 0, 0, 0.2);
             /* The "transparent circle" effect using box-shadow */
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
         }
 
         .hidden {
-            display: none !important; /* !important per assicurare che nasconda sempre l'elemento */
+            display: none !important;
+            /* !important to ensure it always hides the element */
         }
 
         /* This class applies our custom cursor using an embedded SVG (Data URI) */
         .map-selection-active {
             /* This avoids needing an external assets/crosshair.svg file. The '16 16' part centers the 32x32px cursor's hotspot.*/
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><g stroke="%23000000" stroke-width="3" stroke-linecap="round"><line x1="16" y1="5" x2="16" y2="27" /><line x1="5" y1="16" x2="27" y2="16" /></g><g stroke="%23FFFFFF" stroke-width="1.5" stroke-linecap="round"><line x1="16" y1="5" x2="16" y2="27" /><line x1="5" y1="16" x2="27" y2="16" /></g></svg>') 16 16, crosshair;
-            }
+        }
 
         /* Control group styling */
-        .control-group { margin-bottom: 15px; }
-        .control-group label { display: block; margin-bottom: 5px; font-size: 0.9em; color: #333; }
-        input { width: 95%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        input {
+            width: 95%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
         button {
-            padding: 10px; width: 100%; border: none; border-radius: 4px;
-            cursor: pointer; background-color: #f0f0f0; margin-top: 5px;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            margin-top: 5px;
         }
 
         /* Button group styling */
         .button-group {
             margin-top: auto;
-            padding-top: 15px; border-top: 1px solid #eee;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
         }
 
-        #btn-stop, #btn-connect.active {
-            background-color: #d9534f; color: white;
+        #btn-stop,
+        #btn-connect.active {
+            background-color: #d9534f;
+            color: white;
         }
 
         /* Resolution selector styling */
@@ -80,17 +120,20 @@
             flex-wrap: wrap;
             padding: 5px;
         }
+
         .res-svg-button {
             width: 32px;
             height: 32px;
             cursor: pointer;
             flex-shrink: 0;
         }
+
         .res-svg-button svg {
             width: 100%;
             height: 100%;
             display: block;
         }
+
         .leaflet-draggable {
             cursor: move !important;
         }
@@ -99,11 +142,13 @@
             stroke-dasharray: 5, 5;
             animation: dash 1s linear infinite;
         }
+
         @keyframes dash {
             to {
                 stroke-dashoffset: 10;
             }
         }
+
         .leaflet-popup-content button {
             background: #4CAF50;
             color: white;
@@ -121,11 +166,12 @@
             border-radius: 8px;
             text-align: center;
         }
+
         .mini-btn-container {
             background: transparent;
             border: none;
             pointer-events: auto;
-            }
+        }
 
         .mini-btn {
             width: 22px;
@@ -137,43 +183,60 @@
 
             /* --- CSS FIX FOR CENTERING --- */
             display: flex;
-            align-items: center;      /* Centers vertically */
-            justify-content: center;  /* Centers horizontally */
-            padding: 0;               /* Removes any default button padding */
-            font-size: 14px;          /* Slightly larger icon for better fit */
-            line-height: 1;           /* Improves vertical alignment consistency */
+            align-items: center;
+            /* Centers vertically */
+            justify-content: center;
+            /* Centers horizontally */
+            padding: 0;
+            /* Removes any default button padding */
+            font-size: 14px;
+            /* Slightly larger icon for better fit */
+            line-height: 1;
+            /* Improves vertical alignment consistency */
         }
 
         /* Style for the custom Geoman handles (center and radius).
         This creates a semi-transparent circular handle. */
         .custom-pm-handle {
-            background-color: rgba(40, 40, 40, 0.4); /* Darker, semi-transparent gray */
+            background-color: rgba(40, 40, 40, 0.4);
+            /* Darker, semi-transparent gray */
             border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: 50%;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
 
-        .mini-btn.ok { background:#4CAF50; color:white; }
-        .mini-btn.del { background:#d9534f; color:white; }
+        .mini-btn.ok {
+            background: #4CAF50;
+            color: white;
+        }
 
-        /* 1. Forza l'altezza e il box model di ENTRAMBI gli elementi ad essere identici */
+        .mini-btn.del {
+            background: #d9534f;
+            color: white;
+        }
+
+        /* 1. Force the height and box model of BOTH elements to be identical */
         #icao-container input,
         #icao-container button {
             height: 38px;
-            box-sizing: border-box; /* Fondamentale per un dimensionamento coerente */
-            vertical-align: middle; /* Aiuta l'allineamento sulla stessa linea */
-            margin-top: 0; /* Rimuove margini di default che possono causare disallineamenti */
+            box-sizing: border-box;
+            /* Fundamental for consistent sizing */
+            vertical-align: middle;
+            /* Helps alignment on the same line */
+            margin-top: 0;
+            /* Removes default margins that can cause misalignment */
             margin-bottom: 0;
         }
 
-        /* 2. Definisce lo stile del pulsante per essere un quadrato centrato */
+        /* 2. Defines the button style to be a centered square */
         #icao-container button {
             width: 38px;
             padding: 0;
-            border: 1px solid #ccc;  /* Bordo identico all'input */
+            border: 1px solid #ccc;
+            /* Border identical to input */
             background-color: #f7f7f7;
 
-            /* Usa flexbox per centrare perfettamente l'icona SVG all'interno */
+            /* Use flexbox to perfectly center the SVG icon inside */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -182,8 +245,9 @@
         #btn-connect {
             width: 65px;
             height: 30px;
-            /* ...e il resto delle proprietà che ti avevo dato... */
-            background-color: #d9534f; /* Stato OFF */
+            /* ...and the rest of the properties I gave you... */
+            background-color: #d9534f;
+            /* OFF State */
             color: white;
         }
 
@@ -199,11 +263,13 @@
         }
 
         #fgfs-container input {
-            flex-grow: 1; /* L'input si adatta allo spazio */
-            width: 60px;  /* Larghezza di base */
+            flex-grow: 1;
+            /* Input adapts to space */
+            width: 60px;
+            /* Base width */
         }
 
-        /* Stile per il nuovo indicatore/interruttore */
+        /* Style for the new indicator/switch */
         #btn-fgfs-toggle {
             width: 65px;
             height: 30px;
@@ -214,14 +280,15 @@
             font-size: 12px;
             transition: background-color 0.3s, color 0.3s;
 
-            /* Stato di default: OFF (Rosso) */
+            /* Default state: OFF (Red) */
             background-color: #d9534f;
             color: white;
         }
 
-        /* Stile unificato per il pulsante di connessione */
+        /* Unified style for the connection button */
         #btn-connect {
-            width: 80px; /* Un po' più largo per il testo */
+            width: 80px;
+            /* A bit wider for text */
             height: 30px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -230,105 +297,128 @@
             font-size: 12px;
             transition: background-color 0.3s, color 0.3s;
             color: white;
-            padding: 0; /* Rimuove padding di default */
+            padding: 0;
+            /* Removes default padding */
         }
 
-        /* Stile UNIFICATO per i gruppi con etichetta e controlli sulla stessa riga */
+        /* UNIFIED style for groups with label and controls on the same line */
         .inline-label-group {
             display: flex;
-            /* Allinea gli elementi all'inizio (in alto) per un look migliore con etichette multi-riga */
+            /* Align elements to start (top) for better look with multi-line labels */
             align-items: flex-start;
             width: 100%;
             margin-bottom: 15px;
-            gap: 10px; /* Spazio tra etichetta e controllo */
+            gap: 10px;
+            /* Space between label and control */
         }
 
-        /* Stile per l'etichetta (comune a tutti) */
+        /* Style for label (common to all) */
         .inline-label-group label {
-            flex-basis: 50%;        /* L'etichetta occupa la prima metà dello spazio */
+            flex-basis: 50%;
+            /* Label takes up the first half of the space */
             flex-shrink: 0;
             margin-bottom: 0;
-            line-height: 1.2;       /* Compatta leggermente il testo su più righe */
+            line-height: 1.2;
+            /* Slightly compacts text on multiple lines */
         }
 
-        /* Stile UNIFICATO per tutti i controlli (input e select) */
+        /* UNIFIED style for all controls (input and select) */
         .inline-label-group input,
         .inline-label-group select {
-            flex-grow: 1;           /* Il controllo occupa tutto lo spazio rimanente */
+            flex-grow: 1;
+            /* Control takes up all remaining space */
             box-sizing: border-box;
         }
 
-        /* Stile specifico per allineare a destra il testo degli input numerici */
+        /* Specific style to right-align text of numeric inputs */
         .inline-label-group input[type="number"] {
             text-align: right;
         }
 
-        /* Stile per la riga che contiene più controlli */
+        /* Style for the row containing multiple controls */
         .control-row {
-            display: flex;       /* Allinea gli elementi interni orizzontalmente */
-            gap: 15px;           /* Crea uno spazio tra i due controlli */
+            display: flex;
+            /* Aligns internal elements horizontally */
+            gap: 15px;
+            /* Creates a space between the two controls */
             width: 100%;
         }
 
-        /* Specifica che ogni controllo dentro la riga deve occupare metà dello spazio */
+        /* Specifies that each control inside the row must take up half the space */
         .control-row .control-group {
-            flex: 1;             /* Ogni elemento si espande per occupare uno spazio uguale */
-            margin-bottom: 15px; /* Mantiene la normale spaziatura verticale */
+            flex: 1;
+            /* Each element expands to take up equal space */
+            margin-bottom: 15px;
+            /* Maintains normal vertical spacing */
         }
 
-        /* blocco sdwn super-compatto */
-        .sdwn-inline{
-            display:flex;
-            align-items:center;
-            gap:8px;
-            flex-wrap:wrap;          /* va a capo solo se serve */
-            font-size:12px;          /* più piccolo */
-            line-height:1.1;
-            margin:6px 0;            /* poco spazio verticale */
+        /* super-compact sdwn block */
+        .sdwn-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            /* wraps only if needed */
+            font-size: 12px;
+            /* smaller */
+            line-height: 1.1;
+            margin: 6px 0;
+            /* little vertical space */
         }
 
-        .sdwn-label{
-            font-weight:600;
-            margin:0;
+        .sdwn-label {
+            font-weight: 600;
+            margin: 0;
         }
 
-        .sdwn-precover{
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            margin:0;
-            white-space:nowrap;      /* evita che si spezzetti troppo presto */
+        .sdwn-precover {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0;
+            white-space: nowrap;
+            /* prevents it from breaking too early */
         }
 
-        .sdwn-precover input{
-            transform:scale(0.9);    /* checkbox un filo più piccola */
+        .sdwn-precover input {
+            transform: scale(0.9);
+            /* checkbox a bit smaller */
         }
 
-        .sdwn-select{
-            font-size:12px;
-            padding:2px 6px;
-            height:24px;             /* compatta l’altezza */
-            line-height:1.1;
-            margin:0;
+        .sdwn-select {
+            font-size: 12px;
+            padding: 2px 6px;
+            height: 24px;
+            /* compacts height */
+            line-height: 1.1;
+            margin: 0;
         }
 
         .btn-working {
-            background-color: #ffebee; /* Un rosso molto chiaro come base */
-            color: #b71c1c; /* Testo rosso scuro per contrasto */
-            cursor: not-allowed; /* Cursore che indica che non è cliccabile */
-            animation: pulse-red 2s infinite; /* Applica l'animazione */
+            background-color: #ffebee;
+            /* A very light red as base */
+            color: #b71c1c;
+            /* Dark red text for contrast */
+            cursor: not-allowed;
+            /* Cursor indicating it is not clickable */
+            animation: pulse-red 2s infinite;
+            /* Applies animation */
         }
 
         .collapsible-header {
             cursor: pointer;
-            position: relative; /* Necessario per posizionare la freccia */
-            padding-right: 20px; /* Spazio per la freccia */
-            user-select: none; /* Evita che il testo venga selezionato al doppio click */
+            position: relative;
+            /* Necessary to position the arrow */
+            padding-right: 20px;
+            /* Space for the arrow */
+            user-select: none;
+            /* Prevents text selection on double click */
         }
 
-        /* Crea la freccia usando un pseudo-elemento */
+        /* Creates the arrow using a pseudo-element */
         .collapsible-header::after {
-            content: '▼'; /* Freccia verso il basso (aperto) */
+            content: '▼';
+            /* Arrow down (open) */
             position: absolute;
             right: 0;
             top: 50%;
@@ -337,29 +427,32 @@
             transition: transform 0.2s ease-in-out;
         }
 
-        /* Quando il titolo ha la classe 'collapsed', la freccia punta a destra */
+        /* When title has class 'collapsed', arrow points right */
         .collapsible-header.collapsed::after {
-            transform: translateY(-50%) rotate(-90deg); /* Freccia verso destra (chiuso) */
+            transform: translateY(-50%) rotate(-90deg);
+            /* Arrow right (closed) */
         }
 
-        /* Stile per il contenuto collassabile (per l'animazione) */
+        /* Style for collapsible content (for animation) */
         .collapsible-content {
-            max-height: 500px; /* Un valore abbastanza grande da contenere tutto */
+            max-height: 500px;
+            /* A value large enough to contain everything */
             overflow: hidden;
             transition: max-height 0.3s ease-in-out;
         }
 
-        /* Stato collassato: altezza zero */
+        /* Collapsed state: zero height */
         .collapsible-content.collapsed {
             max-height: 0;
-            padding-top: 0;    /* Rimuove anche il padding per un collasso pulito */
+            padding-top: 0;
+            /* Removes padding too for a clean collapse */
             padding-bottom: 0;
             margin-top: 0;
             margin-bottom: 0;
             border: none;
         }
 
-        /* Aggiungi questo CSS alla fine della sezione <style> */
+        /* Add this CSS at the end of the <style> section */
 
         #route-drop-zone {
             border: 2px dashed #ccc;
@@ -372,94 +465,172 @@
         }
 
         #route-drop-zone.drag-over {
-            background-color: #e8f0fe; /* Un leggero blu quando si trascina sopra */
+            background-color: #e8f0fe;
+            /* A light blue when dragging over */
             border-color: #4285f4;
         }
 
-        #route-waypoint-list ul.route-wp-list { list-style: none; padding-left: 0; }
-        #route-waypoint-list li { display:flex; justify-content:space-between; align-items:center; padding:4px 6px; border-radius:4px; }
-        #route-waypoint-list li.wp-hover { background: #ffe6e6; } /* rosso chiaro */
-        #route-waypoint-list .wp-del { border:none; background:transparent; cursor:pointer; font-size:14px; }
-        #route-waypoint-list .wp-del:hover { filter: brightness(0.85); }
+        #route-waypoint-list ul.route-wp-list {
+            list-style: none;
+            padding-left: 0;
+        }
 
-        .route-wp-list { list-style: none; padding: 0; margin: 0; }
+        #route-waypoint-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 6px;
+            border-radius: 4px;
+        }
+
+        #route-waypoint-list li.wp-hover {
+            background: #ffe6e6;
+        }
+
+        /* light red */
+        #route-waypoint-list .wp-del {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #route-waypoint-list .wp-del:hover {
+            filter: brightness(0.85);
+        }
+
+        .route-wp-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
         .route-wp-list li {
-        display: flex;                 /*  nome+info a sinistra, cestino a destra  */
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 4px;
-        padding: 4px 6px;
-        border-radius: 4px;
+            display: flex;
+            /* name+info on left, trash on right */
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 4px;
+            padding: 4px 6px;
+            border-radius: 4px;
         }
 
         .route-wp-list .wp-main {
-        display: flex;
-        flex-direction: column;        /* nome sopra, meta sotto */
-        align-items: flex-start;
+            display: flex;
+            flex-direction: column;
+            /* name above, meta below */
+            align-items: flex-start;
         }
 
-        .route-wp-list .wp-name { font-weight: 600; }
+        .route-wp-list .wp-name {
+            font-weight: 600;
+        }
 
         .route-wp-list .wp-meta {
-        font-size: 0.85em;
-        color: #444;
+            font-size: 0.85em;
+            color: #444;
         }
 
         .route-wp-list .wp-del {
-        background: none;
-        border: none;
-        cursor: pointer;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
 
-        .route-wp-list li.wp-hover { background: #ffecec; }
+        .route-wp-list li.wp-hover {
+            background: #ffecec;
+        }
 
-        /* Colori di stato per i waypoint */
-        .wp-status-pending { color: black; }
-        .wp-status-processing { color: white; background-color: #d9534f; font-weight: bold; } /* Rosso */
-        .wp-status-done { color: white; background-color: #4285f4; } /* Blu */
+        /* Status colors for waypoints */
+        .wp-status-pending {
+            color: black;
+        }
+
+        .wp-status-processing {
+            color: white;
+            background-color: #d9534f;
+            font-weight: bold;
+        }
+
+        /* Red */
+        .wp-status-done {
+            color: white;
+            background-color: #4285f4;
+        }
+
+        /* Blue */
 
         @keyframes pulse-red {
             0% {
-                background-color: #ffebee; /* Rosso chiaro */
+                background-color: #ffebee;
+                /* Light red */
             }
+
             50% {
-                background-color: #ffffff; /* Bianco */
+                background-color: #ffffff;
+                /* White */
             }
+
             100% {
-                background-color: #ffebee; /* Torna al rosso chiaro */
+                background-color: #ffebee;
+                /* Back to light red */
             }
         }
 
-        /* annulla margini verticali standard di label/select in quel blocco */
-        .sdwn-inline label, .sdwn-inline select { margin-top:0; margin-bottom:0; }
+        /* cancels standard vertical margins of label/select in that block */
+        .sdwn-inline label,
+        .sdwn-inline select {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
 
-        /* Stato Disconnesso (Rosso) */
-        #btn-connect.disconnected { background-color: #d9534f; }
-        #btn-connect.disconnected::before { content: 'FGFS Off'; }
+        /* Disconnected State (Red) */
+        #btn-connect.disconnected {
+            background-color: #d9534f;
+        }
 
-        /* Stato In Connessione (Ambra) */
-        #btn-connect.connecting { background-color: #ffc107; color: #000; }
-        #btn-connect.connecting::before { content: 'Wait...'; }
+        #btn-connect.disconnected::before {
+            content: 'FGFS Off';
+        }
 
-        /* Stato Connesso (Verde) */
-        #btn-connect.active { background-color: #4CAF50; }
-        #btn-connect.active::before { content: 'FGFS On'; }
+        /* Connecting State (Amber) */
+        #btn-connect.connecting {
+            background-color: #ffc107;
+            color: #000;
+        }
 
-        /* Barra pulsanti rotta – versione compatta */
+        #btn-connect.connecting::before {
+            content: 'Wait...';
+        }
+
+        /* Connected State (Green) */
+        #btn-connect.active {
+            background-color: #4CAF50;
+        }
+
+        #btn-connect.active::before {
+            content: 'FGFS On';
+        }
+
+        /* Route buttons bar – compact version */
         .route-bar {
             display: flex;
-            flex-wrap: nowrap;       /* una sola riga */
-            gap: 4px;                /* meno spazio */
+            flex-wrap: nowrap;
+            /* single line */
+            gap: 4px;
+            /* less space */
             margin-top: 6px;
         }
 
         .route-bar button {
             flex: 1 1 0;
-            min-width: 50px;         /* prima 90+ */
-            padding: 4px 6px;        /* prima 6px 4px */
+            min-width: 50px;
+            /* before 90+ */
+            padding: 4px 6px;
+            /* before 6px 4px */
             font-family: system-ui, "Segoe UI", Roboto, sans-serif;
-            font-size: 12px;         /* prima 13px */
+            font-size: 12px;
+            /* before 13px */
             line-height: 1.15;
             text-align: center;
             background: #f6f6f6;
@@ -467,117 +638,157 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background .15s, transform .08s;
-            white-space: normal;     /* consenti 2 righe */
+            white-space: normal;
+            /* allow 2 lines */
         }
 
         .route-bar button strong {
             display: block;
-            font-size: 12.5px;       /* prima 14px */
+            font-size: 12.5px;
+            /* before 14px */
             color: #003366;
         }
 
         .route-bar button small {
             display: block;
-            font-size: 10.5px;       /* prima 11px */
+            font-size: 10.5px;
+            /* before 11px */
             color: #555;
         }
 
-        .route-bar button:hover { background: #eaf2ff; }
-        .route-bar button:active { transform: translateY(0); }
+        .route-bar button:hover {
+            background: #eaf2ff;
+        }
 
-        /* Rendi cliccabili i marker DivIcon */
-        .leaflet-marker-icon.route-clickable { pointer-events: auto; }
-        .leaflet-marker-icon.route-clickable * { pointer-events: none; } /* lascia l'evento al contenitore */
+        .route-bar button:active {
+            transform: translateY(0);
+        }
 
-        /* Cursore coerente quando Create Route è ON (opzionale) */
-        body.create-route-on .leaflet-marker-icon.route-clickable { cursor: crosshair; }
+        /* Make DivIcon markers clickable */
+        .leaflet-marker-icon.route-clickable {
+            pointer-events: auto;
+        }
 
-        /* stato attivo del Create Route */
-        /* stato attivo del Create Route */
+        .leaflet-marker-icon.route-clickable * {
+            pointer-events: none;
+        }
+
+        /* leave event to container */
+
+        /* Consistent cursor when Create Route is ON (optional) */
+        body.create-route-on .leaflet-marker-icon.route-clickable {
+            cursor: crosshair;
+        }
+
+        /* active state of Create Route */
+        /* active state of Create Route */
         #btn-create-route.active {
             background: #007bff;
             border-color: #007bff;
             color: #fff;
         }
-        #btn-create-route.active strong,
-        #btn-create-route.active small { color:#fff; }
 
-        /* Se la colonna è davvero stretta (<320px), passa automaticamente in 2 righe */
+        #btn-create-route.active strong,
+        #btn-create-route.active small {
+            color: #fff;
+        }
+
+        /* If column is really narrow (<320px), automatically switch to 2 lines */
         @media (max-width: 320px) {
-            .route-bar { flex-wrap: wrap; }
-            .route-bar button { flex: 1 1 calc(50% - 4px); min-width: 0; }
+            .route-bar {
+                flex-wrap: wrap;
+            }
+
+            .route-bar button {
+                flex: 1 1 calc(50% - 4px);
+                min-width: 0;
+            }
         }
 
 
-        /* pulsante attivo Create Route ON */
+        /* active button Create Route ON */
         #btn-create-route.active {
             background: #007bff;
             color: white;
-            }
+        }
 
         #btn-create-route.active strong,
         #btn-create-route.active small {
             color: white;
-            }
+        }
 
-        /* Stili base per icone Navaid */
+        /* Base styles for Navaid icons */
         .navaid-icon {
             background-color: transparent;
             border: none;
             width: 16px;
             height: 16px;
-            /* Rende il punto di ancoraggio il centro del div */
+            /* Makes anchor point the center of the div */
             margin-top: -8px;
             margin-left: -8px;
-            /* Simbolo VOR (esempio: un cerchio nero) */
+            /* VOR Symbol (example: a black circle) */
             border: 2px solid black;
             border-radius: 50%;
-            box-sizing: border-box; /* Include bordo nel w/h */
+            box-sizing: border-box;
+            /* Includes border in w/h */
         }
+
         .navaid-icon.ndb {
             background-color: black;
-            border-radius: 0; /* Simbolo NDB (quadrato pieno) */
+            border-radius: 0;
+            /* NDB Symbol (solid square) */
         }
+
         .navaid-icon.dme {
-            /* Aggiungi stili per DME */
+            /* Add styles for DME */
             border: 2px solid black;
-            width: 12px; height: 12px;
-            transform: rotate(45deg); /* Trasforma in X per DME */
+            width: 12px;
+            height: 12px;
+            transform: rotate(45deg);
+            /* Transform to X for DME */
         }
+
         .navaid-icon-container {
-            /* Rende il div contenitore invisibile, lasciando solo l'SVG */
+            /* Makes container div invisible, leaving only SVG */
             background: none;
             border: none;
             cursor: pointer;
             color: black;
             opacity: 0.5;
         }
+
         .airport-marker {
             text-align: center;
-            /* Rendi la scatola dell'icona invisibile ma il testo cliccabile */
+            /* Make icon box invisible but text clickable */
             background: none;
             border: none;
             box-shadow: none;
-            pointer-events: auto; /* Abilita il click */
+            pointer-events: auto;
+            /* Enable click */
             cursor: pointer;
         }
+
         .airport-marker span {
             display: inline-block;
             font-weight: bold;
-            color: #0000ff; /* Colore blu */
-            background: rgba(255, 255, 255, 0.7); /* Sfondo chiaro per leggibilità */
+            color: #0000ff;
+            /* Blue color */
+            background: rgba(255, 255, 255, 0.7);
+            /* Light background for readability */
             border: 1px solid #0000ff;
             border-radius: 3px;
             padding: 1px 4px;
             font-size: 10px;
             line-height: 1.2;
             white-space: nowrap;
-            user-select: none; /* Impedisce la selezione del testo */
+            user-select: none;
+            /* Prevents text selection */
         }
 
-        /* Stile per i pulsanti di filtro */
+        /* Style for filter buttons */
         .filter-button {
-            width: 32px; /* Diamo un po' più di spazio per un pulsante gradevole */
+            width: 32px;
+            /* Give a bit more space for a pleasant button */
             height: 32px;
             padding: 4px;
             border: 1px solid #ccc;
@@ -591,35 +802,47 @@
         }
 
         .filter-button.active {
-            background-color: #4CAF50; /* Verde, attivo */
+            background-color: #4CAF50;
+            /* Green, active */
             border-color: #4CAF50;
         }
 
         .filter-button.inactive {
-            opacity: 0.4; /* Sbiadito, inattivo */
+            opacity: 0.4;
+            /* Faded, inactive */
             background-color: #eee;
         }
 
         .filter-icon {
-        width: 18px;
-        height: 18px;
-        color: #333; /* colore di base (stato inattivo) */
+            width: 18px;
+            height: 18px;
+            color: #333;
+            /* base color (inactive state) */
         }
 
         .heliport-marker svg {
-            filter: drop-shadow(0 0 2px rgba(255,255,255,0.6))
-                    drop-shadow(0 0 3px rgba(0,0,0,0.4));
+            filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 3px rgba(0, 0, 0, 0.4));
         }
 
-        .airport-symbol-marker svg { display:block; color:#333; }
-        .filter-button.active .airport-symbol-marker svg { color:#fff; }
+        .airport-symbol-marker svg {
+            display: block;
+            color: #333;
+        }
 
-        /* stato attivo: il bottone diventa verde e il tratto diventa bianco */
+        .filter-button.active .airport-symbol-marker svg {
+            color: #fff;
+        }
+
+        /* active state: button becomes green and stroke becomes white */
         /*.filter-button.active { background-color: #4CAF50; border-color: #4CAF50; color: #fff; }*/
-        .filter-button.inactive { opacity: 0.45; background-color: #eee; color: #555; }
-
+        .filter-button.inactive {
+            opacity: 0.45;
+            background-color: #eee;
+            color: #555;
+        }
     </style>
 </head>
+
 <body>
     <!-- Left sidebar controls -->
     <div id="controls">
@@ -627,7 +850,7 @@
 
         <div class="control-group">
             <div id="map-visibility-filters" style="display: flex; justify-content: space-around; margin-bottom: 1px;">
-                </div>
+            </div>
         </div>
 
         <!-- Location selection controls -->
@@ -636,9 +859,11 @@
             <div id="icao-container" style="display: flex; gap: 5px;">
                 <input type="text" id="icao" value="LIME" style="flex-grow: 1;" autocomplete="off">
                 <!-- Aircraft icon button to get coords from FlightGear -->
-                <button id="btn-get-coords" title="Get coordinates from FGFS" style="width: auto; padding: 0 10px; display: none;">✈️</button>
+                <button id="btn-get-coords" title="Get coordinates from FGFS"
+                    style="width: auto; padding: 0 10px; display: none;">✈️</button>
                 <!-- Map selection button -->
-                <button id="btn-select-from-map" title="Select coordinates from map" style="width: auto; padding: 0 10px;">&#x2316;</button>
+                <button id="btn-select-from-map" title="Select coordinates from map"
+                    style="width: auto; padding: 0 10px;">&#x2316;</button>
             </div>
             <!-- Manual coordinate input (hidden by default) -->
             <div id="latlon-container" style="display: none;">
@@ -670,20 +895,20 @@
 
         <!-- Distance-based resolution reduction -->
         <div class="sdwn-inline">
-        <span class="sdwn-label">Reduction with Distance (--sdwn):</span>
+            <span class="sdwn-label">Reduction with Distance (--sdwn):</span>
 
-        <label class="sdwn-precover">
-            <input id="precover-checkbox" type="checkbox" checked />
-            <span>Pre-coverage before high-res</span>
-        </label>
+            <label class="sdwn-precover">
+                <input id="precover-checkbox" type="checkbox" checked />
+                <span>Pre-coverage before high-res</span>
+            </label>
 
-        <select id="sdwn-select" class="sdwn-select">
-            <option value="0">0 – Full preview (no down-sampling)</option>
-            <option value="1">1 – Preview level 1</option>
-            <option value="2">2 – Preview level 2</option>
-            <option value="3">3 – Preview level 3</option>
-            <option value="4">4 – Preview level 4</option>
-        </select>
+            <select id="sdwn-select" class="sdwn-select">
+                <option value="0">0 – Full preview (no down-sampling)</option>
+                <option value="1">1 – Preview level 1</option>
+                <option value="2">2 – Preview level 2</option>
+                <option value="3">3 – Preview level 3</option>
+                <option value="4">4 – Preview level 4</option>
+            </select>
         </div>
 
         <!-- Overwrite mode selection -->
@@ -699,25 +924,42 @@
         <!-- Main action button -->
         <button id="btn-download-around-aircraft">Download around aircraft</button>
 
-        <button id="btn-fill-holes" title="Scans the visible area and downloads missing tiles to patch the scenery">Patch Scenery</button>
+        <button id="btn-fill-holes"
+            title="Scans the visible area and downloads missing tiles to patch the scenery">Patch Scenery</button>
 
         <div class="control-group">
             <label for="map-server-select">Map Server (--map):</label>
-            <select id="map-server-select" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                </select>
+            <select id="map-server-select"
+                style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            </select>
         </div>
 
         <div class="control-group">
             <h3 class="collapsible-header">Directory Settings</h3>
 
             <div id="directory-settings-content" class="collapsible-content">
-                <label for="output-path-input">Output Path (`--path`):</label>
-                <div style="display: flex; gap: 5px;">
-                    <input type="text" id="output-path-input" readonly style="flex-grow: 1;">
-                    <button id="btn-edit-paths" style="width: 80px;">Edit</button>
+
+                <label>Output Path (`--path`):</label>
+                <div id="output-path-box" class="path-box" title="Click to change folder">
+                    Loading...
                 </div>
-                <label for="backup-path-input" style="margin-top: 5px;">Backup Path (`--save`):</label>
-                <input type="text" id="backup-path-input" readonly>
+
+                <label style="margin-top: 10px;">Backup Path (`--save`):</label>
+                <div id="backup-path-box" class="path-box" title="Click to change folder">
+                    Loading...
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button id="btn-save-paths" disabled
+                        style="flex: 3; background-color: #4CAF50; color: white; font-weight: bold; margin-top: 0;">
+                        Save & Migrate
+                    </button>
+                    <button id="btn-cancel-paths"
+                        style="flex: 1; background-color: #f0f0f0; color: #333; border: 1px solid #ccc; margin-top: 0;"
+                        title="Cancel changes">
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -731,7 +973,7 @@
                     <p>Drag & Drop your .gpx or .xml route file here</p>
                 </div>
                 <div id="route-waypoint-list">
-                    </div>
+                </div>
             </div>
         </div>
         <hr>
@@ -805,60 +1047,247 @@
 
     <!-- Save Route Modal -->
     <div id="saveRouteModal" class="modal hidden">
-    <div class="modal-content">
-        <h3>Save Flight Route (GPX)</h3>
+        <div class="modal-content">
+            <h3>Save Flight Route (GPX)</h3>
 
-        <div class="row">
-        <label>Departure (ICAO or name)</label>
-        <input id="depInput" type="text" placeholder="LIME / Bergamo Orio al Serio" autocomplete="off">
-        <ul id="depSuggest" class="suggest hidden"></ul>
-        </div>
+            <div class="row">
+                <label>Departure (ICAO or name)</label>
+                <input id="depInput" type="text" placeholder="LIME / Bergamo Orio al Serio" autocomplete="off">
+                <ul id="depSuggest" class="suggest hidden"></ul>
+            </div>
 
-        <div class="row">
-        <label>Arrival (ICAO or name)</label>
-        <input id="arrInput" type="text" placeholder="LIMJ / Genova Sestri" autocomplete="off">
-        <ul id="arrSuggest" class="suggest hidden"></ul>
-        </div>
+            <div class="row">
+                <label>Arrival (ICAO or name)</label>
+                <input id="arrInput" type="text" placeholder="LIMJ / Genova Sestri" autocomplete="off">
+                <ul id="arrSuggest" class="suggest hidden"></ul>
+            </div>
 
-        <div class="row">
-        <label>Route summary</label>
-        <div id="routeSummary" class="summary"></div>
-        </div>
+            <div class="row">
+                <label>Route summary</label>
+                <div id="routeSummary" class="summary"></div>
+            </div>
 
-        <div class="actions">
-        <button id="saveRouteConfirm">Save GPX</button>
-        <button id="saveRouteCancel">Cancel</button>
+            <div class="actions">
+                <button id="saveRouteConfirm">Save GPX</button>
+                <button id="saveRouteCancel">Cancel</button>
+            </div>
         </div>
     </div>
+
+    <div id="transferModal" class="modal hidden" data-transfer-active="false">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3 style="margin-top: 0;">File Transfer in Progress</h3>
+
+            <div id="transferLog"
+                style="margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; font-size: 0.9em; max-height: 150px; overflow-y: auto;">
+                <p><strong><span id="transferCurrentFile">Waiting for initialization...</span></strong></p>
+                <p>Transferring files from <span id="transferOldPath">...</span> to <span
+                        id="transferNewPath">...</span></p>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px;">
+                <span>Progress: <strong id="transferCount">0 / 0 files</strong></span>
+                <span>Transferred: <strong id="transferBytes">0 MB</strong></span>
+            </div>
+
+            <div
+                style="display: flex; justify-content: space-between; font-size: 0.9em; font-weight: bold; margin-bottom: 10px;">
+                <span>Speed: <strong id="transferSpeed">0 B/s</strong></span>
+                <span>Free Space: <strong id="transferFreeSpace">— MB</strong></span>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="transferCancelBtn" style="flex-grow: 1; background-color: #d9534f; color: white;">Stop
+                    Transfer</button>
+                <button id="transferBackgroundBtn" style="flex-grow: 1; background-color: #f0f0f0;">Run in
+                    Background</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dirBrowserModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 600px; height: 80vh; display: flex; flex-direction: column;">
+            <h3>Select Parent Directory</h3>
+
+            <div
+                style="background: #f0f0f0; padding: 10px; border-radius: 4px; margin-bottom: 10px; word-break: break-all;">
+                <strong>Current:</strong> <span id="browserCurrentPath">...</span>
+            </div>
+
+            <div
+                style="display: flex; gap: 5px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
+                <input type="text" id="newFolderInput" placeholder="New folder name..."
+                    style="flex-grow: 1; padding: 6px;">
+                <button id="btnCreateFolder"
+                    style="width: auto; padding: 6px 12px; background-color: #007bff; color: white;">+ Create</button>
+            </div>
+
+            <div id="browserList" style="flex-grow: 1; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+
+            <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                <p>Selected path will be: <br>
+                    <strong><span id="browserPreviewResult">...</span>/<span
+                            id="browserFixedSuffix">Orthophotos</span></strong>
+                </p>
+            </div>
+
+            <div class="actions" style="margin-top: auto; padding-top: 15px;">
+                <button id="browserSelectBtn" style="background-color: #4CAF50; color: white;">Select This
+                    Folder</button>
+                <button id="browserCancelBtn">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <style>
-    .hidden{display:none}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:9999}
-    .modal-content{background:#fff;max-width:720px;width:92%;padding:16px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-    .row{margin:10px 0}
-    label{display:block;font-weight:600;margin-bottom:6px}
-    input[type=text]{width:100%;padding:8px 10px;border:1px solid #aaa;border-radius:8px}
-    .suggest {
-        list-style: none;
-        margin: 6px 0 0;
-        padding: 0;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        max-height: 250px;
-        overflow: auto;
-        background: #fff;
-    }
-    .suggest li {
-        padding: 6px 10px;
-        cursor: pointer;
-        white-space: nowrap;
-        /* Se la larghezza è fissa, prova ad aumentarla */
-    }
-    .suggest li:hover{background:#f0f0f0}
-    .summary{max-height:260px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:8px;font-family:monospace;white-space:pre}
-    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+        .path-box {
+            background-color: #f9f9f9;
+            /* Sfondo leggero per differenziarlo dallo sfondo bianco */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            font-family: monospace;
+            /* Font monospaziato per i percorsi */
+            font-size: 0.85em;
+            color: #333;
+            cursor: pointer;
+            /* Manina per indicare cliccabilità */
+            word-break: break-all;
+            /* Spezza le parole lunghe (percorsi) */
+            white-space: normal;
+            /* Permette il ritorno a capo */
+            min-height: 40px;
+            /* Altezza minima visiva */
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .path-box:hover {
+            background-color: #e3f2fd;
+            /* Evidenziazione al passaggio del mouse */
+            border-color: #2196F3;
+        }
+
+        .path-box.modified {
+            background-color: #ffebee;
+            /* Light red for modified state */
+            border-color: #d9534f;
+        }
+
+        /* Nascondiamo eventuali vecchi input se rimasti nel codice vecchio */
+        #output-path-input,
+        #backup-path-input,
+        #btn-edit-paths {
+            display: none !important;
+        }
+    </style>
+
+    <style>
+        /* Stile per la lista directory */
+        .dir-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dir-item:hover {
+            background-color: #e3f2fd;
+        }
+
+        .dir-item.parent {
+            background-color: #fff3e0;
+            font-weight: bold;
+        }
+
+        .dir-icon {
+            font-size: 1.2em;
+        }
+    </style>
+
+    <style>
+        .hidden {
+            display: none
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999
+        }
+
+        .modal-content {
+            background: #fff;
+            max-width: 720px;
+            width: 92%;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .25)
+        }
+
+        .row {
+            margin: 10px 0
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px
+        }
+
+        input[type=text] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #aaa;
+            border-radius: 8px
+        }
+
+        .suggest {
+            list-style: none;
+            margin: 6px 0 0;
+            padding: 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            max-height: 250px;
+            overflow: auto;
+            background: #fff;
+        }
+
+        .suggest li {
+            padding: 6px 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            /* Se la larghezza è fissa, prova ad aumentarla */
+        }
+
+        .suggest li:hover {
+            background: #f0f0f0
+        }
+
+        .summary {
+            max-height: 260px;
+            overflow: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 8px;
+            font-family: monospace;
+            white-space: pre
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 14px
+        }
     </style>
 
 </body>
+
 </html>

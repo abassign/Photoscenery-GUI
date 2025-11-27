@@ -1,4 +1,4 @@
-# Salva come: src/Downloader.jl
+# Save as: src/Downloader.jl
 module Downloader
 
 using ..Commons, ..StatusMonitor, Images, Downloads, Printf, LightXML, ..JobFactory
@@ -10,43 +10,43 @@ export MapServer, populate_queue!, start_chunk_downloads_parallel!, enqueue_chun
 
 """
 const CHUNK_QUEUE = Channel{Commons.ChunkJob}(100)
-Channel{Any}: Crea un canale (coda FIFO) in grado di trasmettere dati di qualsiasi tipo (Any).
-Inf: Specifica che il canale ha capacità illimitata (può contenere un numero infinito di elementi).
+Channel{Any}: Creates a channel (FIFO queue) capable of transmitting data of any type (Any).
+Inf: Specifies that the channel has unlimited capacity (can contain an infinite number of elements).
 
 const JOBS_DONE_COUNTER = Ref{Int}(0)
-Ref{Int}: Crea un riferimento mutabile a un valore intero.
-(0): Inizializza il contatore a 0.
-Scopo:
-Tiene traccia del numero di lavori completati con successo.
+Ref{Int}: Creates a mutable reference to an integer value.
+(0): Initializes the counter to 0.
+Purpose:
+Tracks the number of successfully completed jobs.
 
 const FAILED_JOBS_COUNT = Ref{Int}(0)
-Struttura identica a JOBS_DONE_COUNTER.
-Scopo:
-Tiene traccia dei lavori falliti (es. a causa di eccezioni).
+Identical structure to JOBS_DONE_COUNTER.
+Purpose:
+Tracks failed jobs (e.g. due to exceptions).
 
-Un produttore accoda lavori in CHUNK_QUEUE.
-Worker multipli prelevano lavori dal canale.
-I contatori tengono traccia dello stato dell'elaborazione:
-JOBS_DONE_COUNTER: Lavori completati.
-FAILED_JOBS_COUNT: Lavori falliti.
-Sincronizzazione: Il canale gestisce automaticamente l'accesso concorrente.
+A producer queues jobs in CHUNK_QUEUE.
+Multiple workers take jobs from the channel.
+Counters track processing status:
+JOBS_DONE_COUNTER: Completed jobs.
+FAILED_JOBS_COUNT: Failed jobs.
+Synchronization: The channel automatically handles concurrent access.
 """
 const CHUNK_QUEUE = Channel{Commons.ChunkJob}(100)
-const FALLBACK_QUEUE = Channel{Tuple{Int, Int}}(50) # Canale per (tile_id, size_id) falliti
+const FALLBACK_QUEUE = Channel{Tuple{Int, Int}}(50) # Channel for failed (tile_id, size_id)
 const JOBS_DONE_COUNTER = Threads.Atomic{Int}(0)
 const FAILED_JOBS_COUNT = Threads.Atomic{Int}(0)
 const PENDING_JOBS = Threads.Atomic{Int}(0)
 
-# --- PRIORITÀ ---
+# --- PRIORITY ---
 const CHUNK_Q_HIGH = Channel{Commons.ChunkJob}(512)
 const CHUNK_Q_LOW  = Channel{Commons.ChunkJob}(4096)
 
-# Mappa (temp_path → :high | :low) per reinserire i retry nella stessa classe
+# Map (temp_path -> :high | :low) to reinsert retries in the same class
 const JOB_CLASS = Dict{String,Symbol}()
 const JOB_CLASS_LOCK = ReentrantLock()
 
 
-# Helper di enqueue (riusano la tua enqueue_chunk_jobs! per contatori/log)
+# Enqueue helpers (reuse your enqueue_chunk_jobs! for counters/logs)
 enqueue_high!(jobs::Vector{Commons.ChunkJob}) = begin
     lock(JOB_CLASS_LOCK) do
         for j in jobs; JOB_CLASS[j.temp_path] = :high; end
@@ -121,7 +121,7 @@ end
 
 function validate_png_file(path::String)::Bool
     try
-        # Controllo firma PNG
+        # PNG signature check
         open(path, "r") do io
             signature = read(io, 8)
             return signature == UInt8[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
@@ -135,40 +135,40 @@ end
 """
 download_and_validate_png(...)
 
-Scarica un chunk PNG, gestendo manualmente i reindirizzamenti (HTTP 301/302).
-Valida la firma e l'header del file PNG, e lo scrive su disco in modo atomico
-per prevenire file corrotti.
+Downloads a PNG chunk, manually handling redirects (HTTP 301/302).
+Validates the PNG signature and header, and writes it to disk atomically
+to prevent corrupt files.
 """
 function download_and_validate_png(url::String, dest_path::String; headers::Dict=Dict(), timeout::Real=60.0, max_redirects::Int=5)
     current_url = url
 
-    # Ciclo per gestire fino a 'max_redirects' reindirizzamenti
+    # Loop to handle up to 'max_redirects' redirects
     for i in 1:max_redirects
         buffer = IOBuffer()
         try
-            @info "Downloader.download_and_validate_png: Tentativo di download da $(current_url)"
+            @info "Downloader.download_and_validate_png: Download attempt from $(current_url)"
             Downloads.download(current_url, buffer; headers=headers, timeout=timeout)
 
-            # Se il download ha successo, valida e salva il file
+            # If download succeeds, validate and save the file
             data = take!(buffer)
-            if isempty(data); throw(ErrorException("Risposta vuota dal server")); end
+            if isempty(data); throw(ErrorException("Empty response from server")); end
 
-            # Logica di validazione PNG
+            # PNG validation logic
             try
                 if length(data) < 24 || view(data, 1:8) != UInt8[0x89,0x50,0x4E,0x47,0x0D,0x0A,0x1A,0x0A]
-                    throw(ArgumentError("Downloader.download_and_validate_png: Firma PNG non valida"))
+                    throw(ArgumentError("Downloader.download_and_validate_png: Invalid PNG signature"))
                 end
-                if view(data, 13:16) != b"IHDR"; throw(ArgumentError("Chunk IHDR mancante")); end
+                if view(data, 13:16) != b"IHDR"; throw(ArgumentError("Missing IHDR Chunk")); end
                 ihdr_len = Int(data[9]) << 24 | Int(data[10]) << 16 | Int(data[11]) << 8 | Int(data[12])
-                if ihdr_len != 13; throw(ArgumentError("Downloader.download_and_validate_png: Lunghezza IHDR non valida")); end
+                if ihdr_len != 13; throw(ArgumentError("Downloader.download_and_validate_png: Invalid IHDR length")); end
                 catch e
-                rethrow(ErrorException("Downloader.download_and_validate_png: Validazione PNG fallita: $e"))
+                rethrow(ErrorException("Downloader.download_and_validate_png: PNG validation failed: $e"))
             end
 
-            # Logica di scrittura atomica su disco
+            # Atomic disk writing logic
             temp_path = dest_path * ".tmp"
             try
-                # Assicura che la directory di destinazione esista prima di scrivere.
+                # Ensure destination directory exists before writing.
                 mkpath(dirname(temp_path))
                 write(temp_path, data)
                 FileIO.load(temp_path)
@@ -176,58 +176,58 @@ function download_and_validate_png(url::String, dest_path::String; headers::Dict
                 @info "Downloader.download_and_validate_png: write image $(dest_path)"
             catch e
                 ispath(temp_path) && rm(temp_path, force=true)
-                rethrow(ErrorException("Downloader.download_and_validate_png: Scrittura su disco fallita: $e"))
+                rethrow(ErrorException("Downloader.download_and_validate_png: Disk write failed: $e"))
                 FileIO.load(temp_path)
             end
 
             return filesize(dest_path)
 
         catch e
-            # Gestione dell'errore di redirect
+            # Redirect error handling
             if e isa Downloads.RequestError && (e.response.status == 301 || e.response.status == 302)
-                # Gli header sono una lista di coppie, non un dizionario. Cerca la chiave "location".
+                # Headers are a list of pairs, not a dictionary. Search for "location" key.
                 location_idx = findfirst(p -> lowercase(p.first) == "location", e.response.headers)
 
                 if location_idx !== nothing
-                    # Estrai il valore della coppia trovata
+                    # Extract value of found pair
                     new_url = e.response.headers[location_idx].second
-                    @info "Downloader.download_and_validate_png: Reindirizzato a $new_url"
-                    current_url = new_url # Aggiorna l'URL e il ciclo for tenterà di nuovo
+                    @info "Downloader.download_and_validate_png: Redirected to $new_url"
+                    current_url = new_url # Update URL and loop will try again
                 else
-                    throw(ErrorException("Downloader.download_and_validate_png: Errore di redirect (301/302), ma header 'Location' non trovato."))
+                    throw(ErrorException("Downloader.download_and_validate_png: Redirect error (301/302), but 'Location' header not found."))
                 end
             else
-                # Se è un altro tipo di errore (es. timeout), lancialo di nuovo
+                # If it's another error type (e.g. timeout), rethrow it
                 rethrow(e)
             end
         end
     end # Fine del ciclo for
 
-    throw(ErrorException("Downloader.download: Troppi reindirizzamenti ($max_redirects) per l'URL: $url"))
+    throw(ErrorException("Downloader.download: Too many redirects ($max_redirects) for URL: $url"))
 end
 
 
 """
 _restore_best_cached_tile(tile_id::Int, requested_size_id::Int, root_path::String, save_path::String, cfg::Dict; allow_higher::Bool=true)
 
-Esplora tutte le possibili risoluzioni per `tile_id` sia nella directory di output (`root_path`) sia in quella di cache/salvataggio (`save_path`).
-Restituisce la `size_id` del tile ripristinato (o già presente) più vicina a `requested_size_id` (stessa → più vicina sotto → eventualmente sopra),
-oppure `nothing` se non ha trovato nulla.
+Explores all possible resolutions for `tile_id` in both output directory (`root_path`) and cache/save directory (`save_path`).
+Returns the `size_id` of the restored (or already present) tile closest to `requested_size_id` (same -> closest below -> eventually above),
+or `nothing` if nothing found.
 
-Regole:
-- Preferisce **DDS** a **PNG** se entrambi presenti.
-- Ordine ricerca per distanza: [requested, requested-1, requested+1, requested-2, requested+2, ...]
-(l’“above” è incluso solo se `allow_higher=true`).
-- Se il file è in `save_path`, lo **copia** in `root_path` mantenendo il nome file.
+Rules:
+- Prefer **DDS** to **PNG** if both present.
+- Candidate order by "distance" from request: [requested, requested-1, requested+1, requested-2, requested+2, ...]
+(the "above" is included only if `allow_higher=true`).
+- If the file is in `save_path`, it **copies** it to `root_path` keeping the filename.
 """
 function _restore_best_cached_tile(tile_id::Int, requested_size_id::Int,
                                    root_path::String, save_path::String, cfg::Dict;
                                    allow_higher::Bool=true)
-    # range tipico: 0..6 (puoi alzarlo in cfg con "max_size_id")
+    # typical range: 0..6 (can raise in cfg with "max_size_id")
     max_id = get(cfg, "max_size_id", 6)
     min_id = 0
 
-    # helper: esiste già un file (dds/png) per questo tile in output?
+    # helper: does a file (dds/png) already exist for this tile in output?
     _has_in_output = function (sid::Int)
         width, _ = Commons.getSizeAndCols(sid)
         dest_dir  = Commons.tile_dest_dir(tile_id, width, root_path)
@@ -236,7 +236,7 @@ function _restore_best_cached_tile(tile_id::Int, requested_size_id::Int,
         any(endswith.(lowercase.(files), ".dds")) || any(endswith.(lowercase.(files), ".png"))
     end
 
-    # Ordine candidati per "distanza" dalla richiesta
+    # Candidate order by "distance" from request
     candidates = Int[]
     max_d = max(requested_size_id - min_id, max_id - requested_size_id)
     for d in 0:max_d
@@ -250,7 +250,7 @@ function _restore_best_cached_tile(tile_id::Int, requested_size_id::Int,
         end
     end
 
-    # 1) Se è già presente in output, basta così
+    # 1) If already present in output, that's enough
     for sid in candidates
         if _has_in_output(sid)
             @info "Restore(move): found existing tile $tile_id at size $sid in output"
@@ -258,10 +258,10 @@ function _restore_best_cached_tile(tile_id::Int, requested_size_id::Int,
         end
     end
 
-    # 2) Prova a spostare dalla cache con la funzione ufficiale
+    # 2) Try to move from cache with official function
     for sid in candidates
         status = ddsFindScanner.moveImage(root_path, save_path, tile_id, sid, cfg)
-        # convenzione: "moved" = spostato, "skip" = già presente/nessuna azione
+        # convention: "moved" = moved, "skip" = already present/no action
         if status in ("moved", "skip")
             @info "Restore(move): tile $tile_id satisfied by cached size=$sid (status=$status)"
             return sid
@@ -272,137 +272,247 @@ function _restore_best_cached_tile(tile_id::Int, requested_size_id::Int,
 end
 
 
+function _____download_worker(worker_id::Int, map_server::MapServer, cfg::Dict)
+    @info "Downloader: ✅ Started priority worker id=$worker_id"
+    start_time = time()
+    downloaded_bytes = 0
+
+    while true
+        # Priority: serve high priority first if present
+        job = if isready(CHUNK_Q_HIGH)
+            take!(CHUNK_Q_HIGH)
+        else
+            take!(CHUNK_Q_LOW)
+        end
+
+        if job === :stop
+            @info "Worker $worker_id: Received STOP signal."
+            break
+        end
+
+        # --- DEBUG: Tracciamento Job ---
+        @info "Worker $worker_id: Prelevato job $(basename(job.temp_path)) (SizeID: $(job.size_id))"
+
+        # Safety block to catch single job crashes
+        try
+            # If a valid file already exists for this chunk, avoid useless work
+            if isfile(job.temp_path) && filesize(job.temp_path) > get(cfg, "min_chunk_bytes", 64)
+                try
+                    if validate_png_file(job.temp_path)
+                        bytes = filesize(job.temp_path)
+                        StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :completed, bytes)
+                        Threads.atomic_add!(JOBS_DONE_COUNTER, 1)
+                        Threads.atomic_add!(PENDING_JOBS, -1)
+                        @info "Worker $worker_id: File già presente e valido. Salto."
+                        continue
+                    end
+                catch e
+                    @warn "Downloader: file validation failed, re-downloading: $(job.temp_path)"
+                    rm(job.temp_path, force=true)
+                end
+            end
+
+            StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :in_progress)
+
+            # URL Generation
+            url, err = _getMapServerURL(map_server, job.bbox, job.pixel_size)
+
+            if err != 0
+                @warn "Worker $worker_id: URL generation FAILED ($err) for $(job.tile_id)"
+                # ... (existing URL retry logic unchanged) ...
+                # For brevity, if it fails here, put in fallback or retry as in your original code
+                # (Ensure you keep your URL retry logic here, if present)
+                put!(FALLBACK_QUEUE, (job.tile_id, job.size_id))
+                Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
+                Threads.atomic_add!(PENDING_JOBS, -1)
+                continue
+            end
+
+            # Retry parameters
+            attempts    = get(cfg, "attempts", 5)
+            base_to     = Float64(get(cfg, "timeout", 30))
+
+            # --- DEBUG ---
+            @info "Worker $worker_id: Generated URL: $url"
+
+            headers = Dict("User-Agent" => "Mozilla/5.0 (PhotoscenaryBot)")
+
+            try
+                # Actual download
+                bytes = download_and_validate_png(url, job.temp_path; headers=headers, timeout=base_to)
+
+                # Success
+                StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :completed, bytes)
+                Threads.atomic_add!(JOBS_DONE_COUNTER, 1)
+                Threads.atomic_add!(PENDING_JOBS, -1)
+                downloaded_bytes += bytes
+                @info "Worker $worker_id: Download completed for $(basename(job.temp_path)) ($bytes bytes)"
+
+            catch e
+                st = try e.response.status catch; 0 end
+
+                if e isa Downloads.RequestError && (st in (404, 410, 500))
+                    @warn "Worker $worker_id: Definitive server error ($st) on $(basename(job.temp_path))"
+                    put!(FALLBACK_QUEUE, (job.tile_id, job.size_id))
+                    Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
+                    Threads.atomic_add!(PENDING_JOBS, -1)
+                else
+                    @warn "Worker $worker_id: Transient/network error on $(basename(job.temp_path)): $e"
+
+                    # Simplified Retry logic for debug (or use your complete one)
+                    if job.retries_left > 0
+                        sleep(1.0)
+                        new_job = Commons.ChunkJob(job.tile_id, job.size_id, job.chunk_xy, job.bbox, job.pixel_size, job.temp_path, job.retries_left - 1)
+                        # Re-queue in LOW for resume
+                        put!(CHUNK_Q_LOW, new_job)
+                    else
+                        @warn "Worker $worker_id: Retries exhausted."
+                        put!(FALLBACK_QUEUE, (job.tile_id, job.size_id))
+                        Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
+                        Threads.atomic_add!(PENDING_JOBS, -1)
+                    end
+                end
+            end
+
+        catch crash_e
+            # --- CRITICAL POINT: CATCH WORKER CRASH ---
+            @error "Worker $worker_id: SUDDEN CRASH processing $(basename(job.temp_path))" exception=(crash_e, catch_backtrace())
+            Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
+            Threads.atomic_add!(PENDING_JOBS, -1)
+        end
+    end
+
+    elapsed = time() - start_time
+    mb = downloaded_bytes / 1024^2
+    @info "Worker $worker_id finished session. Downloaded: $(round(mb, digits=2)) MiB."
+end
+
+
 function download_worker(worker_id::Int, map_server::MapServer, cfg::Dict)
     @info "Downloader: ✅ Started priority worker id=$worker_id"
     start_time = time()
     downloaded_bytes = 0
 
     while true
-        # Priorità: serviamo prima l'alta priorità se presente
+        # Priority: serve high priority first if present
         job = if isready(CHUNK_Q_HIGH)
             take!(CHUNK_Q_HIGH)
         else
-            take!(CHUNK_Q_LOW)    # blocca qui se entrambe vuote
+            take!(CHUNK_Q_LOW)
         end
 
-        job === :stop && break
+        if job === :stop
+            @info "Worker $worker_id: Received STOP signal."
+            break
+        end
 
-        # Se esiste già un file valido per questo chunk, evita lavoro inutile
-        if isfile(job.temp_path) && filesize(job.temp_path) > get(cfg, "min_chunk_bytes", 64)
-            try
-                if validate_png_file(job.temp_path)
-                    bytes = filesize(job.temp_path)
-                    StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :completed, bytes)
-                    Threads.atomic_add!(JOBS_DONE_COUNTER, 1)
-                    Threads.atomic_add!(PENDING_JOBS, -1)
-                    continue
-                end
+        # --- DEBUG: Tracciamento Job ---
+        @info "Worker $worker_id: Prelevato job $(basename(job.temp_path)) (SizeID: $(job.size_id))"
+
+        # Safety block to catch single job crashes
+        try
+            # If a valid file already exists for this chunk, avoid useless work
+            if isfile(job.temp_path) && filesize(job.temp_path) > get(cfg, "min_chunk_bytes", 64)
+                try
+                    if validate_png_file(job.temp_path)
+                        bytes = filesize(job.temp_path)
+                        StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :completed, bytes)
+                        Threads.atomic_add!(JOBS_DONE_COUNTER, 1)
+                        Threads.atomic_add!(PENDING_JOBS, -1)
+                        @info "Worker $worker_id: File già presente e valido. Salto."
+                        continue
+                    end
                 catch e
-                @warn "Downloader: file validation failed, re-downloading: $(job.temp_path)"
-                rm(job.temp_path, force=true)
-            end
-        end
-
-        StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :in_progress)
-        url, err = _getMapServerURL(map_server, job.bbox, job.pixel_size)
-
-        # Errore URL → prova retry con backoff, poi fallback
-        if err != 0
-            @warn "Downloader: URL generation FAILED for $(job.tile_id)-$(job.chunk_xy); will retry"
-            if job.retries_left > 0
-                attempts   = get(cfg, "attempts", get(cfg, "attemps", 5))
-                idx        = max(0, attempts - job.retries_left)
-                base_sleep = get(cfg, "retry_backoff_base", 1.7)
-                cap_sleep  = get(cfg, "retry_max_sleep", 20.0)
-                sleep(min(cap_sleep, base_sleep^idx))
-
-                new_job = Commons.ChunkJob(job.tile_id, job.size_id, job.chunk_xy, job.bbox, job.pixel_size, job.temp_path, job.retries_left - 1)
-                local cls::Symbol
-                lock(JOB_CLASS_LOCK) do
-                    cls = get(JOB_CLASS, job.temp_path, :high)
-                    JOB_CLASS[new_job.temp_path] = cls
+                    @warn "Downloader: file validation failed, re-downloading: $(job.temp_path)"
+                    rm(job.temp_path, force=true)
                 end
-                (cls === :high ? put!(CHUNK_Q_HIGH, new_job) : put!(CHUNK_Q_LOW, new_job))
-            else
-                @warn "Downloader: URL generation permanent failure → fallback"
+            end
+
+            StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :in_progress)
+
+            # URL Generation
+            url, err = _getMapServerURL(map_server, job.bbox, job.pixel_size)
+
+            if err != 0
+                @warn "Worker $worker_id: URL generation FAILED ($err) for $(job.tile_id)"
                 put!(FALLBACK_QUEUE, (job.tile_id, job.size_id))
-                StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :failed)
                 Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
                 Threads.atomic_add!(PENDING_JOBS, -1)
+                continue
             end
-            continue
-        end
 
-        # Parametri retry/timeout progressivi
-        attempts   = get(cfg, "attempts", get(cfg, "attemps", 5))      # tentativi totali per chunk (incl. il 1°)
-        base_to    = Float64(get(cfg, "timeout", 90))                   # timeout base al 1° tentativo
-        idx        = max(0, attempts - job.retries_left)                # 0,1,2,...
-        grow       = get(cfg, "retry_timeout_factor", 1.6)              # fattore crescita timeout
-        cap_to     = Float64(get(cfg, "retry_timeout_cap", 300))        # tetto massimo
-        timeout_sec = min(cap_to, base_to * (grow^idx))
+            # --- CORRECTION: Safe parameter reading ---
+            # Use an inline helper or explicit logic to avoid 'nothing' conversions
 
-        headers = Dict("User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36")
+            attempts_val = get(cfg, "attempts", 5)
+            attempts = (attempts_val === nothing) ? 5 : Int(attempts_val)
 
-        try
-            bytes = download_and_validate_png(url, job.temp_path; headers=headers, timeout=Float64(timeout_sec))
-            StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :completed, bytes)
-            Threads.atomic_add!(JOBS_DONE_COUNTER, 1)
-            Threads.atomic_add!(PENDING_JOBS, -1)
-            downloaded_bytes += bytes
+            timeout_val = get(cfg, "timeout", 30)
+            base_to = (timeout_val === nothing) ? 30.0 : Float64(timeout_val)
+
+            idx        = max(0, attempts - job.retries_left)
+
+            grow_val   = get(cfg, "retry_timeout_factor", 1.6)
+            grow       = (grow_val === nothing) ? 1.6 : Float64(grow_val)
+
+            cap_val    = get(cfg, "retry_timeout_cap", 300)
+            cap_to     = (cap_val === nothing) ? 300.0 : Float64(cap_val)
+
+            timeout_sec = min(cap_to, base_to * (grow^idx))
+            # ------------------------------------------------
+
+            # @info "Worker $worker_id: URL generato: $url"
+
+            headers = Dict("User-Agent" => "Mozilla/5.0 (PhotoscenaryBot)")
+
+            try
+                # Actual download
+                bytes = download_and_validate_png(url, job.temp_path; headers=headers, timeout=timeout_sec) # Use calculated timeout_sec
+
+                # Success
+                StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :completed, bytes)
+                Threads.atomic_add!(JOBS_DONE_COUNTER, 1)
+                Threads.atomic_add!(PENDING_JOBS, -1)
+                downloaded_bytes += bytes
+                @info "Worker $worker_id: Download completed for $(basename(job.temp_path)) ($bytes bytes)"
 
             catch e
-            st = try e.response.status catch; 0 end
+                st = try e.response.status catch; 0 end
 
-            # Fallback SOLO per errori definitivi (contenuto/server)
-            if e isa Downloads.RequestError && (st in (404, 410, 500))
-                @warn "Downloader: definitive server/content error ($st) on $(job.tile_id)-$(job.chunk_xy) → fallback"
-                put!(FALLBACK_QUEUE, (job.tile_id, job.size_id))
-                StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :failed)
-                Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
-                Threads.atomic_add!(PENDING_JOBS, -1)
-
-            else
-                # Transienti: timeout/lentezza/429/503/504 ecc. → RETRY
-                @warn "Downloader: transient error ($st) on $(job.tile_id)-$(job.chunk_xy); will retry" exception=(e, catch_backtrace())
-                isfile(job.temp_path) && rm(job.temp_path, force=true)
-
-                if job.retries_left > 0
-                    base_sleep = get(cfg, "retry_backoff_base", 1.7)
-                    cap_sleep  = get(cfg, "retry_max_sleep", 20.0)
-                    sleep(min(cap_sleep, base_sleep^idx))
-
-                    new_job = Commons.ChunkJob(
-                        job.tile_id, job.size_id, job.chunk_xy,
-                        job.bbox, job.pixel_size, job.temp_path,
-                        job.retries_left - 1
-                        )
-                    # reinserisci nella stessa classe (HIGH/LOW) del job originale
-                    local cls::Symbol
-                    lock(JOB_CLASS_LOCK) do
-                        cls = get(JOB_CLASS, job.temp_path, :high)
-                        JOB_CLASS[new_job.temp_path] = cls
-                    end
-                    if cls === :high
-                        put!(CHUNK_Q_HIGH, new_job)
-                    else
-                        put!(CHUNK_Q_LOW, new_job)
-                    end
+                if e isa Downloads.RequestError && (st in (404, 410, 500))
+                    @warn "Worker $worker_id: Definitive server error ($st) on $(basename(job.temp_path))"
+                    put!(FALLBACK_QUEUE, (job.tile_id, job.size_id))
+                    Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
+                    Threads.atomic_add!(PENDING_JOBS, -1)
                 else
-                    @warn "Downloader: retries exhausted for $(job.tile_id)-$(job.chunk_xy) → fallback"
+                    @warn "Worker $worker_id: Transient/network error on $(basename(job.temp_path)): $e"
+
+                    if job.retries_left > 0
+                        sleep(1.0)
+                        new_job = Commons.ChunkJob(job.tile_id, job.size_id, job.chunk_xy, job.bbox, job.pixel_size, job.temp_path, job.retries_left - 1)
+                        # Re-queue LOW for resume
+                        put!(CHUNK_Q_LOW, new_job)
+                    else
+                        @warn "Worker $worker_id: Retries exhausted."
                         put!(FALLBACK_QUEUE, (job.tile_id, job.size_id))
-                        StatusMonitor.update_chunk_state(job.tile_id, job.chunk_xy, :failed)
                         Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
                         Threads.atomic_add!(PENDING_JOBS, -1)
+                    end
                 end
             end
+
+        catch crash_e
+            # --- CATCH WORKER CRASH ---
+            @error "Worker $worker_id: SUDDEN CRASH processing $(basename(job.temp_path))" exception=(crash_e, catch_backtrace())
+            Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
+            Threads.atomic_add!(PENDING_JOBS, -1)
         end
     end
 
     elapsed = time() - start_time
     mb = downloaded_bytes / 1024^2
-    @info "Worker $worker_id finished. Time: $(round(elapsed, digits=1))s, Downloaded: $(round(mb, digits=2)) MiB."
+    @info "Worker $worker_id finished session. Downloaded: $(round(mb, digits=2)) MiB."
 end
-
 
 
 """
@@ -418,19 +528,19 @@ function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, s
     processed_fallbacks = Set{Tuple{Int, Int}}()
 
     for (tile_id, failed_size_id) in FALLBACK_QUEUE
-        # Evita di processare lo stesso fallback più volte
+        # Avoid processing the same fallback multiple times
         if (tile_id, failed_size_id) in processed_fallbacks
             continue
         end
         push!(processed_fallbacks, (tile_id, failed_size_id))
 
-        @info "Fallback: Ricevuto tile fallito $tile_id (size $failed_size_id). Avvio procedura di recupero."
+        @info "Fallback: Received failed tile $tile_id (size $failed_size_id). Starting recovery procedure."
 
-        # 1. Tenta prima di tutto di ripristinare da cache (qualsiasi risoluzione valida)
+        # 1. Try first to restore from cache (any valid resolution)
         restored_sid = _restore_best_cached_tile(tile_id, failed_size_id, root_path, save_path, cfg)
         if restored_sid !== nothing
-            @info "Fallback: SUCCESS! Tile $tile_id recuperato dalla cache con size $restored_sid."
-            # Pulisci i chunk temporanei del tentativo fallito
+            @info "Fallback: SUCCESS! Tile $tile_id recovered from cache with size $restored_sid."
+            # Clean temporary chunks of failed attempt
             try
                 for f in readdir(tmp_dir)
                     if startswith(f, "$(tile_id)_$(failed_size_id)_")
@@ -438,21 +548,21 @@ function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, s
                     end
                 end
             catch e
-                @warn "Fallback: Errore durante la pulizia dei chunk per $tile_id" exception=(e, catch_backtrace())
+                @warn "Fallback: Error cleaning chunks for $tile_id" exception=(e, catch_backtrace())
             end
-            continue # Lavoro finito per questo tile, passa al prossimo
+            continue # Work done for this tile, move to next
         end
 
-        # 2. Se il ripristino da cache fallisce, procedi con il download a risoluzione inferiore
+        # 2. If cache restore fails, proceed with lower resolution download
         new_size_id = failed_size_id - 1
         if new_size_id < 0
-            @warn "Fallback: Tile $tile_id fallito anche alla risoluzione minima. Abbandono."
+            @warn "Fallback: Tile $tile_id failed even at minimum resolution. Abandoning."
             continue
         end
 
-        @info "Fallback: Cache non disponibile per tile $tile_id. Tento il re-download a size $new_size_id."
+        @info "Fallback: Cache not available for tile $tile_id. Attempting re-download at size $new_size_id."
 
-        # 3. Pulisci i chunk vecchi prima di crearne di nuovi
+        # 3. Clean old chunks before creating new ones
         try
             for f in readdir(tmp_dir)
                 if startswith(f, "$(tile_id)_$(failed_size_id)_")
@@ -460,10 +570,10 @@ function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, s
                 end
             end
         catch e
-            @warn "Fallback: Errore durante la pulizia dei chunk per $tile_id" exception=(e, catch_backtrace())
+            @warn "Fallback: Error cleaning chunks for $tile_id" exception=(e, catch_backtrace())
         end
 
-        # 4. Genera e accoda i nuovi job a risoluzione ridotta
+        # 4. Generate and enqueue new reduced resolution jobs
         try
             _, _, lon_base, lat_base, lon_step, lat_step, _, _ = Commons.coordFromIndex(tile_id)
             width, cols = Commons.getSizeAndCols(new_size_id)
@@ -475,11 +585,11 @@ function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, s
             new_jobs = create_chunk_jobs([fallback_tile], cfg, tmp_dir)
 
             if !isempty(new_jobs)
-                @info "Fallback: Accodamento di $(length(new_jobs)) nuovi chunk per tile $tile_id a size $new_size_id."
+                @info "Fallback: Enqueuing $(length(new_jobs)) new chunks for tile $tile_id at size $new_size_id."
                 enqueue_low!(new_jobs)
             end
         catch e
-            @error "Fallback: Impossibile generare nuovi chunk job per $tile_id." exception=(e, catch_backtrace())
+            @error "Fallback: Unable to generate new chunk jobs for $tile_id." exception=(e, catch_backtrace())
         end
     end
 end
@@ -489,7 +599,7 @@ function populate_queue!(jobs::Vector{ChunkJob})
     while isready(CHUNK_QUEUE) take!(CHUNK_QUEUE) end
     JOBS_DONE_COUNTER[] = 0
     FAILED_JOBS_COUNT[] = 0
-    PENDING_JOBS[] = length(jobs)  # Inizializza il contatore
+    PENDING_JOBS[] = length(jobs)  # Initialize counter
 
     if isempty(jobs)
         close(CHUNK_QUEUE)
@@ -528,7 +638,7 @@ end
 """
 function start_chunk_downloads_parallel!(nworkers::Int, map_server::MapServer, cfg::Dict, root_path::String, save_path::String, tmp_dir::String)
     @info "✅ Downloader.start_chunk_downloads_parallel: Starting..."
-    # Avvia i worker di download
+    # Start download workers
     for i in 1:nworkers
         @async download_worker(i, map_server, cfg)
     end

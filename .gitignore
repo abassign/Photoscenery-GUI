@@ -15,6 +15,7 @@ src/txt/
 # Directory Dati Utente (Grandi e Voluminosi)
 Orthophotos/
 Orthophotos-saved/
+tmp/
 
 # Files e Directory Generati da Julia
 /Manifest.toml # Mantieni Project.toml, escludi Manifest.toml

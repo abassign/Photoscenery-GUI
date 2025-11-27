@@ -45,6 +45,9 @@ include("Route.jl")
 include("AssemblyMonitor.jl")
 using .AssemblyMonitor
 
+include("FileMover.jl")
+using .FileMover # Rende le funzioni disponibili
+
 # -----------------------------------------------------------------------------
 # 3. Moduli di Orchestrazione e Logica Principale
 # -----------------------------------------------------------------------------
@@ -55,7 +58,7 @@ include("GeoEngine.jl")
 using .GeoEngine
 
 # -----------------------------------------------------------------------------
-# 4. Moduli di Avvio e Interfaccia (usano tutto il resto)
+# 4. Startup and Interface Modules (use everything else)
 # -----------------------------------------------------------------------------
 include("AppConfig.jl")
 

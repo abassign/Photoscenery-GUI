@@ -1,4 +1,4 @@
-# Salva come: src/JobFactory.jl
+# Save as: src/JobFactory.jl
 """
 # JobFactory Module
 
@@ -59,7 +59,7 @@ function create_chunk_jobs(tiles::Vector{TileMetadata}, cfg::Dict, tmp_dir::Stri
 
         for y in 1:tile.cols, x in 1:tile.cols
             chunk_xy = (x, y)
-            # Crea il nome del chunk che sarà elemento della matrice di costruzione del dile completo
+            # Create the chunk name which will be an element of the complete tile construction matrix
             y_flipped = tile.cols - y + 1
             temp_filename = "$(tile.id)_$(tile.size_id)_$(total_chunks)_$(y_flipped)_$(x).png"
             temp_path = joinpath(tmp_dir, temp_filename)
@@ -77,7 +77,7 @@ function create_chunk_jobs(tiles::Vector{TileMetadata}, cfg::Dict, tmp_dir::Stri
             bbox = (lonLL=chunk_lonLL, latLL=chunk_latLL, lonUR=chunk_lonUR, latUR=chunk_latUR)
             pixel_size = (width=chunk_pixel_width, height=chunk_pixel_height)
 
-            # Crea un ChunkJob (da Commons) senza URL
+            # Create a ChunkJob (from Commons) without URL
             push!(jobs, ChunkJob(tile.id, tile.size_id, chunk_xy, bbox, pixel_size, temp_path, retries))
         end
     end

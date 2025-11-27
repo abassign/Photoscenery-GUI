@@ -50,12 +50,14 @@ import {
     renderVisibilityFilters
 } from './ui.js';
 
+import { initSettings } from './settings.js';
+
 window.setManualRouteMode = setManualRouteMode;
-window.isManualRouteMode  = isManualRouteMode;
-window.addWaypointManual  = addWaypointManual;
-window.clearManualRoute   = clearManualRoute;
-window.removeWaypointAt   = removeWaypointAt;
-window.highlightWaypoint  = highlightWaypoint;
+window.isManualRouteMode = isManualRouteMode;
+window.addWaypointManual = addWaypointManual;
+window.clearManualRoute = clearManualRoute;
+window.removeWaypointAt = removeWaypointAt;
+window.highlightWaypoint = highlightWaypoint;
 window.computeLegDistancesNM = computeLegDistancesNM;
 window.focusOnSearchTarget = focusOnSearchTarget;
 
@@ -65,7 +67,7 @@ const log = (...a) => window.DEBUG_FGFS && console.log('[DEBUG-JS]', ...a);
 
 // --- Aircraft-auto-queue settings ---
 const RADIUS_AROUND_AC = 20;   // NM of each circle
-const OVERLAP_FACTOR   = 0.33;  // ⅔ diameter offset
+const OVERLAP_FACTOR = 0.33;  // ⅔ diameter offset
 const MIN_JOB_INTERVAL_MS = 3000; // anti-flood throttle
 
 const DATE_FILTER_LABELS = ["This Session", "Today", "Yesterday", "Last Week", "Last Month", "Last Year", "All Time"];
@@ -79,29 +81,29 @@ const state = {
     hasPreview: false,
     previewAreas: [],
     isDragging: false,
-    followAircraftActive: false,    // Lo stato della modalità: ON/OFF
-    followAircraftAllowed: false,   // Se la modalità PUÒ essere attivata (FGFS connesso, etc.)
-    isAutoJobPending: false,        // Flag per prevenire il re-trigger rapido dei job DAA
-    lastDaaCircleId: null,          // ID dell'ultimo cerchio DAA creato
-    lastDaaOriginPoint: null,       // Posizione dell'aereo all'ultimo trigger DAA
-    sessionStartTime: null,         // Aggiungi: Ora di avvio della sessione
-    dateFilterIndex: 6,             // Aggiungi: Indice del filtro (default: 6 = All Time)
-    lastDaaCenterPoint: null,       // centro dell’ultimo cerchio verde
-    lastAutoLaunchTs: 0,            // timestamp ultimo invio autoù
-    lastDaaCircleLayer: null,       // riferimento diretto all’ultimo cerchio verde
-    daaArmed: false,                // isteresi: diventa true solo dopo essere entrati sotto ARM_TH
+    followAircraftActive: false,    // Mode state: ON/OFF
+    followAircraftAllowed: false,   // If mode CAN be activated (FGFS connected, etc.)
+    isAutoJobPending: false,        // Flag to prevent rapid re-trigger of DAA jobs
+    lastDaaCircleId: null,          // ID of the last DAA circle created
+    lastDaaOriginPoint: null,       // Aircraft position at last DAA trigger
+    sessionStartTime: null,         // Add: Session start time
+    dateFilterIndex: 6,             // Add: Filter index (default: 6 = All Time)
+    lastDaaCenterPoint: null,       // center of the last green circle
+    lastAutoLaunchTs: 0,            // timestamp of last auto send
+    lastDaaCircleLayer: null,       // direct reference to the last green circle
+    daaArmed: false,                // hysteresis: becomes true only after entering under ARM_TH
     defaultServerId: 1,
     flightPath: [],
     isFlightPathVisible: true,
     lowDetailThreshold: 1.0,
     isAirportsVisible: true,
     visibilityFilters: {
-        tiles: true,                // Visibilità copertura Tiles (DDS)
-        airports: true,             // Visibilità Marker Aeroporti (non implementato, ma preparato)
-        navaids: true,              // Visibilità Marker Navaids
-        route: true,                // Visibilità Polilinea Rotta
-        minorAirports: false,       // Visibilità aeroporti
-        heliports: false            // Visibilità eliporti
+        tiles: true,                // Tiles coverage visibility (DDS)
+        airports: true,             // Airports Marker Visibility (not implemented, but prepared)
+        navaids: true,              // Navaids Marker Visibility
+        route: true,                // Route Polyline Visibility
+        minorAirports: false,       // Airports visibility
+        heliports: false            // Heliports visibility
     }
 };
 
@@ -109,143 +111,143 @@ const activeCircles = {};           // Stores active job circles on the map
 const jobCompletionCallbacks = window.jobCompletionCallbacks || (window.jobCompletionCallbacks = new Map());
 
 let pendingCircle = null;           // Temporary Leaflet circle object
-
 let navaidsLoadTimer = null;
 
+let transferMonitorInterval = null;
 
-// ---------- Utils centro->esterno ----------
+// ---------- Utils center->outer ----------
 function haversineKm(lat1, lon1, lat2, lon2) {
-  const toRad = d => d * Math.PI / 180;
-  const R = 6371.0088;
-  const dLat = toRad(lat2 - lat1);
-  let dLon = lon2 - lon1;
-  // gestisci antimeridiano
-  if (dLon > 180) dLon -= 360;
-  if (dLon < -180) dLon += 360;
-  dLon = toRad(dLon);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-  return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
+    const toRad = d => d * Math.PI / 180;
+    const R = 6371.0088;
+    const dLat = toRad(lat2 - lat1);
+    let dLon = lon2 - lon1;
+    // handle antimeridian
+    if (dLon > 180) dLon -= 360;
+    if (dLon < -180) dLon += 360;
+    dLon = toRad(dLon);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
 }
 
 
 /**
- * Carica e disegna solo i layer realmente visualizzabili, in base allo span corrente:
- * - > 60°: niente (protezione)
- * - 30°..60°: solo airports_major + navaids (se togglati)
- * - ≤ 30°: airports_major (+etichette), airports_minor, heliports, navaids (se togglati)
+ * Loads and draws only the layers actually viewable, based on current span:
+ * - > 60°: nothing (protection)
+ * - 30°..60°: only airports_major + navaids (if toggled)
+ * - ≤ 30°: airports_major (+labels), airports_minor, heliports, navaids (if toggled)
  */
 async function loadAndDrawNavaids(mapInstance) {
-  const MAX_SPAN_MAJOR_AP_NAVAID = 60.0;
-  const MAX_SPAN_MINOR_AP        = 10.0;
-  const MAX_RESULTS_TOTAL        = 1500;   // cap totale (server gestirà per-tipo)
+    const MAX_SPAN_MAJOR_AP_NAVAID = 60.0;
+    const MAX_SPAN_MINOR_AP = 10.0;
+    const MAX_RESULTS_TOTAL = 1500;   // total cap (server will manage per-type)
 
-  const b = mapInstance.getBounds();
-  const nwLat = b.getNorth(), nwLon = b.getWest();
-  const seLat = b.getSouth(), seLon = b.getEast();
+    const b = mapInstance.getBounds();
+    const nwLat = b.getNorth(), nwLon = b.getWest();
+    const seLat = b.getSouth(), seLon = b.getEast();
 
-  const latSpan = nwLat - seLat;
-  const lonSpan = (nwLon <= seLon) ? (seLon - nwLon) : (seLon + 360 - nwLon);
+    const latSpan = nwLat - seLat;
+    const lonSpan = (nwLon <= seLon) ? (seLon - nwLon) : (seLon + 360 - nwLon);
 
-  const isMajorAreaTooBig = latSpan > MAX_SPAN_MAJOR_AP_NAVAID || lonSpan > MAX_SPAN_MAJOR_AP_NAVAID;
-  const isMinorAreaTooBig = latSpan > MAX_SPAN_MINOR_AP || lonSpan > MAX_SPAN_MINOR_AP;
+    const isMajorAreaTooBig = latSpan > MAX_SPAN_MAJOR_AP_NAVAID || lonSpan > MAX_SPAN_MAJOR_AP_NAVAID;
+    const isMinorAreaTooBig = latSpan > MAX_SPAN_MINOR_AP || lonSpan > MAX_SPAN_MINOR_AP;
 
-  // protezione
-  if (isMajorAreaTooBig) {
-    console.warn(`GeoData: area > ${MAX_SPAN_MAJOR_AP_NAVAID}° — niente fetch.`);
-    drawNavaids([], mapInstance);
-    drawAirports([], mapInstance, false, false, false);
-    return;
-  }
-
-  // Costruisci l’elenco dei tipi realmente visualizzabili
-  const wantNavaids   = state.visibilityFilters.navaids && true; // consentiti fino a 60°
-  const wantMajor     = state.visibilityFilters.airports && true; // consentiti fino a 60°
-  const wantMinor     = state.visibilityFilters.minorAirports && !isMinorAreaTooBig;
-  const wantHeliports = state.visibilityFilters.heliports && !isMinorAreaTooBig;
-
-  const types = [];
-  if (wantNavaids)   types.push('navaids');
-  if (wantMajor)     types.push('airports_major'); // <=60°
-  if (wantMinor)     types.push('airports_minor'); // solo ≤30°
-  if (wantHeliports) types.push('heliports');      // solo ≤30°
-
-  // Se non c'è nulla da mostrare, pulisci e basta
-  if (types.length === 0) {
-    drawNavaids([], mapInstance);
-    drawAirports([], mapInstance, false, false, false);
-    return;
-  }
-
-  // Unica chiamata (server esteso con sottotipi) + fallback “vecchio server”
-  const base = `/api/geo/box?nw_lat=${nwLat}&nw_lon=${nwLon}&se_lat=${seLat}&se_lon=${seLon}`;
-  const url  = `${base}&types=${encodeURIComponent(types.join(','))}&max_total=${MAX_RESULTS_TOTAL}`;
-
-  try {
-    const r = await fetch(url);
-    if (!r.ok) throw new Error('non-200');
-    const data = await r.json();
-
-    // Etichette major solo se ≤30°
-    const allowMajorLabels = !isMinorAreaTooBig;
-
-    // Combina i sottotipi richiesti (INCLUSI gli HELIPORTS)
-    const airportsCombined = []
-      .concat(wantMajor     ? (data.airports_major  || []) : [])
-      .concat(wantMinor     ? (data.airports_minor  || []) : [])
-      .concat(wantHeliports ? (data.heliports       || []) : []);
-
-    // Disegna
-    drawNavaids(data.navaids || [], mapInstance);
-    drawAirports(
-      airportsCombined,
-      mapInstance,
-      !!wantMinor,     // showMinor
-      !!wantMajor,     // showMajor
-      !!wantHeliports, // showHeliports
-      allowMajorLabels
-    );
-
-  } catch (e) {
-    // Fallback: server non supporta sottotipi → due fetch come prima (airports + navaids), ma con filtri lato client
-    console.warn('Server senza sottotipi types=…, uso fallback:', e);
-
-    // 1) Navaids (se richiesti)
-    if (wantNavaids) {
-      try {
-        const rn = await fetch(`${base}&types=navaids&max_navaids=${MAX_RESULTS_TOTAL}`);
-        const dn = rn.ok ? await rn.json() : { navaids: [] };
-        drawNavaids(dn.navaids || [], mapInstance);
-      } catch { drawNavaids([], mapInstance); }
-    } else {
-      drawNavaids([], mapInstance);
+    // protection
+    if (isMajorAreaTooBig) {
+        console.warn(`GeoData: area > ${MAX_SPAN_MAJOR_AP_NAVAID}° — no fetch.`);
+        drawNavaids([], mapInstance);
+        drawAirports([], mapInstance, false, false, false);
+        return;
     }
 
-    // 2) Airports (filtro client per major/minor/heli)
+    // Build the list of actually viewable types
+    const wantNavaids = state.visibilityFilters.navaids && true; // allowed up to 60°
+    const wantMajor = state.visibilityFilters.airports && true; // allowed up to 60°
+    const wantMinor = state.visibilityFilters.minorAirports && !isMinorAreaTooBig;
+    const wantHeliports = state.visibilityFilters.heliports && !isMinorAreaTooBig;
+
+    const types = [];
+    if (wantNavaids) types.push('navaids');
+    if (wantMajor) types.push('airports_major'); // <=60°
+    if (wantMinor) types.push('airports_minor'); // only ≤30°
+    if (wantHeliports) types.push('heliports');      // only ≤30°
+
+    // If nothing to show, just clean
+    if (types.length === 0) {
+        drawNavaids([], mapInstance);
+        drawAirports([], mapInstance, false, false, false);
+        return;
+    }
+
+    // Single call (extended server with subtypes) + fallback "old server"
+    const base = `/api/geo/box?nw_lat=${nwLat}&nw_lon=${nwLon}&se_lat=${seLat}&se_lon=${seLon}`;
+    const url = `${base}&types=${encodeURIComponent(types.join(','))}&max_total=${MAX_RESULTS_TOTAL}`;
+
     try {
-      const ra = await fetch(`${base}&types=airports&max_airports=${MAX_RESULTS_TOTAL}`);
-      const da = ra.ok ? await ra.json() : { airports: [] };
-      const all = da.airports || [];
+        const r = await fetch(url);
+        if (!r.ok) throw new Error('non-200');
+        const data = await r.json();
 
-      // separa i sottotipi in fallback: usa 'type' (OurAirports) o 'kind' come alternativa
-      const getType = a => String(a.type ?? a.kind ?? "").toLowerCase();
-      const helis  = all.filter(a => /heliport/.test(getType(a)));
-      const majors = all.filter(a => /large_airport|medium_airport/.test(getType(a)) || (a.iata && String(a.iata).length > 0));
-      const minors = all.filter(a => !helis.includes(a) && !majors.includes(a));
+        // Major labels only if ≤30°
+        const allowMajorLabels = !isMinorAreaTooBig;
 
-      const allowMajorLabels = !isMinorAreaTooBig;
+        // Combine requested subtypes (INCLUDING HELIPORTS)
+        const airportsCombined = []
+            .concat(wantMajor ? (data.airports_major || []) : [])
+            .concat(wantMinor ? (data.airports_minor || []) : [])
+            .concat(wantHeliports ? (data.heliports || []) : []);
 
-      drawAirports(
-        (wantMinor ? minors : []).concat(wantHeliports ? helis : []).concat(wantMajor ? majors : []),
-        mapInstance,
-        !!wantMinor,
-        !!wantMajor,
-        !!wantHeliports,
-        allowMajorLabels
-      );
-    } catch {
-      drawAirports([], mapInstance, false, false, false);
+        // Draw
+        drawNavaids(data.navaids || [], mapInstance);
+        drawAirports(
+            airportsCombined,
+            mapInstance,
+            !!wantMinor,     // showMinor
+            !!wantMajor,     // showMajor
+            !!wantHeliports, // showHeliports
+            allowMajorLabels
+        );
+
+    } catch (e) {
+        // Fallback: server does not support subtypes → two fetches as before (airports + navaids), but with client-side filters
+        console.warn('Server without subtypes types=…, using fallback:', e);
+
+        // 1) Navaids (if requested)
+        if (wantNavaids) {
+            try {
+                const rn = await fetch(`${base}&types=navaids&max_navaids=${MAX_RESULTS_TOTAL}`);
+                const dn = rn.ok ? await rn.json() : { navaids: [] };
+                drawNavaids(dn.navaids || [], mapInstance);
+            } catch { drawNavaids([], mapInstance); }
+        } else {
+            drawNavaids([], mapInstance);
+        }
+
+        // 2) Airports (client filter for major/minor/heli)
+        try {
+            const ra = await fetch(`${base}&types=airports&max_airports=${MAX_RESULTS_TOTAL}`);
+            const da = ra.ok ? await ra.json() : { airports: [] };
+            const all = da.airports || [];
+
+            // separate subtypes in fallback: use 'type' (OurAirports) or 'kind' as alternative
+            const getType = a => String(a.type ?? a.kind ?? "").toLowerCase();
+            const helis = all.filter(a => /heliport/.test(getType(a)));
+            const majors = all.filter(a => /large_airport|medium_airport/.test(getType(a)) || (a.iata && String(a.iata).length > 0));
+            const minors = all.filter(a => !helis.includes(a) && !majors.includes(a));
+
+            const allowMajorLabels = !isMinorAreaTooBig;
+
+            drawAirports(
+                (wantMinor ? minors : []).concat(wantHeliports ? helis : []).concat(wantMajor ? majors : []),
+                mapInstance,
+                !!wantMinor,
+                !!wantMajor,
+                !!wantHeliports,
+                allowMajorLabels
+            );
+        } catch {
+            drawAirports([], mapInstance, false, false, false);
+        }
     }
-  }
 }
 
 /**
@@ -254,29 +256,30 @@ async function loadAndDrawNavaids(mapInstance) {
  * - Updates map coverage with current filters and opacity
  */
 function mainUpdateLoop() {
+    // console.log("DEBUG: mainUpdateLoop tick");
     if (state.isConnected) {
         api.getFgfsStatus().then(data => {
-            // Prima aggiorna la posizione sulla mappa
+            // First update position on map
             updateAircraftPosition(data);
             if (data.active) {
                 const lastPoint = state.flightPath.length > 0 ? state.flightPath[state.flightPath.length - 1] : null;
-                // Aggiungi un punto solo se la posizione è cambiata
+                // Add a point only if position changed
                 if (!lastPoint || lastPoint.lat !== data.lat || lastPoint.lon !== data.lon) {
                     state.flightPath.push({
                         lat: data.lat,
                         lon: data.lon,
                         heading: data.heading,
-                        altitude_ft: data.altitude, // Quota MSL
-                        // NOTA: Il backend attualmente non fornisce la quota AGL.
-                        // Se la aggiungerai in futuro, andrà inserita qui.
+                        altitude_ft: data.altitude, // MSL Altitude
+                        // NOTE: Backend currently does not provide AGL altitude.
+                        // If you add it in future, it goes here.
                         speed_kts: data.speed,
                         isActivated: false
                     });
-                    // Aggiorna la linea sulla mappa
+                    // Update line on map
                     renderFlightPath(state.flightPath, state.isFlightPathVisible && state.visibilityFilters.route);
                 }
             }
-            // POI salva la rotta nello stato globale
+            // THEN save route to global state
             state.currentHeading = data.heading;
         });
         updateFollowAircraftAvailability();
@@ -284,38 +287,38 @@ function mainUpdateLoop() {
 
     api.fetchCoverageOnce((coverageData) => {
         // -------------------------------------------------------------
-        // NUOVO CONTROLLO: Se il filtro Tiles è disattivato, pulisci e termina.
+        // NEW CHECK: If Tiles filter is disabled, clean and terminate.
         if (!state.visibilityFilters.tiles) {
-            // La variabile 'coverageLayer' è definita in ui.js e usata in updateMapCoverage.
-            // Poiché non puoi accedere a 'coverageLayer' direttamente in main.js,
-            // devi pulire il layer all'interno di updateMapCoverage se il filtro è false,
-            // oppure aggiungere una funzione 'clearCoverage' in ui.js.
+            // 'coverageLayer' variable is defined in ui.js and used in updateMapCoverage.
+            // Since you cannot access 'coverageLayer' directly in main.js,
+            // you must clean the layer inside updateMapCoverage if filter is false,
+            // or add a 'clearCoverage' function in ui.js.
 
-            // OPZIONE A (PIÙ PULITA, richiede una funzione in ui.js):
+            // OPTION A (CLEANER, requires a function in ui.js):
             // clearCoverageLayer();
 
-            // OPZIONE B (PIÙ SEMPLICE, basata sull'ultima modifica del piano):
-            // Se non chiami updateMapCoverage, le tiles rimangono visibili.
-            // Devi forzare la pulizia se il filtro è disattivo.
+            // OPTION B (SIMPLER, based on last plan change):
+            // If you don't call updateMapCoverage, tiles remain visible.
+            // You must force cleaning if filter is inactive.
 
-            // PER ORA: Ci affidiamo alla logica che DOPO aver aggiornato lo stato
-            // e chiamato mainUpdateLoop, il filtro verrà applicato.
+            // FOR NOW: We rely on logic that AFTER updating state
+            // and calling mainUpdateLoop, filter will be applied.
 
             // ******************************************************************
-            // Modifica la funzione 'updateMapCoverage' in ui.js per gestire la pulizia
-            // e qui aggiungiamo il controllo:
+            // Modify 'updateMapCoverage' function in ui.js to handle cleaning
+            // and here we add the check:
             // ******************************************************************
 
-            // Chiamiamo la funzione di aggiornamento con dati vuoti per forzare la pulizia
+            // Call update function with empty data to force cleaning
             updateMapCoverage(
-                [], // Passa un array vuoto
+                [], // Pass an empty array
                 new Set(),
                 state.currentOpacity,
                 state.dateFilterIndex,
                 state.sessionStartTime,
                 state.lowDetailThreshold
             );
-            return; // Termina la callback
+            return; // Terminate callback
         }
         // -------------------------------------------------------------
 
@@ -331,6 +334,8 @@ function mainUpdateLoop() {
             state.sessionStartTime,
             state.lowDetailThreshold
         );
+    }).catch(err => {
+        console.error("Error fetching coverage:", err);
     });
 }
 
@@ -358,15 +363,15 @@ function updatePreview() {
     if (elements.latInput.value && elements.lonInput.value && elements.radiusInput.value) {
         previewArea(
             parseFloat(elements.latInput.value),
-                    parseFloat(elements.lonInput.value),
-                    parseFloat(elements.radiusInput.value)
+            parseFloat(elements.lonInput.value),
+            parseFloat(elements.radiusInput.value)
         );
         state.hasPreview = true;
 
-        // Centra la mappa sull'area selezionata
+        // Center map on selected area
         elements.map.setView(
             [parseFloat(elements.latInput.value), parseFloat(elements.lonInput.value)],
-                             elements.map.getZoom()
+            elements.map.getZoom()
         );
     }
 }
@@ -390,13 +395,13 @@ function checkCompletedJobs() {
     api.getCompletedJobs().then(ids => {
         if (ids.length > 0) {
             ids.forEach(id => {
-                // 1. Rimuovi il cerchio dalla mappa (come prima)
+                // 1. Remove circle from map (as before)
                 clearCircle(id);
-                // 2. Controlla se c'è una callback registrata per questo job e eseguila
+                // 2. Check if there is a registered callback for this job and execute it
                 if (jobCompletionCallbacks.has(id)) {
                     const callback = jobCompletionCallbacks.get(id);
-                    callback(id); // Esegui la callback
-                    jobCompletionCallbacks.delete(id); // Rimuovila dopo l'uso
+                    callback(id); // Execute callback
+                    jobCompletionCallbacks.delete(id); // Remove after use
                 }
             });
         }
@@ -455,13 +460,13 @@ elements.controlsPanel.addEventListener('click', (e) => {
 
             if (state.followAircraftActive) {
                 // --- ACTIVATING the mode ---
-                // CORREZIONE: Chiama la nuova e corretta funzione
+                // CORRECTION: Call the new and correct function
                 startAutomaticFollowJob();
             } else {
-                // Chiama la nuova funzione per pulire i cerchi dalla mappa.
+                // Call new function to clear circles from map.
                 clearAllDaaCircles();
             }
-            // Aggiorna sempre la UI dopo aver cambiato stato
+            // Always update UI after changing state
             updateFollowAircraftAvailability();
             break;
 
@@ -504,7 +509,7 @@ elements.map.on('popupopen', (e) => {
             const tileId = previewBtn.dataset.tileId;
             const sizeId = parseInt(previewBtn.dataset.sizeId, 10);
             const previewUrl = api.getTilePreview(tileId, 512); // anteprima veloce
-            const nativeUrl  = api.getTilePreview(tileId, 512 << sizeId); // full-res download
+            const nativeUrl = api.getTilePreview(tileId, 512 << sizeId); // full-res download
             showTileInPanel(tileId, sizeId, previewUrl, nativeUrl);
         };
     }
@@ -526,9 +531,9 @@ elements.radiusInput.addEventListener('input', () => {
 
 elements.dateFilterSlider.addEventListener('input', (e) => {
     const value = parseInt(e.target.value, 10);
-    state.dateFilterIndex = value; // Aggiorna lo stato
-    elements.dateFilterLabel.textContent = DATE_FILTER_LABELS[value]; // Aggiorna l'etichetta
-    mainUpdateLoop(); // Forza l'aggiornamento della mappa
+    state.dateFilterIndex = value; // Update state
+    elements.dateFilterLabel.textContent = DATE_FILTER_LABELS[value]; // Update label
+    mainUpdateLoop(); // Force map update
 });
 
 // ------------------------------------------------------------------
@@ -542,9 +547,9 @@ function destinationPoint(lat, lon, dNm, bearingDeg) {
     const λ1 = lon * Math.PI / 180;
 
     const φ2 = Math.asin(Math.sin(φ1) * Math.cos(δ) +
-    Math.cos(φ1) * Math.sin(δ) * Math.cos(θ));
+        Math.cos(φ1) * Math.sin(δ) * Math.cos(θ));
     const λ2 = λ1 + Math.atan2(Math.sin(θ) * Math.sin(δ) * Math.cos(φ1),
-                               Math.cos(δ) - Math.sin(φ1) * Math.sin(φ2));
+        Math.cos(δ) - Math.sin(φ1) * Math.sin(φ2));
     return { lat: φ2 * 180 / Math.PI, lon: λ2 * 180 / Math.PI };
 }
 
@@ -572,7 +577,7 @@ function startAutomaticFollowJob() {
 
         state.lastDaaOriginPoint = L.latLng(data.lat, data.lon);
 
-        const radiusNm  = parseFloat(elements.radiusInput.value) || 20;
+        const radiusNm = parseFloat(elements.radiusInput.value) || 20;
         const ahead = destinationPoint(data.lat, data.lon, radiusNm * OVERLAP_FACTOR, data.heading);
 
         const jobParams = {
@@ -596,15 +601,15 @@ function startAutomaticFollowJob() {
 
         state.lastDaaCircleLayer = circle;
 
-        // SALVA il centro del cerchio corrente per il prossimo trigger
+        // SAVE current circle center for next trigger
         state.lastDaaCenterPoint = circle.getLatLng();
-        state.daaArmed = false;  // all’inizio NON siamo armati: prima bisogna avvicinarsi
+        state.daaArmed = false;  // initially NOT armed: must approach first
 
         return api.startJob(jobParams).then(jobData => {
             activeCircles[jobData.jobId] = circle;
             state.lastDaaCircleId = jobData.jobId;
             console.log(`Automatic job #${jobData.jobId} started (k_max=${jobParams.size}).`);
-            state.lastAutoLaunchTs = 0; // reset throttle per il prossimo tick
+            state.lastAutoLaunchTs = 0; // reset throttle for next tick
         }).catch(err => {
             elements.map.removeLayer(circle);
             alert(`Error starting automatic job: ${err.message}`);
@@ -612,11 +617,11 @@ function startAutomaticFollowJob() {
             updateFollowAircraftAvailability();
         });
     }).finally(() => {
-        // libera SEMPRE il trigger (anche in caso di errore)
+        // ALWAYS release trigger (even on error)
         state.isAutoJobPending = false;
         state.lastAutoLaunchTs = Date.now();
     }).catch(() => {
-        // (il catch dopo finally serve solo se la Promise outer lancia prima)
+        // (catch after finally only needed if outer Promise throws first)
     });
 }
 
@@ -626,38 +631,38 @@ function processQueueSequentially() {
     if (!next) return;
 
     const params = {
-        lat   : next.lat,
-        lon   : next.lon,
+        lat: next.lat,
+        lon: next.lon,
         radius: next.radius,
-        size  : parseInt(elements.sizeInput.value) || 4,
-        over  : parseInt(elements.overSelect.value)  || 1,
-        sdwn  : parseInt(elements.sdwnSelect.value)  || -1
+        size: parseInt(elements.sizeInput.value) || 4,
+        over: parseInt(elements.overSelect.value) || 1,
+        sdwn: parseInt(elements.sdwnSelect.value) || -1
     };
 
     api.startJob(params)
-    .then(data => {
-        // Promote orange → green
-        const c = next.circle;
-        c.pm.disable();
-        c.setStyle({ color: '#00cc00', fillColor: '#00cc00', fillOpacity: 0.15, dashArray: null });
-        activeCircles[data.jobId] = c;
+        .then(data => {
+            // Promote orange → green
+            const c = next.circle;
+            c.pm.disable();
+            c.setStyle({ color: '#00cc00', fillColor: '#00cc00', fillOpacity: 0.15, dashArray: null });
+            activeCircles[data.jobId] = c;
 
-        const idx = state.previewAreas.indexOf(next);
-        if (idx > -1) state.previewAreas.splice(idx, 1);
+            const idx = state.previewAreas.indexOf(next);
+            if (idx > -1) state.previewAreas.splice(idx, 1);
 
-        // Wait for Julia “completed” then start next
-        const checkNext = () => {
-            api.getCompletedJobs().then(ids => {
-                if (ids.includes(data.jobId)) {
-                    processQueueSequentially();
-                } else {
-                    setTimeout(checkNext, 1000);
-                }
-            });
-        };
-        checkNext();
-    })
-    .catch(err => alert(`Error: ${err.message}`));
+            // Wait for Julia “completed” then start next
+            const checkNext = () => {
+                api.getCompletedJobs().then(ids => {
+                    if (ids.includes(data.jobId)) {
+                        processQueueSequentially();
+                    } else {
+                        setTimeout(checkNext, 1000);
+                    }
+                });
+            };
+            checkNext();
+        })
+        .catch(err => alert(`Error: ${err.message}`));
 }
 
 
@@ -676,15 +681,15 @@ function checkAutoFollow() {
     api.getFgfsStatus().then(data => {
         if (!data.active) return;
 
-        // --- NUOVO CONTROLLO DI SICUREZZA ---
-        // Se l'aereo è troppo lento (es. meno di 10 kts), non fare nulla.
-        // Questo previene errori con dati di heading instabili da fermo.
+        // --- NEW SAFETY CHECK ---
+        // If aircraft is too slow (e.g. less than 10 kts), do nothing.
+        // This prevents errors with unstable heading data when stopped.
         if (data.speed < 10) {
-            // Resettiamo lo stato di "armo" per essere pronti quando la velocità aumenta
+            // Reset "arm" state to be ready when speed increases
             state.daaArmed = false;
             return;
         }
-        // --- FINE CONTROLLO ---
+        // --- END CHECK ---
 
         const lastCircle = state.lastDaaCircleLayer;
 
@@ -694,13 +699,13 @@ function checkAutoFollow() {
             return;
         }
 
-        const acPos   = L.latLng(data.lat, data.lon);
-        const radius  = lastCircle.getRadius();
-        const centre  = state.lastDaaCenterPoint || lastCircle.getLatLng();
+        const acPos = L.latLng(data.lat, data.lon);
+        const radius = lastCircle.getRadius();
+        const centre = state.lastDaaCenterPoint || lastCircle.getLatLng();
 
         const distToCtr = acPos.distanceTo(centre);
-        const FIRE_TH   = radius * OVERLAP_FACTOR;
-        const ARM_TH    = radius * (OVERLAP_FACTOR * 0.7);
+        const FIRE_TH = radius * OVERLAP_FACTOR;
+        const ARM_TH = radius * (OVERLAP_FACTOR * 0.7);
 
         if (!state.daaArmed) {
             if (distToCtr <= ARM_TH) {
@@ -721,12 +726,12 @@ function checkAutoFollow() {
  * Removes all green job circles created by the DAA mode from the map.
  */
 function clearAllDaaCircles() {
-    // Itera su tutti i cerchi attivi registrati
+    // Iterate over all registered active circles
     for (const jobId in activeCircles) {
         const layer = activeCircles[jobId];
         if (layer) {
-            elements.map.removeLayer(layer); // Rimuove dalla mappa
-            delete activeCircles[jobId];     // Rimuove dalla registro
+            elements.map.removeLayer(layer); // Remove from map
+            delete activeCircles[jobId];     // Remove from registry
         }
     }
     state.lastDaaCircleId = null;
@@ -739,20 +744,20 @@ function clearAllDaaCircles() {
 
 
 /**
- * Filtra i punti attivati dal percorso di volo e li salva in un file XML
- * formattato per FlightGear.
+ * Filters activated flight path points and saves them to an XML file
+ * formatted for FlightGear.
  */
-// RINOMINATA LA FUNZIONE
+// FUNCTION RENAMED
 function saveRouteToXml(flightPath) {
-    // 1. Filtra solo i punti che l'utente ha attivato cliccandoci sopra.
+    // 1. Filter only points user activated by clicking on them.
     const activatedPoints = flightPath.filter(p => p.isActivated);
 
     if (activatedPoints.length === 0) {
-        alert("Nessun waypoint è stato attivato. Clicca sui punti arancioni del percorso per selezionarli prima di salvare.");
+        alert("No waypoints activated. Click on orange path points to select them before saving.");
         return;
     }
 
-    // 2. Costruisce la stringa XML (invariato).
+    // 2. Builds XML string (unchanged).
     let xmlString = '<?xml version="1.0"?>\n<FlightPlan>\n';
     activatedPoints.forEach((point, index) => {
         const ident = `WP${index + 1}`;
@@ -769,15 +774,15 @@ function saveRouteToXml(flightPath) {
     });
     xmlString += '</FlightPlan>';
 
-    // 3. --- BLOCCO DI SALVATAGGIO MODIFICATO ---
+    // 3. --- SAVING BLOCK MODIFIED ---
     const blob = new Blob([xmlString], { type: 'application/xml' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
 
-    // Crea il nome del file con il timestamp, come per "Save Path"
+    // Create filename with timestamp, like for "Save Path"
     const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-    a.download = `flight-route-${timestamp}.xml`; // Nuovo nome file
+    a.download = `flight-route-${timestamp}.xml`; // New filename
 
     document.body.appendChild(a);
     a.click();
@@ -785,13 +790,13 @@ function saveRouteToXml(flightPath) {
     URL.revokeObjectURL(url);
 }
 
-// Funzione per mostrare/nascondere il layer degli aeroporti
+// Function to show/hide airports layer
 function toggleAirportsVisibility(isVisible) {
     state.isAirportsVisible = isVisible;
     if (isVisible) {
         elements.map.addLayer(airportMarkers);
-        // Forza un aggiornamento per caricare i dati (se il layer era spento)
-        // updateMapDataAndOverlays(); // La funzione che effettua il fetch dei dati
+        // Force update to load data (if layer was off)
+        // updateMapDataAndOverlays(); // Function fetching data
     } else {
         elements.map.removeLayer(airportMarkers);
     }
@@ -889,24 +894,24 @@ function createPreviewCircleAt(lat, lon) {
 
         // Avvia subito il job e trasforma il cerchio in "verde"
         api.startJob(params)
-        .then(data => {
-            circle.setStyle({
-                color: '#00cc00',
-                fillColor: '#00cc00',
-                fillOpacity: 0.15,
-                dashArray: null
+            .then(data => {
+                circle.setStyle({
+                    color: '#00cc00',
+                    fillColor: '#00cc00',
+                    fillOpacity: 0.15,
+                    dashArray: null
+                });
+                activeCircles[data.jobId] = circle;
+                areaState.isFixed = true; // ormai è “confermato”
+                // Call the imported drawCircle function, passing activeCircles
+                drawCircle(data.jobId, data.lat, data.lon, data.radius, activeCircles);
+                areaState.isFixed = true;
+            })
+            .catch(err => {
+                alert(`Error starting job: ${err.message}`);
+                // opzionale: riabilita l’editing se vuoi consentire un nuovo tentativo
+                circle.pm.enable();
             });
-            activeCircles[data.jobId] = circle;
-            areaState.isFixed = true; // ormai è “confermato”
-            // Call the imported drawCircle function, passing activeCircles
-            drawCircle(data.jobId, data.lat, data.lon, data.radius, activeCircles);
-            areaState.isFixed = true;
-        })
-        .catch(err => {
-            alert(`Error starting job: ${err.message}`);
-            // opzionale: riabilita l’editing se vuoi consentire un nuovo tentativo
-            circle.pm.enable();
-        });
     });
 
     delBtn.on('click', (event) => {
@@ -946,13 +951,13 @@ function createPreviewCircleAt(lat, lon) {
     });
 
     elements.radiusInput.addEventListener('input', () => {
-    const preview = state.previewAreas.find(a => !a.isFixed);
-    if (preview && preview.circle) {
-        const newRadiusMeters = (parseFloat(elements.radiusInput.value) || 0) * 1852;
-        if (newRadiusMeters > 0) {
-        preview.circle.setRadius(newRadiusMeters);
+        const preview = state.previewAreas.find(a => !a.isFixed);
+        if (preview && preview.circle) {
+            const newRadiusMeters = (parseFloat(elements.radiusInput.value) || 0) * 1852;
+            if (newRadiusMeters > 0) {
+                preview.circle.setRadius(newRadiusMeters);
+            }
         }
-    }
     });
 }
 
@@ -965,8 +970,8 @@ function focusOnSearchTarget({ icao, lat, lon }) {
 
     // Aggiorna input
     if (elements.icaoInput) elements.icaoInput.value = icao || elements.icaoInput.value || "";
-    if (elements.latInput)  elements.latInput.value  = LAT.toFixed(6);
-    if (elements.lonInput)  elements.lonInput.value  = LON.toFixed(6);
+    if (elements.latInput) elements.latInput.value = LAT.toFixed(6);
+    if (elements.lonInput) elements.lonInput.value = LON.toFixed(6);
 
     // Centra mappa
     if (elements.map) {
@@ -1028,47 +1033,47 @@ document.addEventListener('click', (e) => {
 });
 
 elements.icaoInput.addEventListener('keydown', async (ev) => {
-  if (ev.key !== 'Enter') return;
-  ev.preventDefault();
-  hideIcaoSuggestions();
+    if (ev.key !== 'Enter') return;
+    ev.preventDefault();
+    hideIcaoSuggestions();
 
-  const q = ev.target.value.trim();
-  if (!q) return;
+    const q = ev.target.value.trim();
+    if (!q) return;
 
-  try {
-    // UNIFICHIAMO IL FLUSSO: usiamo SEMPRE airportsSearch
-    const { items } = await airportsSearch(q, 5); // 5 è sufficiente per l'alert
+    try {
+        // UNIFICHIAMO IL FLUSSO: usiamo SEMPRE airportsSearch
+        const { items } = await airportsSearch(q, 5); // 5 è sufficiente per l'alert
 
-    if (!items || !items.length) {
-      alert("Nessun aeroporto trovato per: " + q);
-      return;
+        if (!items || !items.length) {
+            alert("Nessun aeroporto trovato per: " + q);
+            return;
+        }
+
+        // Aggiorna il campo con il codice ICAO (che è il risultato preferito)
+        ev.target.value = a.icao || ev.target.value;
+
+        if (items.length > 1) {
+            // Se ci sono più risultati, mostriamo i dettagli nell'alert
+            const suggested = items.map(i => {
+                const iata = i.iata_code ? `(${i.iata_code})` : '';
+                const muni = i.municipality ? ` - ${i.municipality}` : '';
+                return `${i.icao} ${iata} ${i.name}${muni}`;
+            }).join('\n');
+            console.info(`Trovati ${items.length} candidati: si usa ${a.icao}. \nAltri: \n${suggested}`);
+        }
+
+        focusOnSearchTarget({
+            icao: a.icao || ev.target.value,
+            lat: a.lat,
+            lon: a.lon
+        });
+
+
+    } catch (e) {
+        // Questo catch catturerà solo errori 500 o fallimenti di rete, non l'ambiguità.
+        console.error(e);
+        alert("Lookup fallito: " + (e?.message ?? e));
     }
-
-    // Aggiorna il campo con il codice ICAO (che è il risultato preferito)
-    ev.target.value = a.icao || ev.target.value;
-
-    if (items.length > 1) {
-      // Se ci sono più risultati, mostriamo i dettagli nell'alert
-      const suggested = items.map(i => {
-          const iata = i.iata_code ? `(${i.iata_code})` : '';
-          const muni = i.municipality ? ` - ${i.municipality}` : '';
-          return `${i.icao} ${iata} ${i.name}${muni}`;
-      }).join('\n');
-      console.info(`Trovati ${items.length} candidati: si usa ${a.icao}. \nAltri: \n${suggested}`);
-    }
-
-    focusOnSearchTarget({
-        icao: a.icao || ev.target.value,
-        lat: a.lat,
-        lon: a.lon
-    });
-
-
-  } catch (e) {
-    // Questo catch catturerà solo errori 500 o fallimenti di rete, non l'ambiguità.
-    console.error(e);
-    alert("Lookup fallito: " + (e?.message ?? e));
-  }
 });
 
 
@@ -1081,75 +1086,40 @@ elements.btnFillHoles.addEventListener('click', () => {
     const bounds = elements.map.getBounds();
     const settings = {
         size: parseInt(elements.sizeInput.value, 10) || 4,
-            over: parseInt(elements.overSelect.value, 10) || 1,
-            sdwn: parseInt(elements.sdwnSelect.value, 10) || 0,
-            server: parseInt(elements.mapServerSelect.value, 10) || state.defaultServerId
+        over: parseInt(elements.overSelect.value, 10) || 1,
+        sdwn: parseInt(elements.sdwnSelect.value, 10) || 0,
+        server: parseInt(elements.mapServerSelect.value, 10) || state.defaultServerId
     };
 
     // 2. Chiama l'API per avviare il processo in background
     api.fillHoles(bounds, settings)
-    .catch(err => {
-        // Se c'è un errore nella chiamata, mostra un alert
-        alert(`Error starting the patch process: ${err.message}`);
-    })
-    .finally(() => {
-        // 3. Imposta un timer per riattivare il pulsante dopo 60 secondi
-        // Questo avviene sia in caso di successo che di fallimento della chiamata API
-        setTimeout(() => {
-            elements.btnFillHoles.disabled = false;
-            elements.btnFillHoles.classList.remove('btn-working');
-        }, 60000); // 60 secondi in millisecondi
-    });
-});
-
-elements.btnEditPaths.addEventListener('click', () => {
-    const isEditing = !elements.outputPathInput.readOnly;
-
-    if (isEditing) {
-        // --- Logica per SALVARE ---
-        const newPath = elements.outputPathInput.value.trim();
-        const newSave = elements.backupPathInput.value.trim();
-
-        if (!newPath || !newSave) {
-            alert("Paths cannot be empty.");
-            return;
-        }
-
-        api.setPaths(newPath, newSave)
-        .then(response => {
-            if (!response.ok) throw new Error("Server failed to update paths.");
-            alert("Paths updated successfully!");
-            // Riporta allo stato di sola lettura
-            elements.outputPathInput.readOnly = true;
-            elements.backupPathInput.readOnly = true;
-            elements.btnEditPaths.textContent = "Edit";
-            elements.btnEditPaths.style.backgroundColor = "";
-        })
         .catch(err => {
-            alert(`Error: ${err.message}`);
+            // Se c'è un errore nella chiamata, mostra un alert
+            alert(`Error starting the patch process: ${err.message}`);
+        })
+        .finally(() => {
+            // 3. Imposta un timer per riattivare il pulsante dopo 60 secondi
+            // Questo avviene sia in caso di successo che di fallimento della chiamata API
+            setTimeout(() => {
+                elements.btnFillHoles.disabled = false;
+                elements.btnFillHoles.classList.remove('btn-working');
+            }, 60000); // 60 secondi in millisecondi
         });
-
-    } else {
-        // --- Logica per MODIFICARE ---
-        elements.outputPathInput.readOnly = false;
-        elements.backupPathInput.readOnly = false;
-        elements.btnEditPaths.textContent = "Save";
-        elements.btnEditPaths.style.backgroundColor = "#4CAF50"; // Verde per indicare "conferma"
-    }
 });
+
 
 // Toggle "Create Path"
 document.getElementById('btn-create-route').addEventListener('click', () => {
-  const on = !isManualRouteMode();
-  setManualRouteMode(on);
-  const b = document.getElementById('btn-create-route');
-  b.textContent = on ? 'Create Path (ON)' : 'Create Path';
-  b.style.backgroundColor = on ? '#28a745' : '';
-  b.style.color = on ? '#fff' : '';
+    const on = !isManualRouteMode();
+    setManualRouteMode(on);
+    const b = document.getElementById('btn-create-route');
+    b.textContent = on ? 'Create Path (ON)' : 'Create Path';
+    b.style.backgroundColor = on ? '#28a745' : '';
+    b.style.color = on ? '#fff' : '';
 });
 
 elements.btnClearPath.addEventListener('click', () => {
-  clearManualRoute();
+    clearManualRoute();
 });
 
 // ------------------------------------------------------------------
@@ -1157,6 +1127,27 @@ elements.btnClearPath.addEventListener('click', () => {
 // ------------------------------------------------------------------
 window.addEventListener('DOMContentLoaded', () => {
     initializeMap();
+
+    elements.transferModal = document.getElementById('transferModal');
+    elements.transferCancelBtn = document.getElementById('transferCancelBtn');
+    elements.transferBackgroundBtn = document.getElementById('transferBackgroundBtn');
+    elements.transferCount = document.getElementById('transferCount');
+    elements.transferBytes = document.getElementById('transferBytes');
+    elements.transferSpeed = document.getElementById('transferSpeed');
+    elements.transferFreeSpace = document.getElementById('transferFreeSpace');
+    elements.transferCurrentFile = document.getElementById('transferCurrentFile');
+
+    // Nota: Assicurati che questi ID esistano nel tuo HTML corrente
+    elements.transferOldPath = document.getElementById('transferOldPath');
+    elements.transferNewPath = document.getElementById('transferNewPath');
+    elements.transferLog = document.getElementById('transferLog');
+
+    initSettings();
+    document.addEventListener('migration-started', (e) => {
+        // startTransferMonitor è rimasta in main.js
+        startTransferMonitor(e.detail.oldPath, e.detail.newPath);
+    });
+
     if (!state._routeClickBound) {
         elements.map.on('click', (e) => {
             if (!isManualRouteMode()) return;
@@ -1179,36 +1170,36 @@ window.addEventListener('DOMContentLoaded', () => {
         clearTimeout(navaidsLoadTimer);
         navaidsLoadTimer = setTimeout(() => {
             loadAndDrawNavaids(elements.map); // elementi.map è l'istanza Leaflet
-        }, 500); // Ritardo di 500ms
+        }, 500); // 500ms delay
     };
 
-    // 2. Attivazione dei Listener
+    // 2. Activate Listeners
     elements.map.on('moveend', reloadNavaids);
     elements.map.on('zoomend', reloadNavaids);
 
-    // 3. Primo Caricamento
+    // 3. First Load
     reloadNavaids();
 
-    // Primo sync tra DAA e Execute Job
+    // First sync between DAA and Execute Job
     updateFollowAircraftAvailability();
 
     api.getSessionInfo().then(info => {
         state.sessionStartTime = new Date(info.startTime);
-        console.log("Ora di avvio sessione impostata:", state.sessionStartTime);
+        console.log("Session start time set:", state.sessionStartTime);
     }).catch(err => {
-        console.error("Impossibile recuperare l'ora della sessione:", err);
+        console.error("Unable to retrieve session time:", err);
     });
 
     const handleFilterClick = (filterId) => {
         state.visibilityFilters[filterId] = !state.visibilityFilters[filterId];
-        // Ridisegna immediatamente i pulsanti
+        // Redraw buttons immediately
         renderVisibilityFilters(state.visibilityFilters, handleFilterClick);
-        // Forza l'aggiornamento della mappa per applicare il filtro
+        // Force map update to apply filter
         mainUpdateLoop();
-        reloadNavaids(); // Forza il ricaricamento dei navaid/aeroporti
+        reloadNavaids(); // Force reload of navaids/airports
     };
 
-    // INIZIALIZZA I FILTRI VISIVI
+    // INITIALIZE VISIBILITY FILTERS
     renderVisibilityFilters(state.visibilityFilters, handleFilterClick);
 
     // Popola il selettore dei map server al caricamento
@@ -1233,18 +1224,13 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error("Errore nel caricare la configurazione dell'app:", err);
             // In caso di errore, il default rimarrà 1 (o quello che hai impostato nello stato)
         });
-    api.getPaths()
-        .then(paths => {
-            elements.outputPathInput.value = paths.path;
-            elements.backupPathInput.value = paths.save;
-        });
 
     const dropZone = elements.routeDropZone;
 
     if (dropZone) {
         dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropZone.classList.add('drag-over');
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
         });
 
         dropZone.addEventListener('dragleave', (e) => {
@@ -1362,39 +1348,119 @@ window.addEventListener('DOMContentLoaded', () => {
         renderFlightPath(state.flightPath, state.isFlightPathVisible);
     });
 
-    // Avvia il loop periodic
+    // --- Transfer Modal Button Management ---
+
+    // Handler for "Stop Transfer" button
+    elements.transferCancelBtn.addEventListener('click', () => {
+        if (confirm("Are you sure you want to stop the current file transfer? This may leave the index inconsistent.")) {
+            // Cancellation logic is in the backend. Here we disable the flag in FileMover.
+            // Since we don't have a dedicated cancellation endpoint, the user must
+            // act on the terminal, or we use a trick (e.g., a dedicated POST).
+
+            // For now, the user can only hide the modal.
+            // Future implementation: Add a POST /api/cancel-transfer endpoint
+
+            clearInterval(transferMonitorInterval);
+            transferMonitorInterval = null;
+            elements.transferModal.setAttribute('data-transfer-active', 'false');
+            elements.transferModal.classList.add('hidden');
+            alert("Transfer cancelled. Check server logs for status.");
+        }
+    });
+
+    // Handler for "Run in Background" button
+    elements.transferBackgroundBtn.addEventListener('click', () => {
+        elements.transferModal.classList.add('hidden');
+        // Polling will continue in background, user can reopen modal
+        // via another UI element (not yet defined).
+    });
+
+    // Start periodic loop
     mainUpdateLoop();
 });                          // Initial update on startup
 
 // Pollers
 
 startPollers({
-  onConnectionState: (data) => {
-    const btn = elements.btnConnect;
-    btn.classList.remove('active', 'connecting', 'disconnected');
-    switch (data.state) {
-      case 'connected':
-        btn.classList.add('active');
-        btn.title = 'FGFS connected';
-        state.isConnected = true;
-        break;
-      case 'connecting':
-        btn.classList.add('connecting');
-        btn.title = 'FGFS connecting…';
-        state.isConnected = false;
-        break;
-      default:
-        btn.classList.add('disconnected');
-        btn.title = 'FGFS disconnected';
-        state.isConnected = false;
+    onConnectionState: (data) => {
+        const btn = elements.btnConnect;
+        btn.classList.remove('active', 'connecting', 'disconnected');
+        switch (data.state) {
+            case 'connected':
+                btn.classList.add('active');
+                btn.title = 'FGFS connected';
+                state.isConnected = true;
+                break;
+            case 'connecting':
+                btn.classList.add('connecting');
+                btn.title = 'FGFS connecting…';
+                state.isConnected = false;
+                break;
+            default:
+                btn.classList.add('disconnected');
+                btn.title = 'FGFS disconnected';
+                state.isConnected = false;
+        }
+    },
+    onCompletedJobs: (n) => {
+        console.log(`Completed jobs: ${n}`);
+        // puoi anche richiamare checkCompletedJobs() se vuoi aggiornare la mappa
+        checkCompletedJobs();
     }
-  },
-  onCompletedJobs: (n) => {
-    console.log(`Completed jobs: ${n}`);
-    // puoi anche richiamare checkCompletedJobs() se vuoi aggiornare la mappa
-    checkCompletedJobs();
-  }
 });
+
+
+// Transfert selection
+
+function startTransferMonitor(oldPath, newPath) {
+    // 1. Inizializza il Modale
+    elements.transferNewPath.textContent = newPath;
+    elements.transferOldPath.textContent = oldPath; // Mostra solo il vecchio path come sorgente
+    elements.transferCount.textContent = '0 / 0 files';
+    elements.transferBytes.textContent = '0 MB';
+    elements.transferSpeed.textContent = '0 B/s';
+    elements.transferFreeSpace.textContent = '— MB';
+    elements.transferLog.scrollTop = elements.transferLog.scrollHeight; // Scrolla in fondo al log
+
+    // 2. Mostra il Modale
+    elements.transferModal.classList.remove('hidden');
+    elements.transferModal.setAttribute('data-transfer-active', 'true');
+
+    // 3. Avvia il Polling
+    transferMonitorInterval = setInterval(async () => {
+        try {
+            const status = await api.pollMigrationStatus();
+
+            // Se is_active è false, il trasferimento è terminato
+            if (!status.is_active) {
+                clearInterval(transferMonitorInterval);
+                transferMonitorInterval = null;
+                elements.transferModal.setAttribute('data-transfer-active', 'false');
+                elements.transferModal.classList.add('hidden');
+                return;
+            }
+
+            // Aggiornamento Contatori
+            const totalMb = (status.total_bytes / 1024 / 1024).toFixed(1);
+            const transferredMb = (status.bytes_moved / 1024 / 1024).toFixed(1);
+            const speed = status.current_speed_Bps;
+
+            elements.transferCount.textContent = `${status.files_moved} / ${status.total_files} files`;
+            elements.transferBytes.textContent = `${transferredMb} / ${totalMb} MB`;
+            elements.transferSpeed.textContent = `${(speed < 1024 * 1024) ? (speed / 1024).toFixed(1) + ' KB/s' : (speed / 1024 / 1024).toFixed(1) + ' MB/s'}`;
+            elements.transferFreeSpace.textContent = `${status.dest_free_space_MB.toFixed(1)} MB`;
+            elements.transferCurrentFile.textContent = status.current_file
+                ? `Moving: ${status.current_file}`
+                : "Preparing...";
+
+        } catch (e) {
+            console.error("Transfer polling failed:", e);
+        }
+    }, 1000); // Poll ogni secondo
+}
+
+
+
 
 
 // Set up periodic updates
