@@ -36,18 +36,20 @@ mutable struct TelnetConnection
     ipAddress::IPv4
     ipPort::Int
     sock::Union{TCPSocket,Nothing}
-    function TelnetConnection(address::String, port::Int) new(IPv4(address), port, nothing) end
+    function TelnetConnection(address::String, port::Int)
+        new(IPv4(address), port, nothing)
+    end
 end
 
 """
 Holds a complete snapshot of the aircraft's state at a single point in time.
 """
 struct FGFSPosition
-    latitudeDeg :: Float64
-    longitudeDeg:: Float64
-    altitudeFt  :: Float64
-    directionDeg:: Float64
-    speedMph    :: Float64
+    latitudeDeg::Float64
+    longitudeDeg::Float64
+    altitudeFt::Float64
+    directionDeg::Float64
+    speedMph::Float64
 end
 
 """
@@ -58,7 +60,9 @@ mutable struct FGFSPositionRoute
     actual::Union{FGFSPosition,Nothing}
     telnet::Union{TelnetConnection,Nothing}
     stepTime::Float64
-    function FGFSPositionRoute(stepTime=2.0) new([], nothing, nothing, stepTime) end
+    function FGFSPositionRoute(stepTime=2.0)
+        new([], nothing, nothing, stepTime)
+    end
 end
 
 
@@ -85,7 +89,7 @@ function fetch_and_clean_xml(sock::TCPSocket, command::String, debugLevel::Int)
         clean_xml = xml_data_string[1:end_pos.stop]
         return clean_xml
     catch e
-        debugLevel > 0 && @warn "Connector: Error reading or parsing data." exception=(e, Base.catch_backtrace())
+        debugLevel > 0 && @warn "Connector: Error reading or parsing data." exception = (e, Base.catch_backtrace())
         return nothing
     end
 end
@@ -108,11 +112,12 @@ function getFGFSPositionSetTask(host::String, port::Int, _a, _b, debugLevel::Int
                 debugLevel > 0 && @info "Connector: Connecting to $host:$port..."
                 positionRoute.telnet.sock = connect(positionRoute.telnet.ipAddress, positionRoute.telnet.ipPort)
                 debugLevel > 0 && @info "Connector: Connected! ✅"
-                catch e
+            catch e
                 debugLevel > 0 && @warn "Connector: Connection failed. Retrying in 5s."
                 positionRoute.telnet.sock = nothing
                 positionRoute.actual = nothing
-                sleep(5); continue
+                sleep(5)
+                continue
             end
         end
 
@@ -126,11 +131,20 @@ function getFGFSPositionSetTask(host::String, port::Int, _a, _b, debugLevel::Int
                 pos_doc = fetch_and_clean_xml(positionRoute.telnet.sock, "dump /position\r\n", debugLevel)
                 if pos_doc !== nothing
                     root = EzXML.root(EzXML.parsexml(pos_doc))
-                    lat = parse(Float64, nodecontent(findfirst("//latitude-deg", root)))
-                    lon = parse(Float64, nodecontent(findfirst("//longitude-deg", root)))
-                    alt = parse(Float64, nodecontent(findfirst("//altitude-ft", root)))
-                    gnd = parse(Float64, nodecontent(findfirst("//ground-elev-ft", root)))
-                    isRecived = 4
+                    lat_node = findfirst("//latitude-deg", root)
+                    lon_node = findfirst("//longitude-deg", root)
+                    alt_node = findfirst("//altitude-ft", root)
+                    gnd_node = findfirst("//ground-elev-ft", root)
+
+                    if lat_node !== nothing && lon_node !== nothing && alt_node !== nothing
+                        lat = parse(Float64, nodecontent(lat_node))
+                        lon = parse(Float64, nodecontent(lon_node))
+                        alt = parse(Float64, nodecontent(alt_node))
+                        if gnd_node !== nothing
+                            gnd = parse(Float64, nodecontent(gnd_node))
+                        end
+                        isRecived = 4
+                    end
                 end
 
                 ori_doc = fetch_and_clean_xml(positionRoute.telnet.sock, "dump /orientation\r\n", debugLevel)
@@ -161,13 +175,17 @@ function getFGFSPositionSetTask(host::String, port::Int, _a, _b, debugLevel::Int
                     debugLevel >= 2 && @info "Connector.getFGFSPositionSetTask: " lat lon alt heading_deg speed_mph
                 end
                 alt_agl = alt - gnd
-                if alt_agl < 0.0 alt_agl = 0 end
-                positionRoute.actual = pos = FGFSPosition(lat, lon, alt_agl,heading_deg, speed_mph)
+                if alt_agl < 0.0
+                    alt_agl = 0
+                end
+                positionRoute.actual = pos = FGFSPosition(lat, lon, alt_agl, heading_deg, speed_mph)
                 # Create a new FGFSPosition object
                 # Update the global state
             catch e
-                @warn "Connector.getFGFSPositionSetTask: Critical parsing error .. retrying to reconnect" exception=(e, Base.catch_backtrace())
-                if positionRoute.telnet.sock !== nothing; close(positionRoute.telnet.sock); end
+                @warn "Connector.getFGFSPositionSetTask: Critical parsing error .. retrying to reconnect" exception = (e, Base.catch_backtrace())
+                if positionRoute.telnet.sock !== nothing
+                    close(positionRoute.telnet.sock)
+                end
             end
             sleep(positionRoute.stepTime)
         end

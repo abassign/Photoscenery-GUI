@@ -9,6 +9,7 @@
  */
 
 // DOM elements and map references
+import i18n from './i18n.js';
 
 const elements = {
   map: L.map('map').setView([45, 12], 5),
@@ -50,7 +51,19 @@ const elements = {
   routeSettingsHeader: document.getElementById('route-section-content').previousElementSibling,
   routeSettingsContent: document.getElementById('route-section-content'),
   dateFilterSlider: document.getElementById('date-filter-slider'),
-  dateFilterLabel: document.getElementById('date-filter-label')
+  dateFilterSlider: document.getElementById('date-filter-slider'),
+  dateFilterLabel: document.getElementById('date-filter-label'),
+  langEnBtn: document.getElementById('lang-en'),
+  langItBtn: document.getElementById('lang-it'),
+  langFrBtn: document.getElementById('lang-fr'),
+  langDeBtn: document.getElementById('lang-de'),
+  langEsBtn: document.getElementById('lang-es'),
+  langZhBtn: document.getElementById('lang-zh'),
+  langJaBtn: document.getElementById('lang-ja'),
+  langPtBtn: document.getElementById('lang-pt'),
+  langKoBtn: document.getElementById('lang-ko'),
+  langArBtn: document.getElementById('lang-ar'),
+  langRuBtn: document.getElementById('lang-ru')
 };
 
 const CROSSHAIR_SVG_ICON_HTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 32 32">' +
@@ -103,7 +116,6 @@ const PATH_FOR_HELIPORT_H_CENTERED = 'M19 5v14H5V5h14zm-4 6H9V9h6v2zM9 15h6v-2H9
 const VISIBILITY_CONFIG = [
   {
     id: 'tiles',
-    label: 'Tiles',
     svg: `
       <rect x="3" y="3" width="6" height="6" rx="1" />
       <rect x="10" y="3" width="6" height="6" rx="1" />
@@ -118,7 +130,6 @@ const VISIBILITY_CONFIG = [
   },
   {
     id: 'airports',
-    label: 'Airports',
     svg: `
   <path d="M12 2 v8" />
   <path d="M4 10 l8 3 8-3" />
@@ -128,7 +139,6 @@ const VISIBILITY_CONFIG = [
   },
   {
     id: 'minorAirports',
-    label: 'Minor AP',
     svg: `
       <rect x="5" y="10" width="14" height="4" rx="1"/>
       <line x1="7" y1="12" x2="17" y2="12"/>
@@ -137,7 +147,6 @@ const VISIBILITY_CONFIG = [
   },
   {
     id: 'heliports',
-    label: 'Heliports',
     svg: `
       <rect x="4" y="4" width="16" height="16" rx="2" />
       <path d="M9 16 v-8 M15 16 v-8 M9 12 h6" />
@@ -145,7 +154,6 @@ const VISIBILITY_CONFIG = [
   },
   {
     id: 'navaids',
-    label: 'Navaids',
     svg: `
     <circle cx="12" cy="12" r="1.6"/>
     <circle cx="12" cy="12" r="5" fill="none"/>
@@ -154,7 +162,6 @@ const VISIBILITY_CONFIG = [
   },
   {
     id: 'route',
-    label: 'Route',
     svg: `
       <circle cx="5" cy="18" r="2"/>
       <circle cx="12" cy="10" r="2"/>
@@ -178,28 +185,29 @@ function renderVisibilityFilters(visibilityState, clickCallback) {
 
   VISIBILITY_CONFIG.forEach(item => {
     const isActive = visibilityState[item.id];
+    const label = i18n.t(`filter_${item.id}`);
     const button = document.createElement('button');
     button.id = `filter-${item.id}`;
     button.classList.add('filter-button', isActive ? 'active' : 'inactive');
-    button.title = `${item.label} (Click to toggle)`;
+    button.title = `${label} (Click to toggle)`;
     button.dataset.filter = item.id;
 
     // Create SVG for icon
     button.innerHTML = item.svg
       ? `<svg class="filter-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-                role="img" aria-label="${item.label}">
+                role="img" aria-label="${label}">
                 <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 ${item.svg}
                 </g>
             </svg>`
       : `<svg class="filter-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-                role="img" aria-label="${item.label}">
+                role="img" aria-label="${label}">
                 <path d="${item.icon}" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round"/>
             </svg>`;
 
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    button.setAttribute('aria-label', `${item.label} layer`);
+    button.setAttribute('aria-label', `${label} layer`);
 
     button.addEventListener('click', () => clickCallback(item.id));
     container.appendChild(button);
@@ -265,7 +273,7 @@ function updateMapCoverage(coverageData, allowedResolutions, currentOpacity, dat
     if (!allowedResolutions.has(tile.sizeId)) return;
 
     // Draw tile on map
-    const popupHtml = `ID: ${tile.id}<br>Resolution: ${tile.sizeId}<br><b>Score: ${tile.detail_score.toFixed(3)}</b><br><button class="preview-button" data-tile-id="${tile.id}" data-size-id="${tile.sizeId}">View Preview</button>`;
+    const popupHtml = `${i18n.t('id')}: ${tile.id}<br>${i18n.t('resolution_popup')}: ${tile.sizeId}<br><b>${i18n.t('score')}: ${tile.detail_score.toFixed(3)}</b><br><button class="preview-button" data-tile-id="${tile.id}" data-size-id="${tile.sizeId}">${i18n.t('view_preview')}</button>`;
     const bounds = [[tile.bbox.latLL, tile.bbox.lonLL], [tile.bbox.latUR, tile.bbox.lonUR]];
     L.rectangle(bounds, { ...getStyleForSizeId(tile.sizeId), fillOpacity: currentOpacity, opacity: 1 }).addTo(coverageLayer).bindPopup(popupHtml);
 
@@ -313,9 +321,9 @@ function updateAircraftPosition(data) {
 
   const latLng = [data.lat, data.lon];
   const tooltipContent = `
-    <b>Heading:</b> ${Math.round(data.heading)}°<br>
-    <b>Altitude:</b> ${Math.round(data.altitude)} ft<br>
-    <b>Speed:</b> ${Math.round(data.speed)} kts
+    <b>${i18n.t('heading')}</b> ${Math.round(data.heading)}°<br>
+    <b>${i18n.t('altitude')}</b> ${Math.round(data.altitude)} ft<br>
+    <b>${i18n.t('speed')}</b> ${Math.round(data.speed)} kts
     `;
 
   if (!aircraftMarker) {
@@ -397,15 +405,15 @@ function updateFgfsIndicator(status) {
   // Handles both boolean 'true' and string 'connected' as active state.
   if (status === 'connected' || status === true) {
     btn.classList.add('active');
-    btn.textContent = 'FGFS On';
+    btn.textContent = i18n.t('fgfs_on');
   } else {
     // HIDE flight path buttons
     if (status === 'connecting') {
       btn.classList.add('connecting');
-      btn.textContent = 'Wait...';
+      btn.textContent = i18n.t('wait');
     } else { // disconnected o false
       btn.classList.add('disconnected');
-      btn.textContent = 'FGFS Off';
+      btn.textContent = i18n.t('fgfs_off');
     }
   }
 }
@@ -598,7 +606,7 @@ function showTileInPanel(tileId, sizeId, previewUrl, nativeUrl) {
   elements.tilePreviewImage.src = previewUrl;
   elements.tilePreviewImage.style.display = 'block';
 
-  elements.downloadBtn.textContent = `Download full PNG (Res: ${sizeId})`;
+  elements.downloadBtn.textContent = i18n.t('download_full_png', { size: sizeId });
   elements.downloadBtn.style.display = 'block';
 
   elements.downloadBtn.onclick = () => {
@@ -1458,6 +1466,41 @@ function drawAirports(airports, mapInstance, showMinor, showMajor, showHeliports
 }
 
 
+
+// Language Switcher
+if (elements.langEnBtn) {
+  elements.langEnBtn.addEventListener('click', () => i18n.setLanguage('en'));
+}
+if (elements.langItBtn) {
+  elements.langItBtn.addEventListener('click', () => i18n.setLanguage('it'));
+}
+if (elements.langFrBtn) {
+  elements.langFrBtn.addEventListener('click', () => i18n.setLanguage('fr'));
+}
+if (elements.langDeBtn) {
+  elements.langDeBtn.addEventListener('click', () => i18n.setLanguage('de'));
+}
+if (elements.langEsBtn) {
+  elements.langEsBtn.addEventListener('click', () => i18n.setLanguage('es'));
+}
+if (elements.langZhBtn) {
+  elements.langZhBtn.addEventListener('click', () => i18n.setLanguage('zh'));
+}
+if (elements.langJaBtn) {
+  elements.langJaBtn.addEventListener('click', () => i18n.setLanguage('ja'));
+}
+if (elements.langPtBtn) {
+  elements.langPtBtn.addEventListener('click', () => i18n.setLanguage('pt'));
+}
+if (elements.langKoBtn) {
+  elements.langKoBtn.addEventListener('click', () => i18n.setLanguage('ko'));
+}
+if (elements.langArBtn) {
+  elements.langArBtn.addEventListener('click', () => i18n.setLanguage('ar'));
+}
+if (elements.langRuBtn) {
+  elements.langRuBtn.addEventListener('click', () => i18n.setLanguage('ru'));
+}
 
 /***
  * Export function

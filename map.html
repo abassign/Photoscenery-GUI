@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Photoscenary GUI</title>
+    <title data-i18n="app_title">Photoscenary GUI</title>
     <meta charset="utf-8" />
     <!-- Leaflet CSS/JS for interactive maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
     <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/bbecquet/Leaflet.RotatedMarker/leaflet.rotatedMarker.js"></script>
+    <script type="module" src="js/i18n.js"></script>
 
     <style>
         #controls h3 {
@@ -31,7 +32,7 @@
         }
 
         #controls {
-            width: 300px;
+            width: 345px;
             padding: 15px;
             border-right: 1px solid #ccc;
             display: flex;
@@ -644,8 +645,8 @@
 
         .route-bar button strong {
             display: block;
-            font-size: 12.5px;
-            /* before 14px */
+            font-size: 11px;
+            /* before 12.5px */
             color: #003366;
         }
 
@@ -846,7 +847,7 @@
 <body>
     <!-- Left sidebar controls -->
     <div id="controls">
-        <h3>Scenery Controls</h3>
+        <h3 data-i18n="scenery_controls">Scenery Controls</h3>
 
         <div class="control-group">
             <div id="map-visibility-filters" style="display: flex; justify-content: space-around; margin-bottom: 1px;">
@@ -855,26 +856,26 @@
 
         <!-- Location selection controls -->
         <div class="control-group">
-            <label for="icao">ICAO or City:</label>
+            <label for="icao" data-i18n="icao_label">ICAO or City:</label>
             <div id="icao-container" style="display: flex; gap: 5px;">
                 <input type="text" id="icao" value="LIME" style="flex-grow: 1;" autocomplete="off">
                 <!-- Aircraft icon button to get coords from FlightGear -->
-                <button id="btn-get-coords" title="Get coordinates from FGFS"
+                <button id="btn-get-coords" title="Get coordinates from FGFS" data-i18n-title="get_coords_title"
                     style="width: auto; padding: 0 10px; display: none;">✈️</button>
                 <!-- Map selection button -->
                 <button id="btn-select-from-map" title="Select coordinates from map"
-                    style="width: auto; padding: 0 10px;">&#x2316;</button>
+                    data-i18n-title="select_coords_title" style="width: auto; padding: 0 10px;">&#x2316;</button>
             </div>
             <!-- Manual coordinate input (hidden by default) -->
             <div id="latlon-container" style="display: none;">
                 <div class="control-row">
                     <div class="control-group">
-                        <label for="lat">Latitude:</label>
+                        <label for="lat" data-i18n="latitude">Latitude:</label>
                         <input type="number" id="lat" step="any">
                     </div>
 
                     <div class="control-group">
-                        <label for="lon">Longitude:</label>
+                        <label for="lon" data-i18n="longitude">Longitude:</label>
                         <input type="number" id="lon" step="any">
                     </div>
                 </div>
@@ -883,80 +884,83 @@
 
         <div class="control-row">
             <div class="control-group inline-label-group">
-                <label for="radius">Radius (nm):</label>
+                <label for="radius" data-i18n="radius_nm">Radius (nm):</label>
                 <input type="number" id="radius" value="25">
             </div>
 
             <div class="control-group inline-label-group">
-                <label for="size">Resolution (0-6):</label>
+                <label for="size" data-i18n="resolution">Resolution (0-6):</label>
                 <input type="number" id="size" value="4" min="0" max="6">
             </div>
         </div>
 
         <!-- Distance-based resolution reduction -->
         <div class="sdwn-inline">
-            <span class="sdwn-label">Reduction with Distance (--sdwn):</span>
+            <span class="sdwn-label" data-i18n="reduction_distance">Reduction with Distance (--sdwn):</span>
 
             <label class="sdwn-precover">
                 <input id="precover-checkbox" type="checkbox" checked />
-                <span>Pre-coverage before high-res</span>
+                <span data-i18n="pre_coverage">Pre-coverage before high-res</span>
             </label>
 
             <select id="sdwn-select" class="sdwn-select">
-                <option value="0">0 – Full preview (no down-sampling)</option>
-                <option value="1">1 – Preview level 1</option>
-                <option value="2">2 – Preview level 2</option>
-                <option value="3">3 – Preview level 3</option>
-                <option value="4">4 – Preview level 4</option>
+                <option value="0" data-i18n="full_preview">0 – Full preview (no down-sampling)</option>
+                <option value="1" data-i18n="preview_level" data-i18n-params='{"level": 1}'>1 – Preview level 1</option>
+                <option value="2" data-i18n="preview_level" data-i18n-params='{"level": 2}'>2 – Preview level 2</option>
+                <option value="3" data-i18n="preview_level" data-i18n-params='{"level": 3}'>3 – Preview level 3</option>
+                <option value="4" data-i18n="preview_level" data-i18n-params='{"level": 4}'>4 – Preview level 4</option>
             </select>
         </div>
 
         <!-- Overwrite mode selection -->
         <div class="control-group">
-            <label for="over-mode">Overwrite Mode (--over):</label>
+            <label for="over-mode" data-i18n="overwrite_mode">Overwrite Mode (--over):</label>
             <select id="over-mode">
-                <option value="0">0: Never overwrite</option>
-                <option value="1" selected>1: Overwrite if higher resolution</option>
-                <option value="2">2: Always overwrite</option>
+                <option value="0" data-i18n="overwrite_0">0: Never overwrite</option>
+                <option value="1" selected data-i18n="overwrite_1">1: Overwrite if higher resolution</option>
+                <option value="2" data-i18n="overwrite_2">2: Always overwrite</option>
             </select>
         </div>
 
         <!-- Main action button -->
-        <button id="btn-download-around-aircraft">Download around aircraft</button>
+        <button id="btn-download-around-aircraft" data-i18n="download_aircraft">Download around aircraft</button>
 
-        <button id="btn-fill-holes"
-            title="Scans the visible area and downloads missing tiles to patch the scenery">Patch Scenery</button>
+        <button id="btn-fill-holes" title="Scans the visible area and downloads missing tiles to patch the scenery"
+            data-i18n-title="patch_scenery_title" data-i18n="patch_scenery">Patch Scenery</button>
 
         <div class="control-group">
-            <label for="map-server-select">Map Server (--map):</label>
+            <label for="map-server-select" data-i18n="map_server">Map Server (--map):</label>
             <select id="map-server-select"
                 style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
             </select>
         </div>
 
         <div class="control-group">
-            <h3 class="collapsible-header">Directory Settings</h3>
+            <h3 class="collapsible-header" data-i18n="directory_settings">Directory Settings</h3>
 
             <div id="directory-settings-content" class="collapsible-content">
 
-                <label>Output Path (`--path`):</label>
-                <div id="output-path-box" class="path-box" title="Click to change folder">
+                <label data-i18n="output_path">Output Path (`--path`):</label>
+                <div id="output-path-box" class="path-box" title="Click to change folder"
+                    data-i18n-title="click_change_folder">
                     Loading...
                 </div>
 
-                <label style="margin-top: 10px;">Backup Path (`--save`):</label>
-                <div id="backup-path-box" class="path-box" title="Click to change folder">
+                <label style="margin-top: 10px;" data-i18n="backup_path">Backup Path (`--save`):</label>
+                <div id="backup-path-box" class="path-box" title="Click to change folder"
+                    data-i18n-title="click_change_folder">
                     Loading...
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button id="btn-save-paths" disabled
-                        style="flex: 3; background-color: #4CAF50; color: white; font-weight: bold; margin-top: 0;">
+                        style="flex: 3; background-color: #4CAF50; color: white; font-weight: bold; margin-top: 0;"
+                        data-i18n="save_migrate">
                         Save & Migrate
                     </button>
                     <button id="btn-cancel-paths"
                         style="flex: 1; background-color: #f0f0f0; color: #333; border: 1px solid #ccc; margin-top: 0;"
-                        title="Cancel changes">
+                        title="Cancel changes" data-i18n-title="cancel_changes_title" data-i18n="cancel">
                         Cancel
                     </button>
                 </div>
@@ -967,10 +971,10 @@
 
         <div class="control-group">
             <hr>
-            <h3 class="collapsible-header">Download Along Route</h3>
+            <h3 class="collapsible-header" data-i18n="download_route">Download Along Route</h3>
             <div id="route-section-content" class="collapsible-content">
                 <div id="route-drop-zone">
-                    <p>Drag & Drop your .gpx or .xml route file here</p>
+                    <p data-i18n="drop_zone">Drag & Drop your .gpx or .xml route file here</p>
                 </div>
                 <div id="route-waypoint-list">
                 </div>
@@ -979,38 +983,42 @@
         <hr>
 
         <!-- FlightGear connection controls -->
-        <h3>FlightGear Controls</h3>
+        <h3 data-i18n="fgfs_controls">FlightGear Controls</h3>
 
         <div class="control-group" id="fgfs-container">
-            <label for="fgfs-port">FGFS Port:</label>
+            <label for="fgfs-port" data-i18n="fgfs_port">FGFS Port:</label>
             <input type="number" id="fgfs-port" value="5000">
-            <button id="btn-connect" class="disconnected" title="Toggle FGFS Connection"></button>
+            <button id="btn-connect" class="disconnected" title="Toggle FGFS Connection"
+                data-i18n-title="fgfs_connect_title"></button>
         </div>
 
         <div id="route-controls" class="route-bar">
             <button id="btn-create-route">
-                <strong>Create Route</strong><br><small>Click map & objects</small>
+                <strong data-i18n="create_route">Create Route</strong><br><small data-i18n="click_map">Click map &
+                    objects</small>
             </button>
             <button id="btn-toggle-path">
-                <strong>Show Hide</strong><br><small>Toggle path</small>
+                <strong data-i18n="show_hide">Show Hide</strong><br><small data-i18n="toggle_path">Toggle path</small>
             </button>
             <button id="btn-save-path">
-                <strong>Save Path</strong><br><small>Track JSON</small>
+                <strong data-i18n="save_path">Save Path</strong><br><small data-i18n="track_json">Track JSON</small>
             </button>
             <button id="btn-save-route">
-                <strong>Save Route</strong><br><small>Export GPX/XML</small>
+                <strong data-i18n="save_route">Save Route</strong><br><small data-i18n="export_gpx">Export
+                    GPX/XML</small>
             </button>
             <button id="btn-clear-path">
-                <strong>Clear Path</strong><br><small>Remove all</small>
+                <strong data-i18n="clear_path">Clear Path</strong><br><small data-i18n="remove_all">Remove all</small>
             </button>
         </div>
 
-        <h3>Tile preview</h3>
+        <h3 data-i18n="tile_preview" style="margin-bottom: 15px; margin-top: 25px;">Tile preview</h3>
         <!-- Tile preview section -->
 
         <!-- Tile opacity control -->
         <div class="control-group" style="display: flex; align-items: center; gap: 8px;">
-            <label for="opacity-slider" style="white-space: nowrap; margin: 0;">Tile opacity:</label>
+            <label for="opacity-slider" style="white-space: nowrap; margin: 0;" data-i18n="tile_opacity">Tile
+                opacity:</label>
             <input type="range" id="opacity-slider" min="0" max="0.4" step="0.05" value="0.5" style="flex-grow: 1;">
         </div>
 
@@ -1021,19 +1029,48 @@
         </div>
 
         <!-- Resolution quick-select buttons -->
+        <div style="margin-top: 5px; margin-bottom: 5px;">
+            <span data-i18n="view_resolution" style="font-weight: bold;">View Resolution</span>
+        </div>
         <div id="res-svg-container" class="res-svg-container"></div>
 
-        <div class="control-group">
-            <label for="date-filter-slider">Filter by Date:</label>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <input type="range" id="date-filter-slider" min="0" max="6" step="1" value="5" style="flex-grow: 1;">
-                <span id="date-filter-label" style="font-size: 0.9em; min-width: 90px;">All Time</span>
-            </div>
+        <div class="control-group" style="display: flex; align-items: center; gap: 10px;">
+            <label for="date-filter-slider" data-i18n="filter_date" style="white-space: nowrap; margin: 0;">Filter by
+                Date:</label>
+            <input type="range" id="date-filter-slider" min="0" max="6" step="1" value="5" style="flex-grow: 1;">
+            <span id="date-filter-label" style="font-size: 0.9em; min-width: 90px;" data-i18n="all_time">All Time</span>
         </div>
 
         <!-- Server control buttons -->
         <div class="button-group">
-            <button id="btn-stop">Stop Server</button>
+            <button id="btn-stop" data-i18n="stop_server">Stop Server</button>
+        </div>
+
+        <!-- Language Switcher -->
+        <div class="control-group"
+            style="margin-top: auto; text-align: center; padding-top: 10px; border-top: 1px solid #eee;">
+            <button id="lang-en" class="lang-btn" title="English"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇬🇧</button>
+            <button id="lang-it" class="lang-btn" title="Italiano"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇮🇹</button>
+            <button id="lang-fr" class="lang-btn" title="Français"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇫🇷</button>
+            <button id="lang-de" class="lang-btn" title="Deutsch"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇩🇪</button>
+            <button id="lang-es" class="lang-btn" title="Español"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇪🇸</button>
+            <button id="lang-zh" class="lang-btn" title="中文"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇨🇳</button>
+            <button id="lang-ja" class="lang-btn" title="日本語"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇯🇵</button>
+            <button id="lang-pt" class="lang-btn" title="Português"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇵🇹</button>
+            <button id="lang-ko" class="lang-btn" title="한국어"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇰🇷</button>
+            <button id="lang-ar" class="lang-btn" title="العربية"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇸🇦</button>
+            <button id="lang-ru" class="lang-btn" title="Русский"
+                style="width: auto; background: none; border: none; font-size: 24px; cursor: pointer; padding: 5px;">🇷🇺</button>
         </div>
     </div>
 
@@ -1048,58 +1085,62 @@
     <!-- Save Route Modal -->
     <div id="saveRouteModal" class="modal hidden">
         <div class="modal-content">
-            <h3>Save Flight Route (GPX)</h3>
+            <h3 data-i18n="save_route_modal">Save Flight Route (GPX)</h3>
 
             <div class="row">
-                <label>Departure (ICAO or name)</label>
+                <label data-i18n="departure">Departure (ICAO or name)</label>
                 <input id="depInput" type="text" placeholder="LIME / Bergamo Orio al Serio" autocomplete="off">
                 <ul id="depSuggest" class="suggest hidden"></ul>
             </div>
 
             <div class="row">
-                <label>Arrival (ICAO or name)</label>
+                <label data-i18n="arrival">Arrival (ICAO or name)</label>
                 <input id="arrInput" type="text" placeholder="LIMJ / Genova Sestri" autocomplete="off">
                 <ul id="arrSuggest" class="suggest hidden"></ul>
             </div>
 
             <div class="row">
-                <label>Route summary</label>
+                <label data-i18n="route_summary">Route summary</label>
                 <div id="routeSummary" class="summary"></div>
             </div>
 
             <div class="actions">
-                <button id="saveRouteConfirm">Save GPX</button>
-                <button id="saveRouteCancel">Cancel</button>
+                <button id="saveRouteConfirm" data-i18n="save_gpx">Save GPX</button>
+                <button id="saveRouteCancel" data-i18n="cancel">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="transferModal" class="modal hidden" data-transfer-active="false">
         <div class="modal-content" style="max-width: 500px;">
-            <h3 style="margin-top: 0;">File Transfer in Progress</h3>
+            <h3 style="margin-top: 0;" data-i18n="file_transfer">File Transfer in Progress</h3>
 
             <div id="transferLog"
                 style="margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; font-size: 0.9em; max-height: 150px; overflow-y: auto;">
-                <p><strong><span id="transferCurrentFile">Waiting for initialization...</span></strong></p>
+                <p><strong><span id="transferCurrentFile" data-i18n="waiting_init">Waiting for
+                            initialization...</span></strong></p>
                 <p>Transferring files from <span id="transferOldPath">...</span> to <span
                         id="transferNewPath">...</span></p>
             </div>
 
             <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px;">
-                <span>Progress: <strong id="transferCount">0 / 0 files</strong></span>
-                <span>Transferred: <strong id="transferBytes">0 MB</strong></span>
+                <span><span data-i18n="progress">Progress:</span> <strong id="transferCount">0 / 0 files</strong></span>
+                <span><span data-i18n="transferred">Transferred:</span> <strong id="transferBytes">0 MB</strong></span>
             </div>
 
             <div
                 style="display: flex; justify-content: space-between; font-size: 0.9em; font-weight: bold; margin-bottom: 10px;">
-                <span>Speed: <strong id="transferSpeed">0 B/s</strong></span>
-                <span>Free Space: <strong id="transferFreeSpace">— MB</strong></span>
+                <span><span data-i18n="speed">Speed:</span> <strong id="transferSpeed">0 B/s</strong></span>
+                <span><span data-i18n="free_space">Free Space:</span> <strong id="transferFreeSpace">—
+                        MB</strong></span>
             </div>
 
             <div style="display: flex; gap: 10px;">
-                <button id="transferCancelBtn" style="flex-grow: 1; background-color: #d9534f; color: white;">Stop
+                <button id="transferCancelBtn" style="flex-grow: 1; background-color: #d9534f; color: white;"
+                    data-i18n="stop_transfer">Stop
                     Transfer</button>
-                <button id="transferBackgroundBtn" style="flex-grow: 1; background-color: #f0f0f0;">Run in
+                <button id="transferBackgroundBtn" style="flex-grow: 1; background-color: #f0f0f0;"
+                    data-i18n="run_background">Run in
                     Background</button>
             </div>
         </div>
@@ -1107,35 +1148,37 @@
 
     <div id="dirBrowserModal" class="modal hidden">
         <div class="modal-content" style="max-width: 600px; height: 80vh; display: flex; flex-direction: column;">
-            <h3>Select Parent Directory</h3>
+            <h3 data-i18n="select_parent_dir">Select Parent Directory</h3>
 
             <div
                 style="background: #f0f0f0; padding: 10px; border-radius: 4px; margin-bottom: 10px; word-break: break-all;">
-                <strong>Current:</strong> <span id="browserCurrentPath">...</span>
+                <strong data-i18n="current_dir">Current:</strong> <span id="browserCurrentPath">...</span>
             </div>
 
             <div
                 style="display: flex; gap: 5px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
                 <input type="text" id="newFolderInput" placeholder="New folder name..."
-                    style="flex-grow: 1; padding: 6px;">
+                    data-i18n="new_folder_placeholder" style="flex-grow: 1; padding: 6px;">
                 <button id="btnCreateFolder"
-                    style="width: auto; padding: 6px 12px; background-color: #007bff; color: white;">+ Create</button>
+                    style="width: auto; padding: 6px 12px; background-color: #007bff; color: white;"
+                    data-i18n="create">+ Create</button>
             </div>
 
             <div id="browserList" style="flex-grow: 1; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px;">
             </div>
 
             <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                <p>Selected path will be: <br>
+                <p><span data-i18n="selected_path_preview">Selected path will be:</span> <br>
                     <strong><span id="browserPreviewResult">...</span>/<span
                             id="browserFixedSuffix">Orthophotos</span></strong>
                 </p>
             </div>
 
             <div class="actions" style="margin-top: auto; padding-top: 15px;">
-                <button id="browserSelectBtn" style="background-color: #4CAF50; color: white;">Select This
+                <button id="browserSelectBtn" style="background-color: #4CAF50; color: white;"
+                    data-i18n="select_this_folder">Select This
                     Folder</button>
-                <button id="browserCancelBtn">Cancel</button>
+                <button id="browserCancelBtn" data-i18n="cancel">Cancel</button>
             </div>
         </div>
     </div>

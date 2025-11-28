@@ -20,6 +20,10 @@ import { startPollers, fetchCoverageOnce } from './api.js';
 import { resolveIcao, airportsSearch } from './api.js';
 
 import { showSearchMarker, removeSearchMarker } from './ui.js';
+import i18n from './i18n.js';
+
+// Initialize i18n
+i18n.init();
 
 import {
     elements,
@@ -70,7 +74,7 @@ const RADIUS_AROUND_AC = 20;   // NM of each circle
 const OVERLAP_FACTOR = 0.33;  // ⅔ diameter offset
 const MIN_JOB_INTERVAL_MS = 3000; // anti-flood throttle
 
-const DATE_FILTER_LABELS = ["This Session", "Today", "Yesterday", "Last Week", "Last Month", "Last Year", "All Time"];
+const DATE_FILTER_KEYS = ["date_session", "date_today", "date_yesterday", "date_week", "date_month", "date_year", "date_all"];
 
 // --- Global State ---
 const state = {
@@ -532,7 +536,7 @@ elements.radiusInput.addEventListener('input', () => {
 elements.dateFilterSlider.addEventListener('input', (e) => {
     const value = parseInt(e.target.value, 10);
     state.dateFilterIndex = value; // Update state
-    elements.dateFilterLabel.textContent = DATE_FILTER_LABELS[value]; // Update label
+    elements.dateFilterLabel.textContent = i18n.t(DATE_FILTER_KEYS[value]); // Update label
     mainUpdateLoop(); // Force map update
 });
 
