@@ -84,4 +84,6 @@ function run_cli(args=ARGS)
     end
 end
 
+export BatchMode, GuiMode, GeoEngine, run_cli
+
 end # module Photoscenery
