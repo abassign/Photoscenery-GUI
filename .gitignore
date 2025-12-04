@@ -21,7 +21,6 @@ tmp/
 # Files e Directory Generati da Julia
 /Manifest.toml # Mantieni Project.toml, escludi Manifest.toml
 /LocalPreferences.toml
-/deps/
 /artifacts/
 
 # File di ambiente/cache di sistema
