@@ -6,7 +6,7 @@ export get_current_orthophotos_path, get_current_saves_path, update_paths!, set_
 
 using ArgParse, LightXML
 
-const GLOBAL_CONFIG = Dict{String, Any}()
+const GLOBAL_CONFIG = Dict{String,Any}()
 const PARAMS_PATH = Ref(joinpath(@__DIR__, "..", "params.xml"))
 
 
@@ -46,13 +46,15 @@ Returns a dictionary id => options-string and the open XML document
 function _load_or_init_presets()
     # create minimal file if needed
     if !isfile(PARAMS_PATH[])
-        doc  = XMLDocument()
+        doc = XMLDocument()
         root = LightXML.create_root(doc, "params")
         LightXML.new_child(root, "presets")
-        open(PARAMS_PATH[], "w") do io; print(io, doc) end   # write-mode
+        open(PARAMS_PATH[], "w") do io
+            print(io, doc)
+        end   # write-mode
     end
 
-    doc  = LightXML.parse_file(PARAMS_PATH[])
+    doc = LightXML.parse_file(PARAMS_PATH[])
     root = LightXML.root(doc)
     pres = let lst = LightXML.get_elements_by_tagname(root, "presets")
         isempty(lst) ? LightXML.new_child(root, "presets") : lst[1]
@@ -67,7 +69,8 @@ function _load_or_init_presets()
         key = nothing
         for a in LightXML.attributes(idnode)
             if LightXML.name(a) == "name"
-                key = String(LightXML.value(a)); break
+                key = String(LightXML.value(a))
+                break
             end
         end
         key === nothing && continue
@@ -90,12 +93,14 @@ function _save_presets!(presets::Dict{String,String}, doc::LightXML.XMLDocument)
     end
     # rebuild
     pres = LightXML.new_child(root, "presets")
-    for (k,v) in presets
+    for (k, v) in presets
         idn = LightXML.new_child(pres, "id")
         LightXML.set_attribute(idn, "name", k)
         LightXML.add_text(idn, v)
     end
-    open(PARAMS_PATH[], "w") do io; print(io, doc) end        # write-mode
+    open(PARAMS_PATH[], "w") do io
+        print(io, doc)
+    end        # write-mode
 end
 
 
@@ -112,7 +117,7 @@ function parse_args(vec::Vector{String}=ARGS)
 
     # ----- handle --rm -----------------------------------------------
     if (idx = findfirst(==("--rm"), vec)) !== nothing
-        id = get(vec, idx+1, nothing)
+        id = get(vec, idx + 1, nothing)
         id === nothing && error("--rm requires an id")
 
         if haskey(presets, id)
@@ -128,12 +133,12 @@ function parse_args(vec::Vector{String}=ARGS)
     # ----- handle --gt -----------------------------------------------
     pending_create = nothing         # (id,string) to save after parse
     if (idx = findfirst(==("--gt"), vec)) !== nothing
-        id = get(vec, idx+1, nothing)
+        id = get(vec, idx + 1, nothing)
         id === nothing && error("--gt requires an id")
 
         extra = vec[(idx+2):end]     # tokens following the id
         # strip --gt id
-        vec  = vec[1:idx-1]
+        vec = vec[1:idx-1]
 
         if haskey(presets, id)
             vec = vcat(split(presets[id]), extra)   # preset + override
@@ -165,7 +170,7 @@ end
 
 Reads the value of a specific tag (e.g., "path" or "save") from the settings section of params.xml.
 """
-function _read_path_from_xml(tag::String)::Union{String, Nothing}
+function _read_path_from_xml(tag::String)::Union{String,Nothing}
     # Uses the file path relative to the runtime environment, not the package root.
     target_path = "params.xml"
     !isfile(target_path) && return nothing
@@ -181,7 +186,7 @@ function _read_path_from_xml(tag::String)::Union{String, Nothing}
             end
         end
     catch e
-        @warn "AppConfig: Error reading $tag from params.xml." exception=(e, catch_backtrace())
+        @warn "AppConfig: Error reading $tag from params.xml." exception = (e, catch_backtrace())
     end
     return nothing
 end
@@ -223,7 +228,7 @@ function _write_path_to_xml!(tag::String, value::String)
         LightXML.save_file(xdoc, target_path)
         @info "AppConfig: Wrote '$tag' to params.xml: $value"
     catch e
-        @error "AppConfig: Failed to write to params.xml." exception=(e, catch_backtrace())
+        @error "AppConfig: Failed to write to params.xml." exception = (e, catch_backtrace())
     end
 end
 
@@ -284,16 +289,16 @@ end
 
 # Private function for argument parsing
 function _parse_commandline(args)
-    s = ArgParseSettings(description="Photoscenary.jl - Tile downloader for flight simulators.")
+    s = ArgParseSettings(description="Photoscenery.jl - Tile downloader for flight simulators.")
     @add_arg_table! s begin
         "--gt"
-        help     = "Get (or create) a named preset of CLI options stored in params.xml"
+        help = "Get (or create) a named preset of CLI options stored in params.xml"
         arg_type = String
-        nargs    = 1
+        nargs = 1
         "--rm"
-        help     = "Remove a preset from params.xml and exit"
+        help = "Remove a preset from params.xml and exit"
         arg_type = String
-        nargs    = 1
+        nargs = 1
         "--args", "-g"
         help = "The arguments files in txt format"
         arg_type = String
@@ -434,7 +439,7 @@ end
 
 # Only public function of the module
 function initialize_and_parse_args(args, versionProgram, versionProgramDate)
-    println("\nPhotoscenary.jl ver: $versionProgram date: $versionProgramDate - System prerequisite test")
+    println("\nPhotoscenery.jl ver: $versionProgram date: $versionProgramDate - System prerequisite test")
 
     # Call the two private functions
     _initialize_params(versionProgram)
@@ -443,7 +448,7 @@ function initialize_and_parse_args(args, versionProgram, versionProgramDate)
     println("\n--- Execution Parameters ---")
     for (key, val) in parsedArgs
         if val !== nothing
-             println("  $key => $val")
+            println("  $key => $val")
         end
     end
     println("-----------------------------\n")

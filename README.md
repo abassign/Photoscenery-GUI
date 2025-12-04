@@ -43,7 +43,7 @@ julia --project=. -e 'using Pkg; Pkg.instantiate()'
 To launch the web interface, run from the project root:
 
 ```bash
-julia --project=. -e 'using Photoscenary; Photoscenary.GuiMode.run(["--http"])'
+julia --project=. -e 'using Photoscenery; Photoscenery.GuiMode.run(["--http"])'
 ```
 
 If you want to specify one of the four map servers, you can select it using the --map n command.
@@ -51,7 +51,7 @@ This command can assume the following values: 1, 2, 3, or 4.
 For example, the US is --map 2.
 
 ```bash
-julia --project=. -e 'using Photoscenary; Photoscenary.GuiMode.run(["--http", ""--map=2"])'
+julia --project=. -e 'using Photoscenery; Photoscenery.GuiMode.run(["--http", "--map=2"])'
 ```
 
 Then open your browser at:  
@@ -101,7 +101,7 @@ Then open your browser at:
 
 ## 🏗️ Architecture & Modules
 
-- **Photoscenary (root)**: Bootstrapping, logging, CLI parsing (AppConfig), launching GUI/Batch.  
+- **Photoscenery (root)**: Bootstrapping, logging, CLI parsing (AppConfig), launching GUI/Batch.  
 - **AppConfig**: Params handling (`params.xml`), options & presets parsing.  
 - **Commons**: Shared types/utilities (e.g., `MapCoordinates`, `ChunkJob`).  
 - **GeoEngine**: Orchestration (tile calculation, jobs, paths).  

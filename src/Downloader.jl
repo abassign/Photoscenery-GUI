@@ -32,14 +32,14 @@ FAILED_JOBS_COUNT: Failed jobs.
 Synchronization: The channel automatically handles concurrent access.
 """
 const CHUNK_QUEUE = Channel{Commons.ChunkJob}(100)
-const FALLBACK_QUEUE = Channel{Tuple{Int, Int}}(50) # Channel for failed (tile_id, size_id)
+const FALLBACK_QUEUE = Channel{Tuple{Int,Int}}(50) # Channel for failed (tile_id, size_id)
 const JOBS_DONE_COUNTER = Threads.Atomic{Int}(0)
 const FAILED_JOBS_COUNT = Threads.Atomic{Int}(0)
 const PENDING_JOBS = Threads.Atomic{Int}(0)
 
 # --- PRIORITY ---
 const CHUNK_Q_HIGH = Channel{Commons.ChunkJob}(512)
-const CHUNK_Q_LOW  = Channel{Commons.ChunkJob}(4096)
+const CHUNK_Q_LOW = Channel{Commons.ChunkJob}(4096)
 
 # Map (temp_path -> :high | :low) to reinsert retries in the same class
 const JOB_CLASS = Dict{String,Symbol}()
@@ -49,7 +49,9 @@ const JOB_CLASS_LOCK = ReentrantLock()
 # Enqueue helpers (reuse your enqueue_chunk_jobs! for counters/logs)
 enqueue_high!(jobs::Vector{Commons.ChunkJob}) = begin
     lock(JOB_CLASS_LOCK) do
-        for j in jobs; JOB_CLASS[j.temp_path] = :high; end
+        for j in jobs
+            JOB_CLASS[j.temp_path] = :high
+        end
     end
     enqueue_chunk_jobs!(CHUNK_Q_HIGH, jobs)
 end
@@ -57,7 +59,9 @@ end
 
 enqueue_low!(jobs::Vector{Commons.ChunkJob}) = begin
     lock(JOB_CLASS_LOCK) do
-        for j in jobs; JOB_CLASS[j.temp_path] = :low; end
+        for j in jobs
+            JOB_CLASS[j.temp_path] = :low
+        end
     end
     enqueue_chunk_jobs!(CHUNK_Q_LOW, jobs)
 end
@@ -72,7 +76,7 @@ struct MapServer
     proxy::Union{String,Nothing}
     errorCode::Int64
 
-    function MapServer(id::Int, aProxy::Union{String, Nothing}=nothing)
+    function MapServer(id::Int, aProxy::Union{String,Nothing}=nothing)
         try
             serversRoot = get_elements_by_tagname(LightXML.root(parse_file("params.xml")), "servers")
             for server in get_elements_by_tagname(serversRoot[1], "server")
@@ -86,7 +90,7 @@ struct MapServer
             end
             @warn "Map server with ID=$id not found in params.xml."
             return new(id, nothing, nothing, nothing, nothing, nothing, 410)
-            catch err
+        catch err
             @error "Failed to parse params.xml. Error: $err"
             return new(id, nothing, nothing, nothing, nothing, nothing, 411)
         end
@@ -98,7 +102,9 @@ function _getMapServerReplace(urlCmd::String, varString::String, varValue)
 end
 
 function _getMapServerURL(m::MapServer, bbox, pixel_size)
-    if m.errorCode != 0; return "", 412; end
+    if m.errorCode != 0
+        return "", 412
+    end
     urlCmd = m.webUrlCommand
     urlCmd = _getMapServerReplace(urlCmd, "{latLL}", bbox.latLL)
     urlCmd = _getMapServerReplace(urlCmd, "{lonLL}", bbox.lonLL)
@@ -151,17 +157,23 @@ function download_and_validate_png(url::String, dest_path::String; headers::Dict
 
             # If download succeeds, validate and save the file
             data = take!(buffer)
-            if isempty(data); throw(ErrorException("Empty response from server")); end
+            if isempty(data)
+                throw(ErrorException("Empty response from server"))
+            end
 
             # PNG validation logic
             try
-                if length(data) < 24 || view(data, 1:8) != UInt8[0x89,0x50,0x4E,0x47,0x0D,0x0A,0x1A,0x0A]
+                if length(data) < 24 || view(data, 1:8) != UInt8[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]
                     throw(ArgumentError("Downloader.download_and_validate_png: Invalid PNG signature"))
                 end
-                if view(data, 13:16) != b"IHDR"; throw(ArgumentError("Missing IHDR Chunk")); end
+                if view(data, 13:16) != b"IHDR"
+                    throw(ArgumentError("Missing IHDR Chunk"))
+                end
                 ihdr_len = Int(data[9]) << 24 | Int(data[10]) << 16 | Int(data[11]) << 8 | Int(data[12])
-                if ihdr_len != 13; throw(ArgumentError("Downloader.download_and_validate_png: Invalid IHDR length")); end
-                catch e
+                if ihdr_len != 13
+                    throw(ArgumentError("Downloader.download_and_validate_png: Invalid IHDR length"))
+                end
+            catch e
                 rethrow(ErrorException("Downloader.download_and_validate_png: PNG validation failed: $e"))
             end
 
@@ -221,8 +233,8 @@ Rules:
 - If the file is in `save_path`, it **copies** it to `root_path` keeping the filename.
 """
 function _restore_best_cached_tile(tile_id::Int, requested_size_id::Int,
-                                   root_path::String, save_path::String, cfg::Dict;
-                                   allow_higher::Bool=true)
+    root_path::String, save_path::String, cfg::Dict;
+    allow_higher::Bool=true)
     # typical range: 0..6 (can raise in cfg with "max_size_id")
     max_id = get(cfg, "max_size_id", 6)
     min_id = 0
@@ -230,8 +242,10 @@ function _restore_best_cached_tile(tile_id::Int, requested_size_id::Int,
     # helper: does a file (dds/png) already exist for this tile in output?
     _has_in_output = function (sid::Int)
         width, _ = Commons.getSizeAndCols(sid)
-        dest_dir  = Commons.tile_dest_dir(tile_id, width, root_path)
-        if !isdir(dest_dir); return false; end
+        dest_dir = Commons.tile_dest_dir(tile_id, width, root_path)
+        if !isdir(dest_dir)
+            return false
+        end
         files = readdir(dest_dir)
         any(endswith.(lowercase.(files), ".dds")) || any(endswith.(lowercase.(files), ".png"))
     end
@@ -329,13 +343,13 @@ function _____download_worker(worker_id::Int, map_server::MapServer, cfg::Dict)
             end
 
             # Retry parameters
-            attempts    = get(cfg, "attempts", 5)
-            base_to     = Float64(get(cfg, "timeout", 30))
+            attempts = get(cfg, "attempts", 5)
+            base_to = Float64(get(cfg, "timeout", 30))
 
             # --- DEBUG ---
             @info "Worker $worker_id: Generated URL: $url"
 
-            headers = Dict("User-Agent" => "Mozilla/5.0 (PhotoscenaryBot)")
+            headers = Dict("User-Agent" => "Mozilla/5.0 (PhotosceneryBot)")
 
             try
                 # Actual download
@@ -349,7 +363,11 @@ function _____download_worker(worker_id::Int, map_server::MapServer, cfg::Dict)
                 @info "Worker $worker_id: Download completed for $(basename(job.temp_path)) ($bytes bytes)"
 
             catch e
-                st = try e.response.status catch; 0 end
+                st = try
+                    e.response.status
+                catch
+                    0
+                end
 
                 if e isa Downloads.RequestError && (st in (404, 410, 500))
                     @warn "Worker $worker_id: Definitive server error ($st) on $(basename(job.temp_path))"
@@ -376,7 +394,7 @@ function _____download_worker(worker_id::Int, map_server::MapServer, cfg::Dict)
 
         catch crash_e
             # --- CRITICAL POINT: CATCH WORKER CRASH ---
-            @error "Worker $worker_id: SUDDEN CRASH processing $(basename(job.temp_path))" exception=(crash_e, catch_backtrace())
+            @error "Worker $worker_id: SUDDEN CRASH processing $(basename(job.temp_path))" exception = (crash_e, catch_backtrace())
             Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
             Threads.atomic_add!(PENDING_JOBS, -1)
         end
@@ -450,20 +468,20 @@ function download_worker(worker_id::Int, map_server::MapServer, cfg::Dict)
             timeout_val = get(cfg, "timeout", 30)
             base_to = (timeout_val === nothing) ? 30.0 : Float64(timeout_val)
 
-            idx        = max(0, attempts - job.retries_left)
+            idx = max(0, attempts - job.retries_left)
 
-            grow_val   = get(cfg, "retry_timeout_factor", 1.6)
-            grow       = (grow_val === nothing) ? 1.6 : Float64(grow_val)
+            grow_val = get(cfg, "retry_timeout_factor", 1.6)
+            grow = (grow_val === nothing) ? 1.6 : Float64(grow_val)
 
-            cap_val    = get(cfg, "retry_timeout_cap", 300)
-            cap_to     = (cap_val === nothing) ? 300.0 : Float64(cap_val)
+            cap_val = get(cfg, "retry_timeout_cap", 300)
+            cap_to = (cap_val === nothing) ? 300.0 : Float64(cap_val)
 
             timeout_sec = min(cap_to, base_to * (grow^idx))
             # ------------------------------------------------
 
             # @info "Worker $worker_id: URL generato: $url"
 
-            headers = Dict("User-Agent" => "Mozilla/5.0 (PhotoscenaryBot)")
+            headers = Dict("User-Agent" => "Mozilla/5.0 (PhotosceneryBot)")
 
             try
                 # Actual download
@@ -477,7 +495,11 @@ function download_worker(worker_id::Int, map_server::MapServer, cfg::Dict)
                 @info "Worker $worker_id: Download completed for $(basename(job.temp_path)) ($bytes bytes)"
 
             catch e
-                st = try e.response.status catch; 0 end
+                st = try
+                    e.response.status
+                catch
+                    0
+                end
 
                 if e isa Downloads.RequestError && (st in (404, 410, 500))
                     @warn "Worker $worker_id: Definitive server error ($st) on $(basename(job.temp_path))"
@@ -503,7 +525,7 @@ function download_worker(worker_id::Int, map_server::MapServer, cfg::Dict)
 
         catch crash_e
             # --- CATCH WORKER CRASH ---
-            @error "Worker $worker_id: SUDDEN CRASH processing $(basename(job.temp_path))" exception=(crash_e, catch_backtrace())
+            @error "Worker $worker_id: SUDDEN CRASH processing $(basename(job.temp_path))" exception = (crash_e, catch_backtrace())
             Threads.atomic_add!(FAILED_JOBS_COUNT, 1)
             Threads.atomic_add!(PENDING_JOBS, -1)
         end
@@ -525,7 +547,7 @@ it at a progressively lower resolution.
 """
 function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, save_path::String, tmp_dir::String)
     @info "✅ Fallback Manager started. Waiting for failed tiles..."
-    processed_fallbacks = Set{Tuple{Int, Int}}()
+    processed_fallbacks = Set{Tuple{Int,Int}}()
 
     for (tile_id, failed_size_id) in FALLBACK_QUEUE
         # Avoid processing the same fallback multiple times
@@ -548,7 +570,7 @@ function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, s
                     end
                 end
             catch e
-                @warn "Fallback: Error cleaning chunks for $tile_id" exception=(e, catch_backtrace())
+                @warn "Fallback: Error cleaning chunks for $tile_id" exception = (e, catch_backtrace())
             end
             continue # Work done for this tile, move to next
         end
@@ -570,7 +592,7 @@ function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, s
                 end
             end
         catch e
-            @warn "Fallback: Error cleaning chunks for $tile_id" exception=(e, catch_backtrace())
+            @warn "Fallback: Error cleaning chunks for $tile_id" exception = (e, catch_backtrace())
         end
 
         # 4. Generate and enqueue new reduced resolution jobs
@@ -581,7 +603,7 @@ function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, s
                 tile_id, new_size_id,
                 lon_base, lat_base, lon_base + lon_step, lat_base + lat_step,
                 0, 0, 0.0, 0.0, lon_step, width, cols
-                )
+            )
             new_jobs = create_chunk_jobs([fallback_tile], cfg, tmp_dir)
 
             if !isempty(new_jobs)
@@ -589,14 +611,16 @@ function fallback_manager(map_server::MapServer, cfg::Dict, root_path::String, s
                 enqueue_low!(new_jobs)
             end
         catch e
-            @error "Fallback: Unable to generate new chunk jobs for $tile_id." exception=(e, catch_backtrace())
+            @error "Fallback: Unable to generate new chunk jobs for $tile_id." exception = (e, catch_backtrace())
         end
     end
 end
 
 
 function populate_queue!(jobs::Vector{ChunkJob})
-    while isready(CHUNK_QUEUE) take!(CHUNK_QUEUE) end
+    while isready(CHUNK_QUEUE)
+        take!(CHUNK_QUEUE)
+    end
     JOBS_DONE_COUNTER[] = 0
     FAILED_JOBS_COUNT[] = 0
     PENDING_JOBS[] = length(jobs)  # Initialize counter

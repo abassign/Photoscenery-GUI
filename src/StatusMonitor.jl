@@ -19,7 +19,9 @@ Real-time monitoring system for tile download and processing operations.
 
 module StatusMonitor
 
-using Term; using Term.Layout; using Term.Progress
+using Term
+using Term.Layout
+using Term.Progress
 using Printf, Dates, ThreadSafeDicts, Base.Threads, Logging
 using ..Commons, ..AppLogger
 
@@ -28,7 +30,7 @@ export start, stop, log_message, start_tile_download, finish_tile_download, upda
 
 # --- Global State (with IS_ACTIVE) ---
 const MESSAGE_CHANNEL = Channel{String}(200)
-const ACTIVE_DOWNLOADS = ThreadSafeDict{Int, Any}()
+const ACTIVE_DOWNLOADS = ThreadSafeDict{Int,Any}()
 const UI_LOCK = ReentrantLock()
 const IS_ACTIVE = Ref{Bool}(false)
 const SHOULD_RUN = Ref{Bool}(true)
@@ -100,11 +102,11 @@ function start_tile_download(tileIndex::Int, total_chunks::Int)
     IS_ACTIVE[] || return
     side = round(Int, sqrt(total_chunks))
     state = DownloadState(tileIndex, total_chunks, Ref(0), zeros(Int, side, side),
-                            "Downloading...", now(), Ref(0), Ref(0.0), ReentrantLock())
+        "Downloading...", now(), Ref(0), Ref(0.0), ReentrantLock())
     ACTIVE_DOWNLOADS[tileIndex] = state
 end
 
-function update_chunk_state(tileIndex::Int, chunk_xy::Tuple{Int, Int}, status::Symbol, bytes::Int=0)
+function update_chunk_state(tileIndex::Int, chunk_xy::Tuple{Int,Int}, status::Symbol, bytes::Int=0)
     IS_ACTIVE[] || return
     if haskey(ACTIVE_DOWNLOADS, tileIndex)
         state = ACTIVE_DOWNLOADS[tileIndex]
@@ -140,7 +142,7 @@ function finish_tile_download(tileIndex::Int, final_status::String)
                 state.completed_chunks = state.total_chunks
             end
         end
-        catch e
+    catch e
         # Don't crash the entire session for a UI error.
         @error "finish_tile_download: error on tile $tileIndex - $e"
     end
@@ -179,7 +181,7 @@ function _create_summary_panel()
         title="Session Statistics",
         style="white dim",
         box=:ROUNDED
-        )
+    )
 end
 
 function _create_log_panel(latest_logs::Vector{String})
@@ -190,7 +192,7 @@ function _create_log_panel(latest_logs::Vector{String})
         title="Event Log",
         style="white dim",
         box=:ROUNDED
-        )
+    )
 end
 
 function _create_download_panel(state::DownloadState)
@@ -202,10 +204,14 @@ function _create_download_panel(state::DownloadState)
             row_str = ""
             for x in 1:side
                 s = state.chunk_grid[y, x]
-                char = if s == 0; "{dim}⋅{/dim}" # Pending
-                    elseif s == 1; "{yellow}$(Commons.next_symbol!(SPINNER)){/yellow}" # In progress
-                    elseif s == 2; "{green}■{/green}" # Completed
-                    else; "{red}✖{/red}" # Failed
+                char = if s == 0
+                    "{dim}⋅{/dim}" # Pending
+                elseif s == 1
+                    "{yellow}$(Commons.next_symbol!(SPINNER)){/yellow}" # In progress
+                elseif s == 2
+                    "{green}■{/green}" # Completed
+                else
+                    "{red}✖{/red}" # Failed
                 end
                 row_str *= char * " "
             end
@@ -224,14 +230,14 @@ function _create_download_panel(state::DownloadState)
         content = vstack(
             RenderableText(grid_text, justify=:center),
             stats_line
-            )
+        )
 
         return Panel(content;
-                        width=80,
-                        title="Downloading Tile $(state.tileIndex)",
-                        style="default",
-                        box=:ROUNDED
-                        )
+            width=80,
+            title="Downloading Tile $(state.tileIndex)",
+            style="default",
+            box=:ROUNDED
+        )
     end
 end
 
@@ -270,9 +276,9 @@ function run_status_monitor()
         lock(UI_LOCK) do
             print("\033[H")  # Move cursor to home position
             header = Panel(
-                "{bold green}Photoscenary.jl Monitor{/bold green} $(Commons.next_symbol!(SPINNER)) [bold]Active[/bold]",
+                "{bold green}Photoscenery.jl Monitor{/bold green} $(Commons.next_symbol!(SPINNER)) [bold]Active[/bold]",
                 width=80, justify=:center, style="green", box=:DOUBLE
-                )
+            )
             print(vstack(header, all_panels...))
             print("\033[J")  # Clear to end of screen
         end

@@ -1,5 +1,5 @@
 # ───────────────────────────────────────────────────────────────────────────────
-#  Photoscenary – Root Module
+#  Photoscenery – Root Module
 # ───────────────────────────────────────────────────────────────────────────────
 #  Responsibilities:
 #    • CLI argument parsing (delegated to AppConfig)
@@ -10,7 +10,7 @@
 #    • Background task management
 # ───────────────────────────────────────────────────────────────────────────────
 
-module Photoscenary
+module Photoscenery
 
 # -----------------------------------------------------------------------------
 # 1. Moduli Base e di Utilità (più indipendenti possibile)
@@ -84,5 +84,4 @@ function run_cli(args=ARGS)
     end
 end
 
-end # module Photoscenary
-
+end # module Photoscenery

@@ -15,7 +15,7 @@ the new code is: filename[1:prevind(filename,fl)]
 ## 0.3.5 date 20210816
 
 Modified the common.jl module, the module has been reorganized with the structure:
-module PhotoscenaryCommons and the file name is: PhotoscenaryCommons.jl
+module PhotosceneryCommons and the file name is: PhotosceneryCommons.jl
 
 Various errors have been corrected in the management of the automatic variation of the file size according to the distance. Vertical distance has also been introduced in order to reduce the size of the tiles on the vertical. The calculation is inserted in the function: getSizePixelWidthByDistance and has this algorithm:
 sizePixelFound = Int64 (size - round ((size-sizeDwn) * sqrt (distance ^ 2 + altitudeNm ^ 3.0) * 1.5 / radius))

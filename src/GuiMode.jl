@@ -8,7 +8,7 @@
 #   - Connector.jl: Manages FlightGear connection and position tracking
 #   - GeoEngine.jl: Handles geographical calculations and path preparation
 #   - ddsFindScanner.jl: Manages DDS tile file operations
-#   - Photoscenary.dds2pngDXT1: Converts DDS tiles to PNG for preview
+#   - Photoscenery.dds2pngDXT1: Converts DDS tiles to PNG for preview
 #   - Commons.jl: Provides shared data structures and utilities
 #   - Downloader.jl: Handles map tile downloading
 #   - Route.jl: Manages route calculations and ICAO resolution
@@ -35,7 +35,7 @@ module GuiMode
 
 export run
 
-using ..Connector, ..GeoEngine, ..ddsFindScanner, ..Photoscenary.dds2pngDXT1, ..Commons, ..Downloader, ..Route, ..AppConfig, ..AssemblyMonitor
+using ..Connector, ..GeoEngine, ..ddsFindScanner, ..Photoscenery.dds2pngDXT1, ..Commons, ..Downloader, ..Route, ..AppConfig, ..AssemblyMonitor
 using ..AirportsNavaids
 using ..FileMover
 using ..StatusMonitor
@@ -46,7 +46,7 @@ using Base.Threads: Atomic, atomic_add!
 
 # State Management
 
-# Stores the absolute path of the package root (e.g., .../Photoscenary/ftKWW/)
+# Stores the absolute path of the package root (e.g., .../Photoscenery/ftKWW/)
 const PACKAGE_ROOT_PATH = Ref{String}("")
 
 const TMP_DIR = joinpath(PACKAGE_ROOT_PATH[], "tmp")

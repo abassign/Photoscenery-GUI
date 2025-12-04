@@ -43,7 +43,9 @@ function findFileOfRoute(fileName::String, idTypeOfFile::Int=0)
 
     # Commons.findFile returns a vector of FoundFile structs
     files = Commons.findFile(fileName)
-    if isempty(files); return nothing, nothing, nothing; end
+    if isempty(files)
+        return nothing, nothing, nothing
+    end
 
     # Create mapping from file ID to array index for safe access
     file_map = Dict(f.id => i for (i, f) in enumerate(files))
@@ -60,14 +62,16 @@ function findFileOfRoute(fileName::String, idTypeOfFile::Int=0)
                     for (nameFormat, selector) in typeOfFile
                         route = get_elements_by_tagname(LightXML.root(parse_file(file.path)), selector)
                         typeOfFileSelected = nameFormat
-                        if size(route)[1] > 0 break end
+                        if size(route)[1] > 0
+                            break
+                        end
                     end
                 end
 
                 fileId = file.id
                 date = file.mtime
 
-                catch e
+            catch e
                 # If XML parsing fails, skip the file
                 @warn "Unable to parse route file: $(file.path). Error: $e"
             end
@@ -95,10 +99,10 @@ Returns: (latitude, longitude, errorCode)
 function selectIcao(icaoToSelect, centralPointRadiusDistance)
     StatusMonitor.log_message("selectIcao: Starting search for ICAO='$(icaoToSelect)' with radius=$(centralPointRadiusDistance) nm")
 
-        centralPointLat = nothing
-        centralPointLon = nothing
-        errorCode = 0
-        retryNumber = 0
+    centralPointLat = nothing
+    centralPointLon = nothing
+    errorCode = 0
+    retryNumber = 0
 
     while retryNumber <= 1
         # Check if CSV database is newer than serialized version
@@ -106,7 +110,7 @@ function selectIcao(icaoToSelect, centralPointRadiusDistance)
             StatusMonitor.log_message("Converting airport database...")
             serialize("airports.jls", DataFrame(CSV.File("airports.csv")))
             StatusMonitor.log_message("Airport database converted to 'airports.jls'.")
-            elseif stat("airports.jls").mtime == 0.0
+        elseif stat("airports.jls").mtime == 0.0
             StatusMonitor.log_message("Error: Both airports.jls and airports.csv are unavailable.")
             errorCode = 403
             retryNumber = 9
@@ -139,8 +143,12 @@ function selectIcao(icaoToSelect, centralPointRadiusDistance)
 
                     # Handle potential coordinate format issues
                     if !(Commons.inValue(centralPointLat, 90) && Commons.inValue(centralPointLon, 180))
-                        if abs(centralPointLat) > 1000.0; centralPointLat /= 1000.0; end
-                        if abs(centralPointLon) > 1000.0; centralPointLon /= 1000.0; end
+                        if abs(centralPointLat) > 1000.0
+                            centralPointLat /= 1000.0
+                        end
+                        if abs(centralPointLon) > 1000.0
+                            centralPointLon /= 1000.0
+                        end
                     end
 
                     StatusMonitor.log_message("Found ICAO: $(foundDatas[1,:ident]) - $(foundDatas[1,:name])")
@@ -158,7 +166,7 @@ function selectIcao(icaoToSelect, centralPointRadiusDistance)
                     end
                 end
                 retryNumber = 9
-                catch err
+            catch err
                 if retryNumber == 0
                     retryNumber = 1
                     StatusMonitor.log_message("Error: airports.csv is corrupt or missing. Retrying.")
@@ -170,7 +178,9 @@ function selectIcao(icaoToSelect, centralPointRadiusDistance)
                 end
             end
         end
-        if retryNumber == 0; retryNumber = 9; end
+        if retryNumber == 0
+            retryNumber = 9
+        end
     end
 
     StatusMonitor.log_message("selectIcao: Search completed. Lat=$(centralPointLat), Lon=$(centralPointLon), ErrorCode=$(errorCode)")
@@ -187,28 +197,30 @@ Processes FGFS format route waypoints with interpolation.
 - route: XML route data
 - minDistance: Minimum distance between interpolated points
 """
-function getRouteListFormatFGFS!(routeList,route,minDistance)
+function getRouteListFormatFGFS!(routeList, route, minDistance)
     wps = LightXML.get_elements_by_tagname(route[1][1], "wp")
     centralPointLatPrec = nothing
     centralPointLonPrec = nothing
     for wp in wps
         foundData = false
         if wp != nothing
-            if find_element(wp,"icao") != nothing
-                icao = strip(content(find_element(wp,"icao")))
-                (centralPointLat, centralPointLon, errorCode) = selectIcao(icao,minDistance)
-                if errorCode == 0 foundData = true end
-                elseif find_element(wp,"lon") != nothing
-                centralPointLat = Base.parse(Float64, strip(content(find_element(wp,"lat"))))
-                centralPointLon = Base.parse(Float64, strip(content(find_element(wp,"lon"))))
+            if find_element(wp, "icao") != nothing
+                icao = strip(content(find_element(wp, "icao")))
+                (centralPointLat, centralPointLon, errorCode) = selectIcao(icao, minDistance)
+                if errorCode == 0
+                    foundData = true
+                end
+            elseif find_element(wp, "lon") != nothing
+                centralPointLat = Base.parse(Float64, strip(content(find_element(wp, "lat"))))
+                centralPointLon = Base.parse(Float64, strip(content(find_element(wp, "lon"))))
                 foundData = true
             end
             if foundData
                 # Calculate distance from previous point
                 if centralPointLatPrec != nothing && centralPointLonPrec != nothing
-                    posPrec = Geodesy.LLA(centralPointLatPrec,centralPointLonPrec, 0.0)
-                    pos = Geodesy.LLA(centralPointLat,centralPointLon, 0.0)
-                    distanceNm = euclidean_distance(pos,posPrec) / 1852.0
+                    posPrec = Geodesy.LLA(centralPointLatPrec, centralPointLonPrec, 0.0)
+                    pos = Geodesy.LLA(centralPointLat, centralPointLon, 0.0)
+                    distanceNm = euclidean_distance(pos, posPrec) / 1852.0
                 else
                     distanceNm = 0.0
                 end
@@ -216,15 +228,15 @@ function getRouteListFormatFGFS!(routeList,route,minDistance)
                 # Interpolate points if distance exceeds threshold
                 if minDistance < distanceNm
                     numberTrunk = Int32(round(distanceNm / minDistance))
-                    for i in 1:(numberTrunk - 1)
+                    for i in 1:(numberTrunk-1)
                         degLat = centralPointLatPrec + i * (centralPointLat - centralPointLatPrec) / numberTrunk
                         deglon = centralPointLonPrec + i * (centralPointLon - centralPointLonPrec) / numberTrunk
-                        dist = euclidean_distance(Geodesy.LLA(degLat,deglon, 0.0),posPrec) / 1852.0
-                        push!(routeList,(degLat, deglon, dist))
+                        dist = euclidean_distance(Geodesy.LLA(degLat, deglon, 0.0), posPrec) / 1852.0
+                        push!(routeList, (degLat, deglon, dist))
                         StatusMonitor.log_message(@sprintf("Route segment %d.%d -> Lat: %.4f, Lon: %.4f", size(routeList)[1], i, routeList[end][1], routeList[end][2]))
                     end
                 end
-                push!(routeList,(centralPointLat, centralPointLon, distanceNm))
+                push!(routeList, (centralPointLat, centralPointLon, distanceNm))
                 StatusMonitor.log_message(@sprintf("Waypoint %d -> Lat: %.4f, Lon: %.4f, Dist: %.1f nm", size(routeList)[1], routeList[end][1], routeList[end][2], distanceNm))
                 centralPointLatPrec = centralPointLat
                 centralPointLonPrec = centralPointLon
@@ -254,9 +266,9 @@ function getRouteListFormatGPX!(routeList, route, minDistance)
 
     for wp in wps
         if wp != nothing
-            if attribute(wp,"lon") != nothing && attribute(wp,"lat") != nothing
-                centralPointLat = Base.parse(Float64, strip(attribute(wp,"lat")))
-                centralPointLon = Base.parse(Float64, strip(attribute(wp,"lon")))
+            if attribute(wp, "lon") != nothing && attribute(wp, "lat") != nothing
+                centralPointLat = Base.parse(Float64, strip(attribute(wp, "lat")))
+                centralPointLon = Base.parse(Float64, strip(attribute(wp, "lon")))
 
                 # Calculate distance from previous point
                 if centralPointLatPrec != nothing && centralPointLonPrec != nothing
@@ -270,20 +282,20 @@ function getRouteListFormatGPX!(routeList, route, minDistance)
                 # Interpolate additional points if needed
                 if minDistance < distanceNm
                     numberTrunk = Int32(round(distanceNm / minDistance))
-                    for i in 1:(numberTrunk - 1)
+                    for i in 1:(numberTrunk-1)
                         degLat = centralPointLatPrec + i * (centralPointLat - centralPointLatPrec) / numberTrunk
                         deglon = centralPointLonPrec + i * (centralPointLon - centralPointLonPrec) / numberTrunk
                         dist = euclidean_distance(Geodesy.LLA(degLat, deglon, 0.0), posPrec) / 1852.0
                         push!(routeList, (degLat, deglon, dist))
                         StatusMonitor.log_message(@sprintf("Route segment %d.%d -> Lat: %.4f, Lon: %.4f",
-                                                            size(routeList)[1], i, routeList[end][1], routeList[end][2]))
+                            size(routeList)[1], i, routeList[end][1], routeList[end][2]))
                     end
                 end
 
                 # Add the main waypoint
                 push!(routeList, (centralPointLat, centralPointLon, distanceNm))
                 StatusMonitor.log_message(@sprintf("Waypoint %d -> Lat: %.4f, Lon: %.4f, Dist: %.1f nm",
-                                                    size(routeList)[1], routeList[end][1], routeList[end][2], distanceNm))
+                    size(routeList)[1], routeList[end][1], routeList[end][2], distanceNm))
 
                 # Update previous point reference
                 centralPointLatPrec = centralPointLat
@@ -331,7 +343,7 @@ function loadRoute(fileOfRoute, centralPointRadiusDistance)
         # Dispatch to appropriate format handler
         if route[3] == "FGFS"
             getRouteListFormatFGFS!(routeList, route, minDistance)
-            elseif route[3] == "GPX"
+        elseif route[3] == "GPX"
             getRouteListFormatGPX!(routeList, route, minDistance)
         end
     else
@@ -355,7 +367,7 @@ Base.@kwdef struct WP
     alt_m::Union{Nothing,Float64} = nothing
 end
 
-_xml_esc(s) = replace(string(s), "&"=>"&amp;", "<"=>"&lt;", ">"=>"&gt;", "\""=>"&quot;", "'" => "&apos;")
+_xml_esc(s) = replace(string(s), "&" => "&amp;", "<" => "&lt;", ">" => "&gt;", "\"" => "&quot;", "'" => "&apos;")
 
 function _to_wp(x; default_name="WP")
     lat = hasproperty(x, :lat) ? getproperty(x, :lat) : (x isa AbstractDict ? x["lat"] : nothing)
@@ -363,15 +375,15 @@ function _to_wp(x; default_name="WP")
     lat === nothing && error("Waypoint missing 'lat'")
     lon === nothing && error("Waypoint missing 'lon'")
     nm = hasproperty(x, :name) ? getproperty(x, :name) :
-        (x isa AbstractDict && haskey(x,"name") ? x["name"] : default_name)
+         (x isa AbstractDict && haskey(x, "name") ? x["name"] : default_name)
     alt_m = nothing
     if hasproperty(x, :alt_m)
         alt_m = getproperty(x, :alt_m)
-        elseif x isa AbstractDict && haskey(x,"alt_m")
+    elseif x isa AbstractDict && haskey(x, "alt_m")
         alt_m = x["alt_m"]
-        elseif hasproperty(x, :alt_ft)
+    elseif hasproperty(x, :alt_ft)
         alt_m = getproperty(x, :alt_ft) * 0.3048
-        elseif x isa AbstractDict && haskey(x,"alt_ft")
+    elseif x isa AbstractDict && haskey(x, "alt_ft")
         alt_m = x["alt_ft"] * 0.3048
     end
     return WP(name=string(nm), lat=float(lat), lon=float(lon), alt_m=(alt_m === nothing ? nothing : float(alt_m)))
@@ -433,14 +445,14 @@ function search_by_name(q::AbstractString, limit::Integer=10)
     hascol(sym) = hasproperty(db, sym) || (sym in names(db))
     getcol(sym, default=nothing) = hascol(sym) ? db[!, sym] : (hascol(Symbol(sym)) ? db[!, Symbol(sym)] : fill(default, nrow(db)))
 
-    icao_col  = hascol(:ident) ? :ident : (hascol(:gps_code) ? :gps_code : :ident)
-    iata_col  = :iata_code
-    name_col  = :name
-    muni_col  = :municipality
-    keyw_col  = :keywords
-    lat_col   = :latitude_deg
-    lon_col   = :longitude_deg
-    elev_col  = :elevation_ft
+    icao_col = hascol(:ident) ? :ident : (hascol(:gps_code) ? :gps_code : :ident)
+    iata_col = :iata_code
+    name_col = :name
+    muni_col = :municipality
+    keyw_col = :keywords
+    lat_col = :latitude_deg
+    lon_col = :longitude_deg
+    elev_col = :elevation_ft
 
     # Normalization
     norm(s) = Unicode.normalize(uppercase(String(s)), stripmark=true)
@@ -479,22 +491,36 @@ function search_by_name(q::AbstractString, limit::Integer=10)
     function compute_score(qn::String; icao::String, iata::String, name::String, muni::String, keyws::Vector{String})
         s = 0
         # exact matches on codes
-        if !isempty(iata) && qn == iata; s = max(s, 100); end
-        if !isempty(icao) && qn == icao; s = max(s, 100); end
+        if !isempty(iata) && qn == iata
+            s = max(s, 100)
+        end
+        if !isempty(icao) && qn == icao
+            s = max(s, 100)
+        end
 
         # keywords (normalized)
         nkw = map(norm, keyws)
-        if any(k -> qn == k, nkw);                 s = max(s, 90);  end
-        if any(k -> startswith(k, qn), nkw);       s = max(s, 80);  end
+        if any(k -> qn == k, nkw)
+            s = max(s, 90)
+        end
+        if any(k -> startswith(k, qn), nkw)
+            s = max(s, 80)
+        end
 
         # name / municipality
         nm = norm(name)
         mu = norm(muni)
-        if startswith(nm, qn) || startswith(mu, qn); s = max(s, 70); end
-        if occursin(qn, nm) || occursin(qn, mu);     s = max(s, 60); end
+        if startswith(nm, qn) || startswith(mu, qn)
+            s = max(s, 70)
+        end
+        if occursin(qn, nm) || occursin(qn, mu)
+            s = max(s, 60)
+        end
 
         # keywords contains (after name/muni)
-        if any(k -> occursin(qn, k), nkw);          s = max(s, 50); end
+        if any(k -> occursin(qn, k), nkw)
+            s = max(s, 50)
+        end
 
         # codes contains (residual case)
         if (!isempty(iata) && occursin(qn, iata)) || (!isempty(icao) && occursin(qn, icao))
@@ -504,31 +530,43 @@ function search_by_name(q::AbstractString, limit::Integer=10)
         return s
     end
 
-    results = NamedTuple{(:icao,:name,:lat,:lon,:elev_ft,:_score)}[]
+    results = NamedTuple{(:icao, :name, :lat, :lon, :elev_ft, :_score)}[]
 
     @inbounds @simd for i in 1:nrow(db)
-        icao = db[i, icao_col];    icao = icao === missing ? "" : String(icao)
-        iata = db[i, iata_col];    iata = iata === missing ? "" : String(iata)
-        name = db[i, name_col];    name = name === missing ? "" : String(name)
-        muni = db[i, muni_col];    muni = muni === missing ? "" : String(muni)
+        icao = db[i, icao_col]
+        icao = icao === missing ? "" : String(icao)
+        iata = db[i, iata_col]
+        iata = iata === missing ? "" : String(iata)
+        name = db[i, name_col]
+        name = name === missing ? "" : String(name)
+        muni = db[i, muni_col]
+        muni = muni === missing ? "" : String(muni)
         keyw = hascol(keyw_col) ? db[i, keyw_col] : ""
         keyws = split_keywords(keyw)
 
         score = compute_score(qn; icao=norm(icao), iata=norm(iata), name=name, muni=muni, keyws=keyws)
 
         if score != 0
-            lat  = try Float64(db[i, lat_col])  catch; NaN end
-            lon  = try Float64(db[i, lon_col])  catch; NaN end
+            lat = try
+                Float64(db[i, lat_col])
+            catch
+                NaN
+            end
+            lon = try
+                Float64(db[i, lon_col])
+            catch
+                NaN
+            end
             elev = db[i, elev_col]
             push!(results, (icao=icao, name=name, lat=lat, lon=lon, elev_ft=elev, _score=score))
         end
     end
 
     # sort by score, then by name as tie-breaker
-    sorted = sort(results, by = r -> (-r._score, r.name))
+    sorted = sort(results, by=r -> (-r._score, r.name))
 
     # project and limit
-    out = NamedTuple{(:icao,:name,:lat,:lon,:elev_ft)}[]
+    out = NamedTuple{(:icao, :name, :lat, :lon, :elev_ft)}[]
     for r in Iterators.take(sorted, limit)
         push!(out, (icao=r.icao, name=r.name, lat=r.lat, lon=r.lon, elev_ft=r.elev_ft))
     end
@@ -543,13 +581,13 @@ Generates and saves a GPX 1.1 file with <rte>/<rtept> and optionally <wpt> for d
 Returns (filename, gpx_string).
 """
 function save_route_gpx(waypoints;
-                        dep_icao::Union{Nothing,String}=nothing,
-                        arr_icao::Union{Nothing,String}=nothing,
-                        lookup_icao::Union{Nothing,Function}=nothing,
-                        outdir::AbstractString="routes",
-                        include_ele::Bool=false,
-                        route_name::Union{Nothing,String}=nothing,
-                        )
+    dep_icao::Union{Nothing,String}=nothing,
+    arr_icao::Union{Nothing,String}=nothing,
+    lookup_icao::Union{Nothing,Function}=nothing,
+    outdir::AbstractString="routes",
+    include_ele::Bool=false,
+    route_name::Union{Nothing,String}=nothing,
+)
     length(waypoints) ≥ 2 || error("At least 2 waypoints are needed for a GPX route")
 
     wps = Vector{WP}(undef, length(waypoints))
@@ -572,30 +610,36 @@ function save_route_gpx(waypoints;
     end
 
     rname = route_name !== nothing ? route_name :
-        ((dep_icao !== nothing && arr_icao !== nothing && !isempty(dep_icao) && !isempty(arr_icao)) ?
-         "$(dep_icao)-$(arr_icao)" : "Flight-Route")
+            ((dep_icao !== nothing && arr_icao !== nothing && !isempty(dep_icao) && !isempty(arr_icao)) ?
+             "$(dep_icao)-$(arr_icao)" : "Flight-Route")
 
-        buf = IOBuffer()
-        println(buf, """<?xml version="1.0" encoding="UTF-8"?>""")
-        println(buf, """<gpx version="1.1" creator="Photoscenary" xmlns="http://www.topografix.com/GPX/1/1">""")
-        println(buf, "  <metadata>")
-        println(buf, "    <name>$(_xml_esc(rname))</name>")
-        println(buf, "    <time>", Dates.format(now(UTC), dateformat"yyyy-mm-ddTHH:MM:SS"), "Z</time>")
-        println(buf, "  </metadata>")
-        if dep_wpt !== nothing; _print_wpt(buf, dep_wpt); end
-        if arr_wpt !== nothing; _print_wpt(buf, arr_wpt); end
-        _print_rte(buf, rname, wps)
-        println(buf, "</gpx>")
-        gpx = String(take!(buf))
+    buf = IOBuffer()
+    println(buf, """<?xml version="1.0" encoding="UTF-8"?>""")
+    println(buf, """<gpx version="1.1" creator="Photoscenery" xmlns="http://www.topografix.com/GPX/1/1">""")
+    println(buf, "  <metadata>")
+    println(buf, "    <name>$(_xml_esc(rname))</name>")
+    println(buf, "    <time>", Dates.format(now(UTC), dateformat"yyyy-mm-ddTHH:MM:SS"), "Z</time>")
+    println(buf, "  </metadata>")
+    if dep_wpt !== nothing
+        _print_wpt(buf, dep_wpt)
+    end
+    if arr_wpt !== nothing
+        _print_wpt(buf, arr_wpt)
+    end
+    _print_rte(buf, rname, wps)
+    println(buf, "</gpx>")
+    gpx = String(take!(buf))
 
-        isdir(outdir) || mkpath(outdir)
-        ts = Dates.format(now(), dateformat"yyyy-mm-dd-HHMMSS")
-        base = (dep_icao !== nothing && arr_icao !== nothing && !isempty(dep_icao) && !isempty(arr_icao)) ?
-        "$(dep_icao)-$(arr_icao)-$(ts).gpx" :
-            "route-$(ts).gpx"
-        fname = joinpath(outdir, base)
-        open(fname, "w") do io; write(io, gpx); end
-        return (base, gpx)
+    isdir(outdir) || mkpath(outdir)
+    ts = Dates.format(now(), dateformat"yyyy-mm-dd-HHMMSS")
+    base = (dep_icao !== nothing && arr_icao !== nothing && !isempty(dep_icao) && !isempty(arr_icao)) ?
+           "$(dep_icao)-$(arr_icao)-$(ts).gpx" :
+           "route-$(ts).gpx"
+    fname = joinpath(outdir, base)
+    open(fname, "w") do io
+        write(io, gpx)
+    end
+    return (base, gpx)
 end
 
 
