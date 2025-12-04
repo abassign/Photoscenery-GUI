@@ -493,6 +493,50 @@ elements.controlsPanel.addEventListener('click', (e) => {
             state.isMapSelectionMode = !state.isMapSelectionMode;
             toggleMapSelectionMode(state.isMapSelectionMode);
             break;
+
+        case 'btn-check-update':
+            const btn = document.getElementById('btn-check-update');
+            if (btn.classList.contains('update-ready')) {
+                // Already green, perform update
+                if (confirm("Update available. Do you want to pull changes and restart?")) {
+                    fetch('/api/do-update', { method: 'POST' })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                // Optional: reload page or shutdown
+                            } else {
+                                alert("Update failed: " + data.error);
+                            }
+                        })
+                        .catch(err => alert("Error executing update: " + err));
+                }
+            } else {
+                // Check for update
+                btn.textContent = "⏳"; // Loading state
+                fetch('/api/check-update', { method: 'POST' })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.updateAvailable) {
+                            btn.classList.add('update-ready');
+                            btn.style.backgroundColor = '#4CAF50'; // Green
+                            btn.style.color = 'white';
+                            btn.title = "Update available! Click to install.";
+                            btn.textContent = "⬇️";
+                        } else {
+                            btn.style.backgroundColor = '#ccc'; // Stay grey
+                            btn.title = "No updates available";
+                            btn.textContent = "✓";
+                            setTimeout(() => { btn.textContent = "↻"; }, 2000);
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        btn.textContent = "❌";
+                        setTimeout(() => { btn.textContent = "↻"; }, 2000);
+                    });
+            }
+            break;
     }
 });
 

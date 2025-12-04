@@ -228,6 +228,10 @@ function handle(req::HTTP.Request)
             return h_list_dirs(req)
         elseif p == "/api/create-dir"
             return h_create_dir(req)
+        elseif p == "/api/check-update"
+            return h_check_update(req)
+        elseif p == "/api/do-update"
+            return h_do_update(req)
         else
             return HTTP.Response(404, "Not found")
         end
@@ -1579,6 +1583,49 @@ function h_shutdown(_req)
 
     @info "Cleanup finished. Deleted $deleted_count files."
     exit(0)
+end
+
+
+# -------------------------------------------------------------------------------
+# UPDATE MANAGEMENT API
+# -------------------------------------------------------------------------------
+
+function h_check_update(_req)
+    try
+        # Check if git is available
+        if Sys.which("git") === nothing
+            return HTTP.Response(500, JSON3.write(Dict("error" => "Git not found on server")))
+        end
+
+        # Fetch latest changes
+        Base.run(`git fetch`)
+
+        # Check status
+        status_output = read(`git status -uno`, String)
+
+        update_available = occursin("Your branch is behind", status_output)
+
+        return HTTP.Response(200, JSON3.write(Dict("updateAvailable" => update_available)))
+    catch e
+        @error "Update check failed" exception = e
+        return HTTP.Response(500, JSON3.write(Dict("error" => "Update check failed: $(e)")))
+    end
+end
+
+function h_do_update(_req)
+    try
+        if Sys.which("git") === nothing
+            return HTTP.Response(500, JSON3.write(Dict("error" => "Git not found on server")))
+        end
+
+        # Perform pull
+        Base.run(`git pull`)
+
+        return HTTP.Response(200, JSON3.write(Dict("success" => true, "message" => "Update successful. Please restart the server.")))
+    catch e
+        @error "Update execution failed" exception = e
+        return HTTP.Response(500, JSON3.write(Dict("error" => "Update failed: $(e)")))
+    end
 end
 
 
