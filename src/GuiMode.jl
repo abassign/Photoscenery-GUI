@@ -54,7 +54,7 @@ mkpath(TMP_DIR)
 @info "GuiMode: Temporary directory set to fixed path: $TMP_DIR"
 
 const SERVER_START_TIME = now()
-const FGFS_CONNECTION = Ref{Union{Connector.FGFSPositionRoute, Nothing}}(nothing)
+const FGFS_CONNECTION = Ref{Union{Connector.FGFSPositionRoute,Nothing}}(nothing)
 const APP_CONFIG = Ref{Dict}()
 
 # Infinite job queue for processing download/conversion tasks
@@ -71,7 +71,7 @@ const FGFS_LOCK = ReentrantLock()
 const DEFAULT_GUI_ARGS = ["--http", "--map=1"]
 
 # List of file paths that were not recovered and must be deleted on shutdown
-const TMP_DELETE_WATCHLIST = Dict{String, Bool}()
+const TMP_DELETE_WATCHLIST = Dict{String,Bool}()
 const TMP_DELETE_LOCK = ReentrantLock()
 
 
@@ -127,14 +127,14 @@ function handle(req::HTTP.Request)
             conn = FGFS_CONNECTION[]
             st = conn === nothing ? "disconnected" : conn.actual === nothing ? "connecting" : "connected"
 
-            body = JSON3.write((state = st,
-                                 server_time = Dates.format(Dates.now(), dateformat"yyyy-mm-ddTHH:MM:SS")))
+            body = JSON3.write((state=st,
+                server_time=Dates.format(Dates.now(), dateformat"yyyy-mm-ddTHH:MM:SS")))
             return HTTP.Response(
                 200,
                 ["Content-Type" => "application/json",
-                "Cache-Control" => "no-store",
-                "Connection"    => "close",
-                "Content-Length"=> string(sizeof(body))],
+                    "Cache-Control" => "no-store",
+                    "Connection" => "close",
+                    "Content-Length" => string(sizeof(body))],
                 body
             )
         elseif p == "/api/session-info"
@@ -174,10 +174,10 @@ function handle(req::HTTP.Request)
                 bytes = read(path)
                 return HTTP.Response(
                     200,
-                    ["Content-Type"  => "application/json",
-                    "Cache-Control" => "no-store",
-                    "Connection"    => "close",
-                    "Content-Length"=> string(length(bytes))],
+                    ["Content-Type" => "application/json",
+                        "Cache-Control" => "no-store",
+                        "Connection" => "close",
+                        "Content-Length" => string(length(bytes))],
                     bytes
                 )
             else
@@ -190,9 +190,9 @@ function handle(req::HTTP.Request)
                         return HTTP.Response(200, ["Content-Type" => "application/json"], bytes)
                     end
                 catch e
-                    @error "GuiMode: Failed to regenerate coverage.json" exception=(e, catch_backtrace())
+                    @error "GuiMode: Failed to regenerate coverage.json" exception = (e, catch_backtrace())
                 end
-                
+
                 return HTTP.Response(
                     404,
                     ["Content-Type" => "text/plain", "Connection" => "close"],
@@ -272,7 +272,7 @@ end
 
 function h_start_job(req)
     # Force keys to be strings for consistent dictionary access
-    params = Dict{String, Any}(string(k) => v for (k, v) in pairs(JSON3.read(req.body)))
+    params = Dict{String,Any}(string(k) => v for (k, v) in pairs(JSON3.read(req.body)))
 
     job_id = next_job_id()
     params["job_id"] = job_id
@@ -283,7 +283,7 @@ function h_start_job(req)
             coords = GeoEngine.get_coords_from_icao(params["icao"])
             params["lat"] = coords.lat
             params["lon"] = coords.lon
-            catch e
+        catch e
             return HTTP.Response(400, "Cannot resolve ICAO: $(params["icao"])")
         end
     end
@@ -293,11 +293,11 @@ function h_start_job(req)
 
     # Prepare response payload with job details
     response_payload = Dict(
-        "jobId"  => job_id,
-        "lat"    => params["lat"],
-        "lon"    => params["lon"],
+        "jobId" => job_id,
+        "lat" => params["lat"],
+        "lon" => params["lon"],
         "radius" => params["radius"]
-        )
+    )
     HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(response_payload))
 end
 
@@ -329,11 +329,11 @@ function h_fill_holes(req)
 
     # Enqueue a new type of "meta-job" that will be handled by launch_job_from_api
     job_params = Dict(
-        "job_id"   => job_id,
-        "mode"     => "fill_holes", # A new way to identify it
-        "bounds"   => params.bounds,
+        "job_id" => job_id,
+        "mode" => "fill_holes", # A new way to identify it
+        "bounds" => params.bounds,
         "settings" => params.settings
-        )
+    )
 
     put!(JOB_QUEUE, job_params)
 
@@ -369,8 +369,8 @@ function h_connect(req)
                 if sock !== nothing && isopen(sock)
                     close(sock)
                 end
-                catch e
-                @warn "GuiMode.h_connect: Error closing previous socket." exception=(e, catch_backtrace())
+            catch e
+                @warn "GuiMode.h_connect: Error closing previous socket." exception = (e, catch_backtrace())
             end
             FGFS_CONNECTION[] = nothing
             sleep(0.5) # Pause to ensure proper closure
@@ -379,14 +379,14 @@ function h_connect(req)
         # 2. Proceed to create a new clean connection
         try
             params = JSON3.read(req.body)
-            port   = get(params, "port", 5000)
-            host   = "127.0.0.1"
+            port = get(params, "port", 5000)
+            host = "127.0.0.1"
             @info "Starting new FGFS connection to $host:$port"
             # Increase debug level to 2 to see position logs
             FGFS_CONNECTION[] = Connector.getFGFSPositionSetTask(host, port, 10.0, 0.5, 0)
             return HTTP.Response(200, "Connection task started.")
-            catch e
-            @error "Connection failed" exception=(e, catch_backtrace())
+        catch e
+            @error "Connection failed" exception = (e, catch_backtrace())
             FGFS_CONNECTION[] = nothing
             return HTTP.Response(500, "Connection failed: $(sprint(showerror, e))")
         end
@@ -451,7 +451,7 @@ function h_fgfs_status(_req)
             heading=pos.directionDeg,
             altitude=pos.altitudeFt,
             speed=pos.speedMph
-            )
+        )
         return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(payload))
     end
 end
@@ -487,8 +487,8 @@ function h_serve_coverage(_req)
     return HTTP.Response(
         200,
         ["Content-Type" => "application/json",
-         "Cache-Control" => "no-store",
-         "Connection"    => "close"],  # <-- avoids EPIPE
+            "Cache-Control" => "no-store",
+            "Connection" => "close"],  # <-- avoids EPIPE
         body
     )
 end
@@ -510,7 +510,7 @@ end
 function h_preview(req)
     # Generate PNG preview from DDS tile
     id = parse(Int, HTTP.queryparams(req)["id"])
-    w  = parse(Int, get(HTTP.queryparams(req), "w", "512"))
+    w = parse(Int, get(HTTP.queryparams(req), "w", "512"))
     paths = ddsFindScanner.find_file_by_id(id)
     isempty(paths) && return HTTP.Response(404, "Tile not found")
     dds_path = first(paths)
@@ -559,14 +559,14 @@ function serve_static_file(req)
         body = read(filepath)
         # Determine appropriate MIME type based on file extension
         # ... (MIME type logic omitted for brevity, but unchanged)
-        mime = endswith(filepath, ".html")  ?
-        "text/html" :
-            endswith(filepath, ".js")    ?
-        "application/javascript" :
-            endswith(filepath, ".css")   ?
-        "text/css" :
-            endswith(filepath, ".json")  ?
-        "application/json" : "text/plain"
+        mime = endswith(filepath, ".html") ?
+               "text/html" :
+               endswith(filepath, ".js") ?
+               "application/javascript" :
+               endswith(filepath, ".css") ?
+               "text/css" :
+               endswith(filepath, ".json") ?
+               "application/json" : "text/plain"
 
         return HTTP.Response(200, ["Content-Type" => mime], body)
     catch e
@@ -593,9 +593,9 @@ end
 # GET /api/resolve-icao?icao=XXXX
 # NOTE: legacy route kept for compatibility with old JS.
 function h_resolve_icao(req::HTTP.Request)
-    qs   = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
-    raw  = get(qs, "icao", "")
-    q    = String(raw)               # avoids SubString
+    qs = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
+    raw = get(qs, "icao", "")
+    q = String(raw)               # avoids SubString
     q_uc = uppercase(q)
 
     # 1) Case "looks like an ICAO" (4-5 alphanumerics): try direct resolve
@@ -605,29 +605,29 @@ function h_resolve_icao(req::HTTP.Request)
             # fallback: maybe the user wrote an IATA or a local code -> try full-text
             cand = AirportsNavaids.search_airports(q; limit=5)
             if isempty(cand)
-                return HTTP.Response(404, ["Content-Type"=>"application/json"],
-                                     JSON3.write((error="not found", query=q)))
-                elseif length(cand) == 1
-                return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(cand[1]))
+                return HTTP.Response(404, ["Content-Type" => "application/json"],
+                    JSON3.write((error="not found", query=q)))
+            elseif length(cand) == 1
+                return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(cand[1]))
             else
                 # Ambiguous: return list
-                arr = [ (icao=x.icao, name=x.name, lat=x.lat, lon=x.lon, elev_ft=x.elev_ft) for x in cand ]
-                return HTTP.Response(409, ["Content-Type"=>"application/json"], JSON3.write((error="ambiguous", query=q, items=arr)))
+                arr = [(icao=x.icao, name=x.name, lat=x.lat, lon=x.lon, elev_ft=x.elev_ft) for x in cand]
+                return HTTP.Response(409, ["Content-Type" => "application/json"], JSON3.write((error="ambiguous", query=q, items=arr)))
             end
         else
-            return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(a))
+            return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(a))
         end
     end
 
     # 2) Case "free text" (e.g. 'ROMA', 'BERGAMO'): use full-text search
     cand = AirportsNavaids.search_airports(q; limit=5)
     if isempty(cand)
-        return HTTP.Response(404, ["Content-Type"=>"application/json"], JSON3.write((error="not found", query=q)))
+        return HTTP.Response(404, ["Content-Type" => "application/json"], JSON3.write((error="not found", query=q)))
     elseif length(cand) == 1
-        return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(cand[1]))
+        return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(cand[1]))
     else
-        arr = [ (icao=x.icao, name=x.name, lat=x.lat, lon=x.lon, elev_ft=x.elev_ft) for x in cand ]
-        return HTTP.Response(409, ["Content-Type"=>"application/json"], JSON3.write((error="ambiguous", query=q, items=arr)))
+        arr = [(icao=x.icao, name=x.name, lat=x.lat, lon=x.lon, elev_ft=x.elev_ft) for x in cand]
+        return HTTP.Response(409, ["Content-Type" => "application/json"], JSON3.write((error="ambiguous", query=q, items=arr)))
     end
 end
 
@@ -650,7 +650,7 @@ function h_get_map_servers(req)
             end
         end
     catch e
-        @error "Unable to read or parse params.xml for servers" exception=(e, catch_backtrace())
+        @error "Unable to read or parse params.xml for servers" exception = (e, catch_backtrace())
         return HTTP.Response(500, "Error reading server list from params.xml")
     end
 
@@ -678,7 +678,7 @@ function h_get_paths(req)
         payload = Dict(
             "path" => get(APP_CONFIG[], "path", "N/A"),
             "save" => get(APP_CONFIG[], "save", "N/A")
-            )
+        )
         return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(payload))
     end
 end
@@ -694,19 +694,19 @@ function h_set_paths(req)
 
         lock(FGFS_LOCK) do
             if new_path !== nothing
-                APP_CONFIG[][ "path" ] = new_path
+                APP_CONFIG[]["path"] = new_path
                 mkpath(new_path) # Try to create the folder if it doesn't exist
             end
             if new_save !== nothing
-                APP_CONFIG[][ "save" ] = new_save
+                APP_CONFIG[]["save"] = new_save
                 mkpath(new_save)
             end
         end
 
-        @info "Paths updated via API" path=new_path save=new_save
+        @info "Paths updated via API" path = new_path save = new_save
         return HTTP.Response(200, "Paths updated successfully")
-        catch e
-        @error "Error updating paths via API" exception=(e, catch_backtrace())
+    catch e
+        @error "Error updating paths via API" exception = (e, catch_backtrace())
         return HTTP.Response(500, "Failed to update paths")
     end
 end
@@ -732,7 +732,7 @@ function h_save_route(req::HTTP.Request)
 
     # output folder: inside session save path, in "routes"
     out_base = get(APP_CONFIG[], "save", "Orthophotos-saved")
-    out_dir  = joinpath(out_base, "routes")
+    out_dir = joinpath(out_base, "routes")
     mkpath(out_dir)
 
     try
@@ -746,17 +746,17 @@ function h_save_route(req::HTTP.Request)
             route_name=nothing
         )
         # respond with filename + gpx (so UI can download it immediately)
-        payload = Dict("filename"=>filename, "gpx"=>gpx)
-        return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(payload))
+        payload = Dict("filename" => filename, "gpx" => gpx)
+        return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(payload))
     catch e
-        @error "h_save_route: failed to save GPX" exception=(e, catch_backtrace())
+        @error "h_save_route: failed to save GPX" exception = (e, catch_backtrace())
         return HTTP.Response(500, "Failed to save GPX: $(sprint(showerror, e))")
     end
 end
 
 function _routes_outdir()
     out_base = get(APP_CONFIG[], "save", "Orthophotos-saved")
-    out_dir  = joinpath(out_base, "routes")
+    out_dir = joinpath(out_base, "routes")
     mkpath(out_dir)
     return out_dir
 end
@@ -765,13 +765,13 @@ function h_list_routes(_req::HTTP.Request)
     dir = _routes_outdir()
     files = filter(f -> endswith(f, ".gpx"), readdir(dir; join=true))
     # Sort by mtime desc
-    sorted = sort(files, by=f->stat(f).mtime, rev=true)
+    sorted = sort(files, by=f -> stat(f).mtime, rev=true)
     data = [Dict(
-        "name"=>basename(f),
-        "size"=>stat(f).size,
-        "mtime"=>string(stat(f).mtime)
+        "name" => basename(f),
+        "size" => stat(f).size,
+        "mtime" => string(stat(f).mtime)
     ) for f in sorted]
-    return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(data))
+    return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(data))
 end
 
 function h_download_route(req::HTTP.Request)
@@ -789,65 +789,65 @@ function h_download_route(req::HTTP.Request)
     body = read(path)
     return HTTP.Response(
         200,
-        ["Content-Type"=>"application/gpx+xml",
-         "Content-Disposition"=>"attachment; filename=$(fname)"],
+        ["Content-Type" => "application/gpx+xml",
+            "Content-Disposition" => "attachment; filename=$(fname)"],
         body
     )
 end
 
 function h_airports_search(req::HTTP.Request)
     params = HTTP.queryparams(req)
-    q     = get(params, "q", "") |> String
+    q = get(params, "q", "") |> String
     limit = parse(Int, get(params, "limit", "10"))
     isempty(q) && return HTTP.Response(400, "Missing q")
 
     try
         # 1) ALWAYS search in both airports (including heliports) and navaids
-        results_ap = AirportsNavaids.search_airports(q;  limit = limit)
-        results_nv = AirportsNavaids.search_navaids(q;   limit = limit)
+        results_ap = AirportsNavaids.search_airports(q; limit=limit)
+        results_nv = AirportsNavaids.search_navaids(q; limit=limit)
 
         # Helper to read fields robustly
         _extract(a, sym::Symbol, default) =
             hasproperty(a, sym) ? getfield(a, sym) :
-                (a isa AbstractDict ? get(a, sym, get(a, String(sym), default)) : default)
+            (a isa AbstractDict ? get(a, sym, get(a, String(sym), default)) : default)
 
         # 2) Map airports
         items_ap = [Dict(
-            "kind"         => "airport",
-            "icao"         => String(_extract(a, :icao, "")),
-            "name"         => String(_extract(a, :name, "")),
-            "lat"          => Float64(_extract(a, :lat,  NaN)),
-            "lon"          => Float64(_extract(a, :lon,  NaN)),
-            "elev_ft"      => _extract(a, :elev_ft, missing),
+            "kind" => "airport",
+            "icao" => String(_extract(a, :icao, "")),
+            "name" => String(_extract(a, :name, "")),
+            "lat" => Float64(_extract(a, :lat, NaN)),
+            "lon" => Float64(_extract(a, :lon, NaN)),
+            "elev_ft" => _extract(a, :elev_ft, missing),
             "municipality" => String(_extract(a, :municipality, "")),
-            "iata_code"    => String(_extract(a, :iata_code, ""))
-            ) for a in results_ap]
+            "iata_code" => String(_extract(a, :iata_code, ""))
+        ) for a in results_ap]
 
         # 3) Map navaids (ident -> icao, type in iata_code field to show in parentheses)
         items_nv = [Dict(
-            "kind"         => "navaid",
-            "icao"         => String(_extract(nv, :ident, "")),
-            "name"         => String(_extract(nv, :name, "")),
-            "lat"          => Float64(_extract(nv, :lat,  NaN)),
-            "lon"          => Float64(_extract(nv, :lon,  NaN)),
-            "elev_ft"      => _extract(nv, :elev_ft, missing),
+            "kind" => "navaid",
+            "icao" => String(_extract(nv, :ident, "")),
+            "name" => String(_extract(nv, :name, "")),
+            "lat" => Float64(_extract(nv, :lat, NaN)),
+            "lon" => Float64(_extract(nv, :lon, NaN)),
+            "elev_ft" => _extract(nv, :elev_ft, missing),
             "municipality" => "",
-            "iata_code"    => String(_extract(nv, :type, ""))  # es. "VOR", "NDB"
-            ) for nv in results_nv]
+            "iata_code" => String(_extract(nv, :type, ""))  # es. "VOR", "NDB"
+        ) for nv in results_nv]
 
-            # 4) Merge; optional: cut to 'limit' total results
-            items = vcat(items_ap, items_nv)
-            if length(items) > limit
-                items = items[1:limit]
-            end
+        # 4) Merge; optional: cut to 'limit' total results
+        items = vcat(items_ap, items_nv)
+        if length(items) > limit
+            items = items[1:limit]
+        end
 
         return HTTP.Response(
             200,
             ["Content-Type" => "application/json"],
             JSON3.write(Dict("items" => items))
-            )
+        )
     catch e
-        @error "airports/search failed" exception=(e, catch_backtrace())
+        @error "airports/search failed" exception = (e, catch_backtrace())
         return HTTP.Response(500, "airports search not available")
     end
 end
@@ -870,13 +870,13 @@ end
 
 # -------- airport subtype helpers --------
 @inline function _is_heli(a::Dict)
-    t = lowercase(String(get(a, "type", get(a,"kind",""))))
+    t = lowercase(String(get(a, "type", get(a, "kind", ""))))
     return occursin("heliport", t) || occursin("helipad", t)
 end
 
 @inline function _has_iata(a::Dict)
     v = get(a, "iata", nothing)
-    return !(v === nothing || v === missing || String(v) == "" )
+    return !(v === nothing || v === missing || String(v) == "")
 end
 
 @inline function _is_major(a::Dict)
@@ -910,26 +910,26 @@ function h_geo_box(req::HTTP.Request)
     end
 
     # which groups are really needed
-    want_nv   = "navaids"        in types_set
+    want_nv = "navaids" in types_set
     want_amaj = "airports_major" in types_set
     want_amin = "airports_minor" in types_set
-    want_heli = "heliports"      in types_set
+    want_heli = "heliports" in types_set
 
     # cap (totals per group; client-side you can pass &max_total=..., here we apply them per-group)
     max_airports_total = parse(Int, get(qs, "max_total", get(qs, "max_airports", "1000")))
-    max_navaids_total  = parse(Int, get(qs, "max_total", get(qs, "max_navaids",  "1000")))
+    max_navaids_total = parse(Int, get(qs, "max_total", get(qs, "max_navaids", "1000")))
 
     # call the collector only once (otherwise = double work)
     include_airports = (want_amaj || want_amin || want_heli)
-    include_navaids  = want_nv
+    include_navaids = want_nv
 
     collected = AirportsNavaids.collect_bbox(
         nw_lat, nw_lon, se_lat, se_lon;
         include_airports=include_airports,
         include_navaids=include_navaids,
         # ask for a bit wider and then cut by subtype
-        max_airports = max(2*max_airports_total, 10_000),
-        max_navaids  = max_navaids_total,
+        max_airports=max(2 * max_airports_total, 10_000),
+        max_navaids=max_navaids_total,
     )
 
     # response with separate keys
@@ -946,9 +946,9 @@ function h_geo_box(req::HTTP.Request)
     # airports: split into three arrays
     if include_airports
         airports_all = get(collected, "airports", Any[])
-        majors   = Any[]
-        minors   = Any[]
-        helis    = Any[]
+        majors = Any[]
+        minors = Any[]
+        helis = Any[]
 
         for a in airports_all
             if _is_heli(a)
@@ -985,7 +985,7 @@ function h_geo_box(req::HTTP.Request)
     # (comment if you want a minimal payload)
     # resp["bbox"]   = collected["bbox"]
 
-    return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(resp))
+    return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(resp))
 end
 
 
@@ -996,46 +996,58 @@ function h_geo_circle(req::HTTP.Request)
     rkm = parse(Float64, get(qs, "r_km", "10"))
 
     types = lowercase(get(qs, "types", "all"))
-    inc_ap = types in ("all","airports")
-    inc_nv = types in ("all","navaids")
+    inc_ap = types in ("all", "airports")
+    inc_nv = types in ("all", "navaids")
 
     max_ap = parse(Int, get(qs, "max_airports", "10000"))
-    max_nv = parse(Int, get(qs, "max_navaids",  "10000"))
+    max_nv = parse(Int, get(qs, "max_navaids", "10000"))
 
     body = AirportsNavaids.circle_json(lat, lon, rkm;
-                                       include_airports=inc_ap,
-                                       include_navaids=inc_nv,
-                                       max_airports=max_ap,
-                                       max_navaids=max_nv)
-    return HTTP.Response(200, ["Content-Type"=>"application/json"], body)
+        include_airports=inc_ap,
+        include_navaids=inc_nv,
+        max_airports=max_ap,
+        max_navaids=max_nv)
+    return HTTP.Response(200, ["Content-Type" => "application/json"], body)
 end
 
 
 # GET /api/airports/resolve?icao=LIME
 function h_airports_resolve(req::HTTP.Request)
-    qs   = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
+    qs = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
     icao = String(get(qs, "icao", ""))
-    a    = AirportsNavaids.resolve_icao(icao)
+    a = AirportsNavaids.resolve_icao(icao)
 
     if a === nothing
-        return HTTP.Response(404, ["Content-Type"=>"application/json"], JSON3.write((error="not found",)))
+        return HTTP.Response(404, ["Content-Type" => "application/json"], JSON3.write((error="not found",)))
     end
-    return HTTP.Response(200, ["Content-Type"=>"application/json"], JSON3.write(a))
+    return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(a))
 end
 
 # GET /api/nav/circle?lat=...&lon=...&radius_nm=...
 function h_nav_circle(req::HTTP.Request)
-    qs   = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
-    lat  = try parse(Float64, get(qs, "lat", "0")) catch; 0.0 end
-    lon  = try parse(Float64, get(qs, "lon", "0")) catch; 0.0 end
-    r_nm = try parse(Float64, get(qs, "radius_nm", "20")) catch; 20.0 end
+    qs = HTTP.URIs.queryparams(HTTP.URIs.URI(String(req.target)))
+    lat = try
+        parse(Float64, get(qs, "lat", "0"))
+    catch
+        0.0
+    end
+    lon = try
+        parse(Float64, get(qs, "lon", "0"))
+    catch
+        0.0
+    end
+    r_nm = try
+        parse(Float64, get(qs, "radius_nm", "20"))
+    catch
+        20.0
+    end
     r_nm = clamp(r_nm, 0.1, 500.0)
 
     json = AirportsNavaids.circle_json(lat, lon, r_nm;
-                                        include_airports=true, include_navaids=true,
-                                        max_airports=1000, max_navaids=1000)
+        include_airports=true, include_navaids=true,
+        max_airports=1000, max_navaids=1000)
 
-    return HTTP.Response(200, ["Content-Type"=>"application/json"], json)
+    return HTTP.Response(200, ["Content-Type" => "application/json"], json)
 end
 
 ###############################################################################
@@ -1102,8 +1114,8 @@ function start_background_worker()
                     # Execute the actual job processing
                     launch_job_from_api(job)
                     @info "Job #$job_id completed successfully"
-                    catch e
-                    @error "Job #$job_id failed" exception=(e, catch_backtrace())
+                catch e
+                    @error "Job #$job_id failed" exception = (e, catch_backtrace())
                 finally
                     # Always notify job completion (success or failure)
                     # so the green indicator can disappear from UI
@@ -1168,11 +1180,11 @@ function handle_server_error(req, e)
     # Check if the error is a "broken pipe" (client disconnected)
     if isa(e, Base.IOError) && e.code == Base.UV_EPIPE
         # Log as warning instead of error, less alarming
-        @warn "Client connection closed prematurely (EPIPE)" request_target=req.target
+        @warn "Client connection closed prematurely (EPIPE)" request_target = req.target
     else
         # For all other errors, which are potentially serious,
         # continue logging them as critical errors
-        @error "Critical server error!" exception=(e, catch_backtrace())
+        @error "Critical server error!" exception = (e, catch_backtrace())
     end
 end
 
@@ -1263,7 +1275,7 @@ end
 
 function launch_job_from_api(params::Dict)
     job_id = params["job_id"]
-    @info "Starting job #$job_id in parallel task" job=params
+    @info "Starting job #$job_id in parallel task" job = params
 
     try
         # Normalize keys to string for safe access
@@ -1278,18 +1290,22 @@ function launch_job_from_api(params::Dict)
 
             # 1. Build 'cfg' configuration which requires lat/lon
             sdwn_value = get(p, "sdwn", -1)
-            if sdwn_value == -1 || sdwn_value === nothing; sdwn_value = 0; else sdwn_value = Int(sdwn_value); end
+            if sdwn_value == -1 || sdwn_value === nothing
+                sdwn_value = 0
+            else
+                sdwn_value = Int(sdwn_value)
+            end
 
-            cfg = Dict{String, Any}(
+            cfg = Dict{String,Any}(
                 "radius" => get(p, "radius", 10.0),
-                "size"   => get(p, "size", 4),
-                "over"   => get(p, "over", 1),
-                "lat"    => p["lat"], # Here it is safe, because this job MUST have lat/lon
-                "lon"    => p["lon"],
+                "size" => get(p, "size", 4),
+                "over" => get(p, "over", 1),
+                "lat" => p["lat"], # Here it is safe, because this job MUST have lat/lon
+                "lon" => p["lon"],
                 "server" => get(p, "server", 1),
-                "sdwn"   => sdwn_value,
-                "mode"   => job_mode,
-                )
+                "sdwn" => sdwn_value,
+                "mode" => job_mode,
+            )
 
             # 2. Prepare paths and map servers
             route_vec, _, root_path, save_path = GeoEngine.prepare_paths_and_location(cfg, home_path)
@@ -1299,12 +1315,12 @@ function launch_job_from_api(params::Dict)
             for (lat, lon) in route_vec
                 area = Commons.MapCoordinates(lat, lon, Float64(cfg["radius"]))
                 heading_deg = nothing
-                alt_ft      = nothing
+                alt_ft = nothing
                 if job_mode == "daa"
                     try
                         if FGFS_CONNECTION[] !== nothing && FGFS_CONNECTION[].actual !== nothing
                             heading_deg = FGFS_CONNECTION[].actual.directionDeg
-                            alt_ft      = FGFS_CONNECTION[].actual.altitudeFt
+                            alt_ft = FGFS_CONNECTION[].actual.altitudeFt
                         end
                     catch
                         heading_deg, alt_ft = nothing, nothing
@@ -1317,18 +1333,18 @@ function launch_job_from_api(params::Dict)
             # 1. Extract specific data for this job
             bounds = p["bounds"]
             settings = p["settings"]
-            fill_cfg = Dict(string(k)=>v for (k,v) in pairs(settings))
+            fill_cfg = Dict(string(k) => v for (k, v) in pairs(settings))
 
             # 2. We need paths, but we don't have a lat/lon.
             #    Call prepare_paths_and_location with an empty config
             #    to make it use its automatic search logic for the "Orthophotos" folder.
-            _, _, root_path, save_path = GeoEngine.prepare_paths_and_location(Dict{String, Any}(), home_path)
+            _, _, root_path, save_path = GeoEngine.prepare_paths_and_location(Dict{String,Any}(), home_path)
             map_srv = Downloader.MapServer(get(fill_cfg, "server", 1))
             # 3. Call the specialized function for filling
             @async GeoEngine.process_fill_holes(bounds, fill_cfg, map_srv, root_path, save_path, TMP_DIR)
         end
     catch e
-        @error "GuiMode.launch_job_from_api: ❌ Job failed" exception=(e, catch_backtrace())
+        @error "GuiMode.launch_job_from_api: ❌ Job failed" exception = (e, catch_backtrace())
     finally
         @info "GuiMode.launch_job_from_api: Job #$job_id **always** completed"
     end
@@ -1369,15 +1385,15 @@ function h_list_dirs(req)
         end
 
         # Sort: parent first, then alphabetical
-        sort!(dirs, by = x -> (x["type"] == "parent" ? 0 : 1, lowercase(x["name"])))
+        sort!(dirs, by=x -> (x["type"] == "parent" ? 0 : 1, lowercase(x["name"])))
 
         payload = Dict(
             "currentPath" => current_path,
             "directories" => dirs
-            )
+        )
 
         return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(payload))
-        catch e
+    catch e
         return HTTP.Response(500, JSON3.write(Dict("error" => "Errore lettura directory: $(e)")))
     end
 end
@@ -1411,7 +1427,7 @@ function h_create_dir(req)
         @info "Created new directory: $new_full_path"
         return HTTP.Response(200, "Directory created")
 
-        catch e
+    catch e
         return HTTP.Response(500, JSON3.write(Dict("error" => "Error creating directory: $(e)")))
     end
 end
@@ -1497,7 +1513,7 @@ function handle_set_paths(req::HTTP.Request)
                 end
 
             catch e
-                @error "GuiMode: Path migration failed. Active paths remain unchanged." exception=(e, catch_backtrace())
+                @error "GuiMode: Path migration failed. Active paths remain unchanged." exception = (e, catch_backtrace())
                 StatusMonitor.log_message("Path migration failed. Please check server log for details.")
             end
         end
@@ -1506,7 +1522,7 @@ function handle_set_paths(req::HTTP.Request)
         return HTTP.Response(202, JSON3.write(Dict("status" => "Migration started. Check /api/migration-status for progress.")))
 
     catch e
-        @error "GuiMode.handle_set_paths: ❌ Failed to process request" exception=(e, catch_backtrace())
+        @error "GuiMode.handle_set_paths: ❌ Failed to process request" exception = (e, catch_backtrace())
         return HTTP.Response(500, JSON3.write(Dict("error" => "Internal server error during path update.")))
     end
 end
@@ -1664,8 +1680,12 @@ function run(args::Vector{String}=ARGS)
     xml_path = AppConfig._read_path_from_xml("path")
     xml_save = AppConfig._read_path_from_xml("save")
 
-    if xml_path !== nothing; AppConfig.GLOBAL_CONFIG["path"] = xml_path; end
-    if xml_save !== nothing; AppConfig.GLOBAL_CONFIG["save"] = xml_save; end
+    if xml_path !== nothing
+        AppConfig.GLOBAL_CONFIG["path"] = xml_path
+    end
+    if xml_save !== nothing
+        AppConfig.GLOBAL_CONFIG["save"] = xml_save
+    end
 
     # 2.3: GeoEngine fallback logic finds default/best paths.
     # Use AppConfig.GLOBAL_CONFIG as configuration source.
@@ -1703,10 +1723,29 @@ function run(args::Vector{String}=ARGS)
             cp(source_path, target_path)
             @info "Configuration: params.xml successfully copied to $target_path"
         catch e
-            @error "Configuration: Unable to copy params.xml from $source_path" exception=e
+            @error "Configuration: Unable to copy params.xml from $source_path" exception = e
         end
     elseif !isfile(source_path)
         @warn "Original params.xml file not found in $source_path. Continuing without server list."
+    end
+
+    # 2.6: Copy launch scripts if they don't exist
+    for script_name in ["go.bat", "go.jl", "go.sh"]
+        s_path = joinpath(PACKAGE_ROOT_PATH[], script_name)
+        t_path = joinpath(project_root, script_name)
+        if isfile(s_path) && !isfile(t_path)
+            @info "Configuration: $script_name not found in launch directory. Copying from package root..."
+            try
+                cp(s_path, t_path)
+                @info "Configuration: $script_name successfully copied to $t_path"
+                # Ensure shell scripts are executable
+                if endswith(script_name, ".sh")
+                    chmod(t_path, 0o755)
+                end
+            catch e
+                @error "Configuration: Unable to copy $script_name" exception = e
+            end
+        end
     end
 
     # --------------------------------------------------------------------------
@@ -1754,7 +1793,7 @@ function run(args::Vector{String}=ARGS)
         AirportsNavaids.start!(; async=true)
         @info "[AirportsNavaids] background bootstrap started"
     catch e
-        @warn "[AirportsNavaids] could not start" exception=e
+        @warn "[AirportsNavaids] could not start" exception = e
     end
 
     # 4.3: "One-Off" Orphan Recovery at startup (MOVED AFTER WORKER START)
@@ -1772,7 +1811,7 @@ function run(args::Vector{String}=ARGS)
             true # is_first_run = true
         )
     catch e
-        @error "Error during initial orphan recovery" exception=(e, catch_backtrace())
+        @error "Error during initial orphan recovery" exception = (e, catch_backtrace())
     end
 
     # 4.4: Start periodic monitoring of TMP folder (for future cleanup)
@@ -1791,13 +1830,13 @@ function run(args::Vector{String}=ARGS)
                     false # is_first_run = false (watchlist maintenance only)
                 )
             catch e
-                @error "Recover orphaned tiles periodic failed" exception=(e, catch_backtrace())
+                @error "Recover orphaned tiles periodic failed" exception = (e, catch_backtrace())
             end
         end
     end
 
     # 4.5: Start Assembly Monitor
-    runtime_cfg = Dict{String, Any}(APP_CONFIG[])
+    runtime_cfg = Dict{String,Any}(APP_CONFIG[])
     @async AssemblyMonitor.monitor_and_assemble(initial_root_path, initial_save_path, TMP_DIR, runtime_cfg)
 
     # --------------------------------------------------------------------------
