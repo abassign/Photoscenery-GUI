@@ -1,3 +1,3 @@
 @echo off
-julia --project=. go.jl
+julia go.jl
 pause

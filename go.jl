@@ -39,14 +39,18 @@ check_for_updates()
 
 # Activate project environment
 println("\nStarting Photoscenery...")
-Pkg.activate(".")
 
-# Load the application
-# We include the main file directly to load the module
-include("src/Photoscenary.jl")
-
-# Bring module into scope
-using .Photoscenary
+if isdir("src") && isfile("src/Photoscenary.jl")
+    println("Local source detected. Activating local environment...")
+    Pkg.activate(".")
+    # Load the application from source
+    include("src/Photoscenary.jl")
+    using .Photoscenary
+else
+    println("Local source not found. Attempting to load installed package...")
+    # Assume Photoscenary is installed in the active environment
+    using Photoscenary
+end
 
 # Launch the GUI
 Photoscenary.GuiMode.run()
