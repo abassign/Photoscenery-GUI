@@ -1718,6 +1718,24 @@ function run(args::Vector{String}=ARGS)
     # STEP 2: Harmonization and Loading of Active Paths (Path Migration Flow)
     # --------------------------------------------------------------------------
 
+    # 2.0: Automatic Fallback Logic for params.xml (Copy if not exists)
+    # MOVED HERE to ensure it exists BEFORE we try to read/update it below.
+    project_root = pwd()
+    target_path = joinpath(project_root, "params.xml")
+    source_path = joinpath(PACKAGE_ROOT_PATH[], "params.xml")
+
+    if isfile(source_path) && !isfile(target_path)
+        @info "Configuration: params.xml not found in launch directory. Copying from package root ($source_path)..."
+        try
+            cp(source_path, target_path)
+            @info "Configuration: params.xml successfully copied to $target_path"
+        catch e
+            @error "Configuration: Unable to copy params.xml from $source_path" exception = e
+        end
+    elseif !isfile(source_path)
+        @warn "Original params.xml file not found in $source_path. Continuing without server list."
+    end
+
     # 2.1: Initialize shared state 'AppConfig.GLOBAL_CONFIG'
     # This is the active session variable used by GeoEngine and FileMover.
     empty!(AppConfig.GLOBAL_CONFIG)
@@ -1759,22 +1777,7 @@ function run(args::Vector{String}=ARGS)
     AppConfig.GLOBAL_CONFIG["save"] = initial_save_path
     APP_CONFIG[] = AppConfig.GLOBAL_CONFIG # Makes active configuration consistent
 
-    # 2.5: Automatic Fallback Logic for params.xml (Copy if not exists)
-    project_root = pwd()
-    target_path = joinpath(project_root, "params.xml")
-    source_path = joinpath(PACKAGE_ROOT_PATH[], "params.xml")
 
-    if isfile(source_path) && !isfile(target_path)
-        @info "Configuration: params.xml not found in launch directory. Copying from package root ($source_path)..."
-        try
-            cp(source_path, target_path)
-            @info "Configuration: params.xml successfully copied to $target_path"
-        catch e
-            @error "Configuration: Unable to copy params.xml from $source_path" exception = e
-        end
-    elseif !isfile(source_path)
-        @warn "Original params.xml file not found in $source_path. Continuing without server list."
-    end
 
     # 2.6: Copy launch scripts if they don't exist
     for script_name in ["go.bat", "go.jl", "go.sh"]
