@@ -91,5 +91,6 @@
     "date_month": "Last Month",
     "date_year": "Last Year",
     "date_all": "All Time",
-    "view_resolution": "View Resolution"
+    "view_resolution": "View Resolution",
+    "coords": "Coords"
 }

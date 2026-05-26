@@ -273,7 +273,7 @@ function updateMapCoverage(coverageData, allowedResolutions, currentOpacity, dat
     if (!allowedResolutions.has(tile.sizeId)) return;
 
     // Draw tile on map
-    const popupHtml = `${i18n.t('id')}: ${tile.id}<br>${i18n.t('resolution_popup')}: ${tile.sizeId}<br><b>${i18n.t('score')}: ${tile.detail_score.toFixed(3)}</b><br><button class="preview-button" data-tile-id="${tile.id}" data-size-id="${tile.sizeId}">${i18n.t('view_preview')}</button>`;
+    const popupHtml = `${i18n.t('id')}: ${tile.id}<br>${i18n.t('coords') || 'Coords'}: ${tile.coords || 'N/A'}<br>${i18n.t('resolution_popup')}: ${tile.sizeId}<br><b>${i18n.t('score')}: ${tile.detail_score.toFixed(3)}</b><br><button class="preview-button" data-tile-id="${tile.id}" data-size-id="${tile.sizeId}">${i18n.t('view_preview')}</button>`;
     const bounds = [[tile.bbox.latLL, tile.bbox.lonLL], [tile.bbox.latUR, tile.bbox.lonUR]];
     L.rectangle(bounds, { ...getStyleForSizeId(tile.sizeId), fillOpacity: currentOpacity, opacity: 1 }).addTo(coverageLayer).bindPopup(popupHtml);
 

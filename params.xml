@@ -42,13 +42,13 @@
         <airports>
             <url>https://davidmegginson.github.io/ourairports-data/airports.csv</url>
             <file_path>airports.csv</file_path>
-            <date>2025-12-04</date>
+            <date>2026-05-26</date>
         </airports>
         <navaids>
             <url>https://davidmegginson.github.io/ourairports-data/navaids.csv</url>
             <file_path>navaids.csv</file_path>
-            <date>2025-12-04</date>
+            <date>2026-05-26</date>
         </navaids>
     </external_files>
     <presets><id name="fast-phnl">-i phnl -r 20 -s 2</id></presets>
-<settings><path>/home/abassign/fgfs-scenery/photoscenery/Orthophotos</path><save>/home/abassign/fgfs-scenery/photoscenery/Orthophotos-saved</save></settings></params>
+<settings><path>/mnt/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos</path><save>/mnt/Salvataggi/Salvataggi/FGFS-Scenary/photoscenery/Orthophotos-saved</save></settings></params>

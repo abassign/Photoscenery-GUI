@@ -81,16 +81,16 @@ Return the tile resolution ID (0…6) as a function of:
 """
 function adaptive_size_id(k_max::Int, h::Real, d::Real, fov_deg::Real=60)::Int
     # --- Constants ---
-    NM_TO_M  = 1852.0           # meters in 1 NM
-    FT_TO_M  = 0.3048           # meters in 1 ft
+    NM_TO_M = 1852.0           # meters in 1 NM
+    FT_TO_M = 0.3048           # meters in 1 ft
     TILE_LAT_DEG = 1 / 8        # tile height in degrees
     EARTH_RADIUS_M = 6371000.0  # mean Earth radius in meters
     SCREEN_PX = 1920            # assumed display width in pixels
     KFOV = 1.0                  # Enhances the altitude effect on distance
 
     # --- 1. Convert altitude (feet) and distance (NM) to meters ---
-    alt_m   = h * FT_TO_M
-    dist_m  = d * NM_TO_M
+    alt_m = h * FT_TO_M
+    dist_m = d * NM_TO_M
 
     # --- 2. Compute visible ground width at given altitude (simple trig) ---
     fov_rad = deg2rad(fov_deg / 2.0)
@@ -134,15 +134,15 @@ or a single coordinate/ICAO point.
 struct Waypoint
     lat::Float64
     lon::Float64
-    alt_agl_ft::Union{Float64, Nothing}  # AGL altitude in feet, optional
-    angle_deg::Union{Float64, Nothing}   # Route angle in degrees, optional
+    alt_agl_ft::Union{Float64,Nothing}  # AGL altitude in feet, optional
+    angle_deg::Union{Float64,Nothing}   # Route angle in degrees, optional
 end
 
 
 """
 Gets the nominal pixel width and column count for a given size ID from PIXEL_SIZE_MAP.
 """
-function getSizeAndCols(size_id::Int)::Union{Tuple{Int, Int}, Nothing}
+function getSizeAndCols(size_id::Int)::Union{Tuple{Int,Int},Nothing}
     for item in PIXEL_SIZE_MAP
         if item.size == size_id
             return item.width, item.cols
@@ -162,20 +162,20 @@ struct MapCoordinates
     isDeclarePolar::Bool
     positionRoute::Union{Connector.FGFSPositionRoute,Nothing}
 
-    function MapCoordinates(lat::Float64,lon::Float64,radius::Float64)
-        (latLL,lonLL,latUR,lonUR) = Commons.latDegByCentralPoint(lat,lon,radius)
+    function MapCoordinates(lat::Float64, lon::Float64, radius::Float64)
+        (latLL, lonLL, latUR, lonUR) = Commons.latDegByCentralPoint(lat, lon, radius)
         # Assume 'positionRoute' is not provided in this constructor, so 'nothing'
-        return new(lat,lon,radius,latLL,lonLL,latUR,lonUR,true, nothing)
+        return new(lat, lon, radius, latLL, lonLL, latUR, lonUR, true, nothing)
     end
 
-    function MapCoordinates(latLL::Float64,lonLL::Float64,latUR::Float64,lonUR::Float64)
+    function MapCoordinates(latLL::Float64, lonLL::Float64, latUR::Float64, lonUR::Float64)
         lon = lonLL + (lonUR - lonLL) / 2.0
         lat = latLL + (latUR - latLL) / 2.0
         # Simplified radius calculation, your original version with LLA is correct
         # if Geodesy.jl or similar is available.
         radius = sqrt((lonUR - lonLL)^2 + (latUR - latLL)^2) # Simplification, use your original logic
         # Assume 'positionRoute' is not provided in this constructor, so 'nothing'
-        return new(lat,lon,radius,latLL,lonLL,latUR,lonUR,false, nothing)
+        return new(lat, lon, radius, latLL, lonLL, latUR, lonUR, false, nothing)
     end
 end
 
@@ -213,9 +213,9 @@ end
 struct ChunkJob
     tile_id::Int
     size_id::Int
-    chunk_xy::Tuple{Int, Int}
-    bbox::NamedTuple{(:lonLL, :latLL, :lonUR, :latUR), NTuple{4, Float64}}
-    pixel_size::NamedTuple{(:width, :height), NTuple{2, Int}}
+    chunk_xy::Tuple{Int,Int}
+    bbox::NamedTuple{(:lonLL, :latLL, :lonUR, :latUR),NTuple{4,Float64}}
+    pixel_size::NamedTuple{(:width, :height),NTuple{2,Int}}
     temp_path::String
     retries_left::Int
 end
@@ -227,19 +227,32 @@ matching the exact order expected by the legacy Downloader.jl function.
 """
 function Base.getindex(t::TileMetadata, i::Int)
     # This mapping is arbitrary but matches what Downloader.jl expects.
-    if i == 1; return t.id;
-    elseif i == 2; return t.size_id;
-    elseif i == 3; return t.lonLL;
-    elseif i == 4; return t.latLL;
-    elseif i == 5; return t.lonUR;
-    elseif i == 6; return t.latUR;
-    elseif i == 7; return t.x;
-    elseif i == 8; return t.y;
-    elseif i == 9; return t.lonC;
-    elseif i == 10; return t.latC;
-    elseif i == 11; return t.lon_step;
-    elseif i == 12; return t.width;
-    elseif i == 13; return t.cols;
+    if i == 1
+        return t.id
+    elseif i == 2
+        return t.size_id
+    elseif i == 3
+        return t.lonLL
+    elseif i == 4
+        return t.latLL
+    elseif i == 5
+        return t.lonUR
+    elseif i == 6
+        return t.latUR
+    elseif i == 7
+        return t.x
+    elseif i == 8
+        return t.y
+    elseif i == 9
+        return t.lonC
+    elseif i == 10
+        return t.latC
+    elseif i == 11
+        return t.lon_step
+    elseif i == 12
+        return t.width
+    elseif i == 13
+        return t.cols
     else
         throw(BoundsError(t, i))
     end
@@ -254,33 +267,33 @@ Base.iterate(t::TileMetadata, state=1) = state > length(t) ? nothing : (t[state]
 m = LATITUDE_BANDS
 n = TILE_WIDTHS_DEG
 
-tileWidth(lat) = reduce(+,map((x,y,z)->z * (abs(lat) < x) * (abs(lat) >= y),m,m[begin+1:end],n))
+tileWidth(lat) = reduce(+, map((x, y, z) -> z * (abs(lat) < x) * (abs(lat) >= y), m, m[begin+1:end], n))
 
-baseX(lat,lon) = floor(floor(lon / tileWidth(lat)) * tileWidth(lat))
-x(lat,lon) = floor(Int,(lon - baseX(lat,lon)) / tileWidth(lat))
+baseX(lat, lon) = floor(floor(lon / tileWidth(lat)) * tileWidth(lat))
+x(lat, lon) = floor(Int, (lon - baseX(lat, lon)) / tileWidth(lat))
 baseY(lat) = floor(lat)
-y(lat) = floor(Int,(lat - baseY(lat)) * 8)
+y(lat) = floor(Int, (lat - baseY(lat)) * 8)
 
 minLat(lat) = baseY(lat) + 1.0 * (y(lat) // 8)
 maxLat(lat) = baseY(lat) + 1.0 * ((1 + y(lat)) // 8)
 
-minLon(lat,lon) = baseX(lat,lon) + x(lat,lon) * tileWidth(lat)
-maxLon(lat,lon) = minLon(lat,lon) + tileWidth(lat)
+minLon(lat, lon) = baseX(lat, lon) + x(lat, lon) * tileWidth(lat)
+maxLon(lat, lon) = minLon(lat, lon) + tileWidth(lat)
 
 centerLat(lat) = minLat(lat) + (maxLat(lat) - minLat(lat)) / 2.0
-centerLon(lat,lon) = minLon(lat,lon) + (maxLon(lat,lon) - minLon(lat,lon)) / 2.0
+centerLon(lat, lon) = minLon(lat, lon) + (maxLon(lat, lon) - minLon(lat, lon)) / 2.0
 
 longDegOnLatitudeNm(lat) = 2 * pi * 6371.0 * 0.53996 * cosd(lat) / 360.0
 longDegOnLongitudeNm() = pi * 6378.0 * 0.53996 / 180
 
-latDegByCentralPoint(lat,lon,radius) = (
-    round((lat -  mod(lat,0.125)) - (radius/longDegOnLongitudeNm()),digits=1),
-    round((lon -  mod(lon,tileWidth(lat))) - (radius/longDegOnLatitudeNm(lat)),digits=1),
-    round((lat - mod(lat,0.125) + 0.125) + (radius/longDegOnLongitudeNm()),digits=1),
-    round((lon - mod(lon,tileWidth(lat)) + tileWidth(lat))+ (radius/longDegOnLatitudeNm(lat)),digits=1))
+latDegByCentralPoint(lat, lon, radius) = (
+    round((lat - mod(lat, 0.125)) - (radius / longDegOnLongitudeNm()), digits=1),
+    round((lon - mod(lon, tileWidth(lat))) - (radius / longDegOnLatitudeNm(lat)), digits=1),
+    round((lat - mod(lat, 0.125) + 0.125) + (radius / longDegOnLongitudeNm()), digits=1),
+    round((lon - mod(lon, tileWidth(lat)) + tileWidth(lat)) + (radius / longDegOnLatitudeNm(lat)), digits=1))
 
-sizeHight(sizeWidth,lat) = Int(sizeWidth / (8 * tileWidth(lat)))
-inValue(value,extrem) = abs(value) <= extrem
+sizeHight(sizeWidth, lat) = Int(sizeWidth / (8 * tileWidth(lat)))
+inValue(value, extrem) = abs(value) <= extrem
 
 """
 Calculates the longitudinal width of a tile in degrees based on latitude.
@@ -340,11 +353,11 @@ function coordFromIndex(index)
     lat = ((index - ((lon + 180) << 14)) >> 6) - 90
     y = (index - (((lon + 180) << 14) + ((lat + 90) << 6))) >> 3
     x = index - ((((lon + 180) << 14) + ((lat + 90) << 6)) + (y << 3))
-    a = string(lon >= 0.0 ? "e" : "w", lon >= 0.0 ? @sprintf("%03d",floor(abs(lon),digits=-1)) : @sprintf("%03d",ceil(abs(lon),digits=-1)),
-               lat >= 0.0 ? "n" : "s", lat >= 0.0 ? @sprintf("%02d",floor(abs(lat),digits=-1)) : @sprintf("%02d",ceil(abs(lat),digits=-1)))
-    b = string(lon >= 0.0 ? "e" : "w", lon >= 0.0 ? @sprintf("%03d",floor(Int,abs(lon))) : @sprintf("%03d",ceil(Int,abs(lon))),
-               lat >= 0.0 ? "n" : "s", lat >= 0.0 ? @sprintf("%02d",floor(Int,abs(lat))) : @sprintf("%02d",ceil(Int,abs(lat))))
-    return lon + (tileWidth(lat) / 2.0 + x * tileWidth(lat)) / 2.0, lat + (0.125 / 2 + y * 0.125) / 2.0, lon, lat, x, y, a, b
+    a = string(lon >= 0.0 ? "e" : "w", lon >= 0.0 ? @sprintf("%03d", floor(abs(lon), digits=-1)) : @sprintf("%03d", ceil(abs(lon), digits=-1)),
+        lat >= 0.0 ? "n" : "s", lat >= 0.0 ? @sprintf("%02d", floor(abs(lat), digits=-1)) : @sprintf("%02d", ceil(abs(lat), digits=-1)))
+    b = string(lon >= 0.0 ? "e" : "w", lon >= 0.0 ? @sprintf("%03d", floor(Int, abs(lon))) : @sprintf("%03d", ceil(Int, abs(lon))),
+        lat >= 0.0 ? "n" : "s", lat >= 0.0 ? @sprintf("%02d", floor(Int, abs(lat))) : @sprintf("%02d", ceil(Int, abs(lat))))
+    return lon + (tileWidth(lat) / 2.0 + x * tileWidth(lat)), lat + (0.125 / 2 + y * 0.125), lon, lat, x, y, a, b
 end
 
 """
@@ -359,15 +372,15 @@ function tile_dirs(lat::Real, lon::Real)
     lon10 = floor(Int, lon ÷ 10) * 10        # 26.5 → 20
     lat10 = floor(Int, lat ÷ 10) * 10        # 68.6 → 60
     first = @sprintf("%c%03d%c%02d",
-                     lon ≥ 0 ? 'e' : 'w', abs(lon10),
-                     lat ≥ 0 ? 'n' : 's',  abs(lat10))
+        lon ≥ 0 ? 'e' : 'w', abs(lon10),
+        lat ≥ 0 ? 'n' : 's', abs(lat10))
 
     # --- 1° block ----------------------------------------------------------
     lon1 = floor(Int, lon)                   # 26
     lat1 = floor(Int, lat)                   # 68
     second = @sprintf("%c%03d%c%02d",
-                      lon ≥ 0 ? 'e' : 'w', abs(lon1),
-                      lat ≥ 0 ? 'n' : 's',  abs(lat1))
+        lon ≥ 0 ? 'e' : 'w', abs(lon1),
+        lat ≥ 0 ? 'n' : 's', abs(lat1))
 
     return first, second
 end
@@ -385,7 +398,7 @@ end
 
 
 """ Returns the filename extension. """
-function getFileExtension(filename::AbstractString)::Union{String, Nothing}
+function getFileExtension(filename::AbstractString)::Union{String,Nothing}
     try
         return lowercase(splitext(filename)[2])
     catch
@@ -394,8 +407,8 @@ function getFileExtension(filename::AbstractString)::Union{String, Nothing}
 end
 
 """ Returns the filename without the extension. """
-function getFileName(filename::AbstractString)::Union{String, Nothing}
-     try
+function getFileName(filename::AbstractString)::Union{String,Nothing}
+    try
         return splitext(filename)[1]
     catch
         return nothing
@@ -409,7 +422,7 @@ end
 Reads the DDS header to get image dimensions.
 Returns: (success::Bool, width::Int64, height::Int64)
 """
-function getDDSSize(file_path::AbstractString)::Tuple{Bool, Int64, Int64}
+function getDDSSize(file_path::AbstractString)::Tuple{Bool,Int64,Int64}
     !isfile(file_path) && return false, 0, 0
     # Simple check, could be more robust
     !endswith(lowercase(file_path), ".dds") && return false, 0, 0
@@ -448,9 +461,9 @@ end
 Uses ImageIO to get PNG image dimensions.
 Returns: (success::Bool, width::Int64, height::Int64)
 """
-function getPNGSize(file_path::AbstractString)::Tuple{Bool, Int64, Int64}
+function getPNGSize(file_path::AbstractString)::Tuple{Bool,Int64,Int64}
     !isfile(file_path) && return false, 0, 0
-     # Simple check
+    # Simple check
     !endswith(lowercase(file_path), ".png") && return false, 0, 0
 
     try
@@ -477,7 +490,7 @@ end
 """
 Gets nominal pixel width and column count for a given size ID (0-6).
 """
-function getSizePixel(size_id::Int)::Tuple{Int, Int}
+function getSizePixel(size_id::Int)::Tuple{Int,Int}
     for item in PIXEL_SIZE_MAP
         if item.size == size_id
             return item.width, item.cols
@@ -509,7 +522,7 @@ get_count(counter::DirErrorCounter)::Int = counter.count
 mutable struct CursorAnimator
     index::Int
     const symbols::Vector{Char}
-    CursorAnimator() = new(1, ['\U2190','\U2196','\U2191','\U2197','\U2192','\U2198','\U2193','\U2199'])
+    CursorAnimator() = new(1, ['\U2190', '\U2196', '\U2191', '\U2197', '\U2192', '\U2198', '\U2193', '\U2199'])
 end
 
 """ Gets the next cursor symbol in the animation sequence. """
@@ -542,8 +555,8 @@ function findFile(fileName::String; startPath::Union{String,Nothing}=nothing)::V
             search_path = dirname(fileName)
             target_name = basename(fileName)
         else
-             search_path = homedir() # Default search location
-             target_name = basename(fileName)
+            search_path = homedir() # Default search location
+            target_name = basename(fileName)
         end
     end
 
@@ -553,20 +566,20 @@ function findFile(fileName::String; startPath::Union{String,Nothing}=nothing)::V
     # Check if the exact path is given and exists
     exact_path = joinpath(search_path, target_name)
     if isfile(exact_path)
-         try
+        try
             st = stat(exact_path)
             push!(foundFiles, FoundFile(1, exact_path, st.mtime, st.size))
             return foundFiles # Found the exact file, no need to search further
-         catch e
-             println("Warning: Could not stat file '$exact_path': $e")
-         end
+        catch e
+            println("Warning: Could not stat file '$exact_path': $e")
+        end
     end
 
     # Walk the directory if the exact file wasn't found or path was just a directory
     if isdir(search_path)
         error_counter = DirErrorCounter()
         try
-            for (root, dirs, files) in walkdir(search_path; onerror= e->(add_error!(error_counter); println("Error walking directory: $e")))
+            for (root, dirs, files) in walkdir(search_path; onerror=e -> (add_error!(error_counter); println("Error walking directory: $e")))
                 for file in files
                     if file == target_name
                         full_path = joinpath(root, file)
@@ -582,14 +595,14 @@ function findFile(fileName::String; startPath::Union{String,Nothing}=nothing)::V
                 end
             end
         catch e
-             println("Error during directory walk starting at '$search_path': $e")
+            println("Error during directory walk starting at '$search_path': $e")
         end
         num_errors = get_count(error_counter)
         # if num_errors > 0
         #     println("Note: $num_errors errors occurred during directory scan.")
         # end
-    # else # search_path was specified but wasn't the file and isn't a directory
-    #    println("Warning: Specified search path '$search_path' is not a directory or the target file.")
+        # else # search_path was specified but wasn't the file and isn't a directory
+        #    println("Warning: Specified search path '$search_path' is not a directory or the target file.")
     end
 
 
@@ -603,26 +616,26 @@ Returns the pixel dimensions of the *chunk* consistent with the tile aspect rati
 - Width  = floor(width / cols)
 - Height = round(width * |Δlat/Δlon|)
 """
-@inline function chunk_pixel_size(tile::TileMetadata)::NamedTuple{(:width,:height),Tuple{Int,Int}}
+@inline function chunk_pixel_size(tile::TileMetadata)::NamedTuple{(:width, :height),Tuple{Int,Int}}
     @assert tile.cols > 0
     w::Int = fld(tile.width, tile.cols)   # floor(width/cols), avoids double rounding
     Δlon::Float64 = tile.lonUR - tile.lonLL
     Δlat::Float64 = tile.latUR - tile.latLL
-    aspect::Float64 = (abs(Δlon) < 1e-12) ? 1.0 : abs(Δlat/Δlon)
+    aspect::Float64 = (abs(Δlon) < 1e-12) ? 1.0 : abs(Δlat / Δlon)
     h::Int = max(1, Int(round(w * aspect)))
-    return (width = w, height = h)
+    return (width=w, height=h)
 end
 
 """
 chunk_pixel_size(width::Integer, cols::Integer, Δlat::Real, Δlon::Real)
 Variant for cases where width/cols do not match those in TileMetadata (e.g. pre-coverage).
 """
-@inline function chunk_pixel_size(width::Integer, cols::Integer, Δlat::Real, Δlon::Real)::NamedTuple{(:width,:height),Tuple{Int,Int}}
+@inline function chunk_pixel_size(width::Integer, cols::Integer, Δlat::Real, Δlon::Real)::NamedTuple{(:width, :height),Tuple{Int,Int}}
     @assert cols > 0
     w::Int = fld(Int(width), Int(cols))
-    aspect::Float64 = (abs(float(Δlon)) < 1e-12) ? 1.0 : abs(float(Δlat)/float(Δlon))
+    aspect::Float64 = (abs(float(Δlon)) < 1e-12) ? 1.0 : abs(float(Δlat) / float(Δlon))
     h::Int = max(1, Int(round(w * aspect)))
-    return (width = w, height = h)
+    return (width=w, height=h)
 end
 
 

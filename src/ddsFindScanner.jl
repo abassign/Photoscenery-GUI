@@ -36,8 +36,8 @@ const QUICK_CHECK_SAMPLE_SIZE = 100
 # the entire index will be regenerated.
 const QUICK_CHECK_FAILURE_THRESHOLD_PERCENT = 1.0
 
-const SCORE_CACHE = Dict{Tuple{String,Int64}, Tuple{Float64,Int}}()
-const SCORE_LOCK  = ReentrantLock()
+const SCORE_CACHE = Dict{Tuple{String,Int64},Tuple{Float64,Int}}()
+const SCORE_LOCK = ReentrantLock()
 
 const SKIP_NOACCESS = e -> begin
     dir = hasproperty(e, :path) ? getproperty(e, :path) :
@@ -49,9 +49,9 @@ end
 using Dates
 
 const DEFAULT_METADATA = Dict(
-    "version"    => "1.0",
-    "last_scan"  => Dates.format(Dates.now(), "yyyy-mm-dd HH:MM:SS")
-    )
+    "version" => "1.0",
+    "last_scan" => Dates.format(Dates.now(), "yyyy-mm-dd HH:MM:SS")
+)
 const _is_scanning = Ref(false)
 const _last_scan_duration = Ref{Int}(0)
 
@@ -66,14 +66,14 @@ end
 macro dinfo(msg)
     esc(quote
         local _f = (@isdefined __FUNCTION__) ? __FUNCTION__ : nothing
-        @info $msg _func=_f
+        @info $msg _func = _f
     end)
 end
 
 macro dwarn(msg)
     esc(quote
         local _f = (@isdefined __FUNCTION__) ? __FUNCTION__ : nothing
-        @warn $msg _func=_f
+        @warn $msg _func = _f
     end)
 end
 
@@ -81,7 +81,7 @@ macro derror(msg)
     esc(quote
         try
             local _f = (@isdefined __FUNCTION__) ? __FUNCTION__ : nothing
-            @error $msg _func=_f
+            @error $msg _func = _f
         catch log_e
             println(stderr, "ddsFindScanner.derror: LOGGER FAILURE: ", log_e)
         end
@@ -95,7 +95,7 @@ end
 const _data_lock = ReentrantLock()
 const _coverage_lock = ReentrantLock()
 # In-memory dictionary holding information about found files (path -> details)
-const _existing_data = Dict{String, Any}()
+const _existing_data = Dict{String,Any}()
 # Boolean flag to control the background update loop
 const _should_continue = Ref{Bool}(true)
 
@@ -118,10 +118,10 @@ end
 
 
 function get_score_complex(path::String;
-                           min_samples::Int=150, max_samples::Int=2000, batch::Int=100,
-                           gedge::Int=25, tol_rel::Float64=0.06)
+    min_samples::Int=150, max_samples::Int=2000, batch::Int=100,
+    gedge::Int=25, tol_rel::Float64=0.06)
 
-    mt  = isfile(path) ? Int64(mtime(path)) : 0
+    mt = isfile(path) ? Int64(mtime(path)) : 0
     key = (path, mt)
 
     if haskey(SCORE_CACHE, key)
@@ -130,7 +130,7 @@ function get_score_complex(path::String;
     end
 
     r = detail_score_file(path; min_samples=min_samples, max_samples=max_samples,
-                          batch=batch, gedge=gedge, tol_rel=tol_rel)
+        batch=batch, gedge=gedge, tol_rel=tol_rel)
     lock(SCORE_LOCK) do
         SCORE_CACHE[key] = (r.score, r.samples)
     end
@@ -224,7 +224,7 @@ A tuple `(is_consistent, mismatch_percentage)` where:
 - `is_consistent`: `true` if the discrepancy percentage is below the threshold.
 - `mismatch_percentage`: The percentage of inconsistent files found in the sample.
 """
-function _validate_index_consistency(file_data::AbstractDict)::Tuple{Bool, Float64}
+function _validate_index_consistency(file_data::AbstractDict)::Tuple{Bool,Float64}
     num_files_in_index = length(file_data)
     if num_files_in_index == 0
         return (true, 0.0) # An empty index is always consistent.
@@ -263,7 +263,7 @@ function _validate_index_consistency(file_data::AbstractDict)::Tuple{Bool, Float
             end
         catch e
             # If `stat` fails or date parsing fails, consider it inconsistent.
-            @warn "ddsFindScanner: Error checking file '$path' in Quick Check." exception=(e, catch_backtrace())
+            @warn "ddsFindScanner: Error checking file '$path' in Quick Check." exception = (e, catch_backtrace())
             inconsistent_count += 1
         end
     end
@@ -307,7 +307,7 @@ sizeId, and the new detail score.
 Returns a tuple: (isValid, path, size, id, last_modified_str, sizeId, width, height, score)
 `isValid` is true if dimensions could be read.
 """
-function get_file_info(path::String, isDDS::Bool = false, isPNG::Bool = false)
+function get_file_info(path::String, isDDS::Bool=false, isPNG::Bool=false)
     try
         stat_info = stat(path)
         size = stat_info.size
@@ -316,7 +316,7 @@ function get_file_info(path::String, isDDS::Bool = false, isPNG::Bool = false)
 
         if isDDS
             dimension = Commons.getDDSSize(path)
-            elseif isPNG
+        elseif isPNG
             dimension = Commons.getPNGSize(path)
         end
 
@@ -364,7 +364,7 @@ function find_file_by_id(id::Int, sizeId::Union{Int,Nothing}=nothing; verbose::B
             # Extract ID and sizeId from the record, providing defaults if keys are missing
             file_id = get(record, "id", -1) # Use -1 as a sentinel for missing ID
             # Use -1 as a sentinel for missing sizeId; 0 is a valid sizeId
-            file_size_id = get(record, "sizeId",-1)
+            file_size_id = get(record, "sizeId", -1)
             # Debugging output if verbose mode is enabled
             verbose && @dinfo "Checking: $path | ID: $file_id | SizeID: $file_size_id | Target ID: $id | Target SizeID: $sizeId"
             # Check if the file ID matches the target ID
@@ -384,8 +384,8 @@ function find_file_by_id(id::Int, sizeId::Union{Int,Nothing}=nothing; verbose::B
         if isempty(matches)
             # Construct appropriate "not found" message
             msg = sizeId === nothing ?
-                "No files found for ID $id (any sizeId)" :
-                "No files found for ID $id and sizeId $sizeId"
+                  "No files found for ID $id (any sizeId)" :
+                  "No files found for ID $id and sizeId $sizeId"
             @dinfo ("ddsFindScanner.find_file_by_id: $(msg)")
         else
             # Construct "found" message
@@ -413,7 +413,7 @@ end
 Calculates and prints statistics about the files in the index, including
 total size and counts per sizeId.
 """
-function _print_statistics(data::Dict{String, Any})
+function _print_statistics(data::Dict{String,Any})
     # Initialize counts for each expected sizeId (0 through 5)
     size_id_counts = Dict(i => 0 for i in 0:5)
     total_size_bytes = 0
@@ -485,9 +485,9 @@ function _periodic_update(scan_paths::Vector{String}, program_version::String)
                         @dinfo "ddsFindScanner._periodic_update: Saving index to $(_data_file[])..."
                         current_metadata = Dict(
                             "program_version" => program_version,
-                            "scanned_paths"   => scan_paths,
-                            "last_scan"       => Dates.now(),
-                            )
+                            "scanned_paths" => scan_paths,
+                            "last_scan" => Dates.now(),
+                        )
                         save_data(current_metadata, _existing_data)
                         @dinfo "ddsFindScanner._periodic_update: Index saved."
                     else
@@ -497,10 +497,10 @@ function _periodic_update(scan_paths::Vector{String}, program_version::String)
 
                 @dinfo "ddsFindScanner._periodic_update: Update cycle finished at $(Dates.format(Dates.now(), "HH:MM:SS"))."
             end # end of with_logger
-            catch e
-                # Errors are also written to the log file
-                with_logger(logger) do
-                    @error "ddsFindScanner._periodic_update: Critical error during periodic update." exception=(e, catch_backtrace())
+        catch e
+            # Errors are also written to the log file
+            with_logger(logger) do
+                @error "ddsFindScanner._periodic_update: Critical error during periodic update." exception = (e, catch_backtrace())
             end
         end
         @dinfo "ddsFindScanner._periodic_update: The Background scanning process will start in $(SCAN_INTERVAL_S[])  sec."
@@ -527,13 +527,13 @@ Returns:
 - Count of valid PNG files found.
 """
 function scan_directories(dirs_to_scan::Vector{String})
-    file_data = Vector{Tuple{String, Int64, Int64, String, Int64, Int64, Int64, Float64}}()
+    file_data = Vector{Tuple{String,Int64,Int64,String,Int64,Int64,Int64,Float64}}()
     dds_count = 0
     png_count = 0
 
     for dir in dirs_to_scan
         try
-            for (root, _, files) in walkdir(dir; onerror = SKIP_NOACCESS)
+            for (root, _, files) in walkdir(dir; onerror=SKIP_NOACCESS)
                 path_components = splitpath(root)
                 if ("Orthophotos" in path_components) || ("Orthophotos-saved" in path_components)
                     for file in files
@@ -577,13 +577,15 @@ function generate_coverage_json()
         _, _, lon_base, lat_base, x, y, _, _ = Commons.coordFromIndex(tile_id)
         lat_ref = lat_base + (y * 0.125) + 0.0625
         width = Commons.tileWidth(lat_ref)
-        lonLL = lon_base + x * width; latLL = lat_base + y * 0.125
-        lonUR = lonLL + width; latUR = latLL + 0.125
+        lonLL = lon_base + x * width
+        latLL = lat_base + y * 0.125
+        lonUR = lonLL + width
+        latUR = latLL + 0.125
         return (latLL=latLL, lonLL=lonLL, latUR=latUR, lonUR=lonUR)
     end
 
     # Dictionary to track the best candidate for each tile_id
-    tile_candidates = Dict{Int, Dict{String, Any}}()
+    tile_candidates = Dict{Int,Dict{String,Any}}()
 
     lock(_data_lock) do
         for (path, record) in _existing_data
@@ -602,8 +604,8 @@ function generate_coverage_json()
                 "sizeId" => size_id,
                 "isInOrtho" => is_in_ortho,
                 "last_modified" => last_mod,
-                "detail_score"  => detail_score
-                )
+                "detail_score" => detail_score
+            )
 
             if !haskey(tile_candidates, tile_id)
                 # If it's the first one found, add it as candidate
@@ -616,7 +618,7 @@ function generate_coverage_json()
                 if current_candidate["isInOrtho"] && !existing_candidate["isInOrtho"]
                     tile_candidates[tile_id] = current_candidate
                     # RULE 2: Both are in the same "zone" -> highest resolution wins.
-                    elseif current_candidate["isInOrtho"] == existing_candidate["isInOrtho"]
+                elseif current_candidate["isInOrtho"] == existing_candidate["isInOrtho"]
                     if current_candidate["sizeId"] > existing_candidate["sizeId"]
                         tile_candidates[tile_id] = current_candidate
                     end
@@ -629,12 +631,16 @@ function generate_coverage_json()
     output_data = []
     for (tile_id, info) in tile_candidates
         push!(output_data, Dict(
-            "id"            => tile_id,
-            "bbox"          => get_tile_bbox_from_id(tile_id),
-            "sizeId"        => info["sizeId"],
+            "id" => tile_id,
+            "bbox" => get_tile_bbox_from_id(tile_id),
+            "sizeId" => info["sizeId"],
             "last_modified" => info["last_modified"],
-            "detail_score"  => info["detail_score"]
-            ))
+            "detail_score" => info["detail_score"],
+            "coords" => begin
+                clon, clat, _, _, _, _, _, _ = Commons.coordFromIndex(tile_id)
+                @sprintf("%.4f, %.4f", clat, clon)
+            end
+        ))
     end
 
     @info "ddsFindScanner: Writing $(length(output_data)) unique tiles to coverage.json..."
@@ -646,7 +652,7 @@ function generate_coverage_json()
         end
         @info "ddsFindScanner: Report 'coverage.json' successfully updated! ✅ (Path: $(abspath("coverage.json")))"
     catch e
-        @error "ddsFindScanner: Unable to write coverage.json file" exception=(e, catch_backtrace())
+        @error "ddsFindScanner: Unable to write coverage.json file" exception = (e, catch_backtrace())
     end
 end
 
@@ -669,15 +675,15 @@ function load_data()
                 return (json_data["metadata"], json_data["files"])
             else
                 @dinfo "ddsFindScanner.load_data: Warning: Invalid index format in $(file_path). Rebuilding."
-                return (nothing, Dict{String, Any}())
+                return (nothing, Dict{String,Any}())
             end
-            catch e
+        catch e
             @dinfo "ddsFindScanner.load_data: Error loading data from $(file_path): $e. Rebuilding."
-            return (nothing, Dict{String, Any}())
+            return (nothing, Dict{String,Any}())
         end
     else
         @dinfo "ddsFindScanner.load_data: Data file $(file_path) not found. Starting with empty index."
-        return (nothing, Dict{String, Any}())
+        return (nothing, Dict{String,Any}())
     end
 end
 
@@ -686,7 +692,7 @@ end
 Saves the metadata and file index to a JSON file and automatically
 triggers the regeneration of the web coverage report.
 """
-function save_data(metadata::Dict, file_data::Dict{String, Any})
+function save_data(metadata::Dict, file_data::Dict{String,Any})
     file_path = _data_file[]
     full_data = Dict(
         "metadata" => metadata,
@@ -731,7 +737,7 @@ Adds new files and updates existing entries if the modification time is newer.
 `new_scan_results` is a vector of tuples:
 `(path, size, id, last_modified_str, sizeId, width, height)`
 """
-function update_data(existing_data::Dict{String, Any}, new_scan_results::Vector)
+function update_data(existing_data::Dict{String,Any}, new_scan_results::Vector)
     updated_count = 0
     added_count = 0
 
@@ -784,7 +790,7 @@ function place_tile!(
     rootPath::String,
     rootPath_saved::String,
     cfg::Dict
-    )
+)
     if !isfile(source_path)
         @warn "ddsFindScanner.place_tile: Source file not found: $source_path"
         return false
@@ -815,7 +821,9 @@ function place_tile!(
 
             # If we are in over=1 or over=2, we must compare dimensions
             is_success, actual_width, _ = Commons.getDDSSize(final_dest_path)
-            if !is_success; is_success, actual_width, _ = Commons.getPNGSize(final_dest_path); end
+            if !is_success
+                is_success, actual_width, _ = Commons.getPNGSize(final_dest_path)
+            end
 
             # Debug checkpoint: print values before comparison
             println("--- DEBUG place_tile! ---")
@@ -827,7 +835,11 @@ function place_tile!(
 
             if !is_success
                 @warn "Unable to read existing file at '$(final_dest_path)'. It will be removed."
-                try; rm(final_dest_path, force=true); catch e; @error "Unable to remove corrupt file" exception=(e, catch_backtrace()); end
+                try
+                    rm(final_dest_path, force=true)
+                catch e
+                    @error "Unable to remove corrupt file" exception = (e, catch_backtrace())
+                end
             else
                 if overwrite_mode == 1 && tile.width <= actual_width
                     @info "Existing tile ($actual_width px) is better or equal. Archiving new tile ($tile.width px)."
@@ -867,19 +879,19 @@ function place_tile!(
         lock(_data_lock) do
             stat_info = stat(final_dest_path)
             _existing_data[final_dest_path] = Dict(
-                "id"             => tile.id,
-                "size"           => stat_info.size,
-                "last_modified"  => Dates.format(now(), "yyyy-mm-dd HH:MM:SS"),
-                "sizeId"         => tile.size_id,
-                "width"          => tile.width,
-                "height"         => tile.width,
-                "detail_score"   => score
+                "id" => tile.id,
+                "size" => stat_info.size,
+                "last_modified" => Dates.format(now(), "yyyy-mm-dd HH:MM:SS"),
+                "sizeId" => tile.size_id,
+                "width" => tile.width,
+                "height" => tile.width,
+                "detail_score" => score
             )
             save_data(DEFAULT_METADATA, _existing_data)
         end
         return true
     catch e
-        @error "Error placing tile" exception=(e, catch_backtrace())
+        @error "Error placing tile" exception = (e, catch_backtrace())
         return false
     end
 end
@@ -888,7 +900,7 @@ function moveImage(rootPath::String, rootPath_saved::String, id::Int, target_siz
     @info "ddsFindScanner.moveImage: Searching tile from cache for ID $id, sizeId $target_sizeId"
 
     # [Logic to find "best_candidate" remains the same]
-    candidates = Tuple{String, Dict}[]
+    candidates = Tuple{String,Dict}[]
     lock(_data_lock) do
         for (path, record) in _existing_data
             if get(record, "id", -1) == id && get(record, "sizeId", -1) == target_sizeId
@@ -902,7 +914,7 @@ function moveImage(rootPath::String, rootPath_saved::String, id::Int, target_siz
         return "not_found"
     end
 
-    sort!(candidates, by = x -> get(x[2], "last_modified", ""), rev=true)
+    sort!(candidates, by=x -> get(x[2], "last_modified", ""), rev=true)
     candidate_path, candidate_record = candidates[1]
 
     # Create a temporary TileMetadata object with necessary info
@@ -914,7 +926,7 @@ function moveImage(rootPath::String, rootPath_saved::String, id::Int, target_siz
 
     temp_tile_meta = Commons.TileMetadata(
         id, target_sizeId, lon, lat, 0.0, 0.0, 0, 0, 0.0, 0.0, 0.0, width, cols
-        )
+    )
 
     # Call new centralized function to do the heavy lifting
     success = place_tile!(candidate_path, temp_tile_meta, rootPath, rootPath_saved, cfg)
@@ -944,7 +956,7 @@ function startFind(scan_paths::Vector{String}, program_version::String)
             end
         end
     catch e
-        @warn "Unable to read 'scan_interval_seconds' from params.xml. Default of 300s will be used." exception=(e, catch_backtrace())
+        @warn "Unable to read 'scan_interval_seconds' from params.xml. Default of 300s will be used." exception = (e, catch_backtrace())
         SCAN_INTERVAL_S[] = 300 # Restore default in case of error
     end
 
@@ -957,11 +969,11 @@ function startFind(scan_paths::Vector{String}, program_version::String)
 
     if metadata === nothing
         rebuild_needed = true
-            rebuild_reason = "Index file not found or invalid."
+        rebuild_reason = "Index file not found or invalid."
     else
         if get(metadata, "program_version", "") != program_version
             rebuild_needed = true
-                rebuild_reason = "Program version has changed."
+            rebuild_reason = "Program version has changed."
         elseif Set(get(metadata, "scanned_paths", [])) != Set(scan_paths)
             rebuild_needed = true
             rebuild_reason = "Scan paths have changed."
@@ -989,9 +1001,9 @@ function startFind(scan_paths::Vector{String}, program_version::String)
             @dinfo ("ddsFindScanner.startFind: Performing initial synchronous save of the new index...")
             current_metadata = Dict(
                 "program_version" => program_version,
-                "scanned_paths"   => scan_paths,
-                "last_scan"       => Dates.now(),
-                )
+                "scanned_paths" => scan_paths,
+                "last_scan" => Dates.now(),
+            )
             save_data(current_metadata, _existing_data)
 
             @dinfo ("ddsFindScanner.startFind: Initial save complete. The file dds_files.json is now available.")
@@ -1030,7 +1042,7 @@ function startFind()
         syncScan()  # synchronous scan
 
         scan_end_time = time_ns()
-        scan_duration_ms = (scan_end_time - scan_start_time)/1000000
+        scan_duration_ms = (scan_end_time - scan_start_time) / 1000000
 
         lock(_data_lock) do
             _last_scan_duration[] = scan_duration_ms
@@ -1062,16 +1074,16 @@ function has_suitable_tile(id::Int, target_sizeId::Int, rootPath::String, savePa
     end
 
     # Find version with highest resolution among existing ones
-    best_existing = sort(all_versions, by = v -> get(v, "sizeId", -1), rev=true)[1]
+    best_existing = sort(all_versions, by=v -> get(v, "sizeId", -1), rev=true)[1]
     best_existing_sizeId = get(best_existing, "sizeId", -1)
 
     if overwrite_mode == 0
         # Never overwrite: if it exists (at any resolution), it is "suitable".
         return true
-        elseif overwrite_mode == 1
+    elseif overwrite_mode == 1
         # Overwrite only if new is better: "suitable" if existing is >= new.
         return best_existing_sizeId >= target_sizeId
-        elseif overwrite_mode == 2
+    elseif overwrite_mode == 2
         # Always overwrite: no existing file is "suitable" to block a new download.
         return false
     end
@@ -1184,11 +1196,11 @@ and sizeId) for each file, creating a richer index.
 """
 function syncScan()
     lock(_data_lock) do
-        new_data = Dict{String, Any}()
+        new_data = Dict{String,Any}()
 
         for dir in directories
             @info "ddsFindScanner.syncScan: Scanning directory: $dir"
-            for (root, _, files) in walkdir(dir; onerror = SKIP_NOACCESS)
+            for (root, _, files) in walkdir(dir; onerror=SKIP_NOACCESS)
                 # Filter only interesting folders for performance
                 if !("Orthophotos" in splitpath(root))
                     continue
@@ -1213,14 +1225,14 @@ function syncScan()
                         # Add record to index only if it is a valid image
                         if is_valid && id !== nothing
                             new_data[fullpath] = Dict(
-                                "id"            => id,
-                                "name"          => basename(fullpath),
-                                "size"          => size,          # Size in bytes
+                                "id" => id,
+                                "name" => basename(fullpath),
+                                "size" => size,          # Size in bytes
                                 "last_modified" => last_modified,
-                                "sizeId"        => sizeId,        # Dimensional class 0..6
-                                "width"         => width,
-                                "height"        => height,
-                                "detail_score"  => score
+                                "sizeId" => sizeId,        # Dimensional class 0..6
+                                "width" => width,
+                                "height" => height,
+                                "detail_score" => score
                             )
                         end
                     end
@@ -1260,12 +1272,12 @@ function printStats()
     lock(_data_lock) do
         dds_count = 0
         png_count = 0
-        dir_counts = Dict{String, Int}()
+        dir_counts = Dict{String,Int}()
 
         for (filepath, details) in _existing_data
             if endswith(filepath, ".dds")
                 dds_count += 1
-                elseif endswith(filepath, ".png")
+            elseif endswith(filepath, ".png")
                 png_count += 1
             end
 
