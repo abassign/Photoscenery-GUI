@@ -369,8 +369,8 @@ second_lvl - 1×1° string    (e.g. "e026n68")
 """
 function tile_dirs(lat::Real, lon::Real)
     # --- 10° block ---------------------------------------------------------
-    lon10 = floor(Int, lon ÷ 10) * 10        # 26.5 → 20
-    lat10 = floor(Int, lat ÷ 10) * 10        # 68.6 → 60
+    lon10 = floor(Int, lon / 10) * 10        # 26.5 → 20
+    lat10 = floor(Int, lat / 10) * 10        # 68.6 → 60
     first = @sprintf("%c%03d%c%02d",
         lon ≥ 0 ? 'e' : 'w', abs(lon10),
         lat ≥ 0 ? 'n' : 's', abs(lat10))
